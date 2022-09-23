@@ -1,0 +1,40 @@
+{
+  "actor" : {
+    "objectType" : "Agent",
+    "name" : "John Doe",
+    "mbox" : "mailto:john.doe@example.com"
+  },
+  "verb" : {
+    "id" : "http://example.com/visited",
+    "display" : {
+      "en-US" : "will visit",
+      "it-IT" : "visiterò"
+    }
+  },
+  "object" : {
+    "objectType" : "Activity",
+    "id" : "http://example.com/xapi/activity/simplestatement",
+    "definition" : {
+      "name" : {
+        "en-US" : "Example Activity",
+        "it-IT" : "Esempio di attività"
+      },
+      "description" : {
+        "en-US" : "An xAPI activity",
+        "it-IT" : "Un'attività xAPI"
+      }
+    }
+  },
+  "result" : {
+    "score" : {
+      "scaled" : 0.5,
+      "raw" : 5.0,
+      "min" : 0.0,
+      "max" : 10.0
+    },
+    "success" : true,
+    "completion" : true,
+    "response" : "response",
+    "duration" : "PT4H35M59.14S"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "actor" : {
+    "objectType" : "Agent",
+    "name" : "John Doe",
+    "mbox" : "mailto:john.doe@example.com"
+  },
+  "verb" : {
+    "id" : "http://example.com/visited",
+    "display" : {
+      "en-US" : "will visit",
+      "it-IT" : "visiterò"
+    }
+  },
+  "object" : {
+    "objectType" : "Group",
+    "name" : "Example Group",
+    "account" : {
+      "homePage" : "http://example.com/homePage",
+      "name" : "GroupAccount"
+    },
+    "member" : [
+      {
+        "objectType" : "Agent",
+        "name" : "Andrew Downes",
+        "mbox" : "mailto:andrew@example.co.uk"
+      },
+      {
+        "objectType" : "Agent",
+        "name" : "Aaron Silvers",
+        "openid" : "http://aaron.openid.example.org"
+      }
+    ]
+  }
+}

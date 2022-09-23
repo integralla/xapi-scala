@@ -1,0 +1,67 @@
+package io.integralla.model.xapi.statement
+
+import io.circe.jawn.decode
+import io.circe.syntax.EncoderOps
+import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.xapi.statement.identifiers.IRI
+import io.integralla.testing.spec.UnitSpec
+
+class StatementResultTest extends UnitSpec {
+
+  val sampleScore: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
+  val sampleExtensions: Extensions = Map(IRI("http://example.com/extenions/other") -> """{"one": 1, "two": 2}""".asJson)
+
+  val sampleResult: StatementResult = StatementResult(
+    Some(sampleScore), Some(true), Some(true), Some("response"), Some("PT4H35M59.14S"), Some(sampleExtensions)
+  )
+
+  val sampleResultEncoded: String = """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"response":"response","duration":"PT4H35M59.14S","extensions":{"http://example.com/extenions/other":"{\"one\": 1, \"two\": 2}"}}"""
+
+  describe("StatementResult") {
+    describe("[validation]") {
+      it("should not throw a statement validation error for a valid duration") {
+        StatementResult(
+          Some(sampleScore), Some(true), Some(true), Some("response"), Some("PT16559.14S"), Some(sampleExtensions)
+        )
+      }
+
+      it("should throw a statement validation error for a invalid duration") {
+        val exception = intercept[StatementValidationException] {
+          StatementResult(
+            Some(sampleScore), Some(true), Some(true), Some("response"), Some("T15M20.345S"), Some(sampleExtensions)
+          )
+        }
+        assert(exception.getMessage.contains("The supplied duration could not be parsed: duration(T15M20.345S), errorIndex(0)"))
+      }
+    }
+
+    describe("[encoding]") {
+      it("should successfully encode a result") {
+        val actual: String = sampleResult.asJson.noSpaces
+        assert(actual === sampleResultEncoded)
+      }
+    }
+
+    describe("[decoding]") {
+      it("should successfully decode a result") {
+        val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](sampleResultEncoded)
+        decoded match {
+          case Right(actual) => assert(actual === sampleResult)
+          case Left(err) => throw new Error(s"Decoding failed: $err")
+        }
+      }
+
+      it("should successfully decode a result in which some values are not set") {
+        val data: String = """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"duration":"PT4H35M59.14S"}"""
+        val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](data)
+        val expected: StatementResult = StatementResult(
+          Some(sampleScore), Some(true), Some(true), None, Some("PT4H35M59.14S"), None
+        )
+        decoded match {
+          case Right(actual) => assert(actual === expected)
+          case Left(err) => throw new Error(s"Decoding failed: $err")
+        }
+      }
+    }
+  }
+}

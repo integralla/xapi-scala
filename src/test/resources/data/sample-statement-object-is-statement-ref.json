@@ -1,0 +1,18 @@
+{
+  "actor" : {
+    "objectType" : "Agent",
+    "name" : "John Doe",
+    "mbox" : "mailto:john.doe@example.com"
+  },
+  "verb" : {
+    "id" : "http://example.com/visited",
+    "display" : {
+      "en-US" : "will visit",
+      "it-IT" : "visiterò"
+    }
+  },
+  "object" : {
+    "objectType" : "StatementRef",
+    "id" : "f1dc3573-e346-4bd0-b295-f5dde5cbe13f"
+  }
+}

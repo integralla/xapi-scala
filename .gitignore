@@ -1,0 +1,9 @@
+# IDE
+.idea
+
+# BSP
+.bsp
+
+# SBT / Scala
+target/
+

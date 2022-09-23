@@ -1,0 +1,58 @@
+{
+  "actor" : {
+    "objectType" : "Agent",
+    "name" : "John Doe",
+    "mbox" : "mailto:john.doe@example.com"
+  },
+  "verb" : {
+    "id" : "http://example.com/visited",
+    "display" : {
+      "en-US" : "will visit",
+      "it-IT" : "visiterò"
+    }
+  },
+  "object" : {
+    "objectType" : "Activity",
+    "id" : "http://example.adlnet.gov/xapi/example/activity",
+    "definition" : {
+      "name" : {
+        "en-US" : "Example Activity"
+      },
+      "description" : {
+        "en-US" : "An xAPI example activity"
+      },
+      "type" : "http://adlnet.gov/expapi/activities/cmi.interaction",
+      "moreInfo" : "https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#Appendix2C",
+      "interactionType" : "choice",
+      "correctResponsesPattern" : [
+        "golf[,]tetris"
+      ],
+      "choices" : [
+        {
+          "id" : "golf",
+          "definition" : {
+            "en-US" : "Golf Example"
+          }
+        },
+        {
+          "id" : "facebook",
+          "definition" : {
+            "en-US" : "Facebook App"
+          }
+        },
+        {
+          "id" : "tetris",
+          "definition" : {
+            "en-US" : "Tetris Example"
+          }
+        },
+        {
+          "id" : "scrabble",
+          "definition" : {
+            "en-US" : "Scrabble Example"
+          }
+        }
+      ]
+    }
+  }
+}

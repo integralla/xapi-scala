@@ -1,0 +1,42 @@
+{
+  "actor" : {
+    "objectType" : "Agent",
+    "name" : "John Doe",
+    "mbox" : "mailto:john.doe@example.com"
+  },
+  "verb" : {
+    "id" : "http://example.com/visited",
+    "display" : {
+      "en-US" : "will visit",
+      "it-IT" : "visiterò"
+    }
+  },
+  "object" : {
+    "objectType" : "Activity",
+    "id" : "http://example.com/xapi/activity/simplestatement",
+    "definition" : {
+      "name" : {
+        "en-US" : "Example Activity",
+        "it-IT" : "Esempio di attività"
+      },
+      "description" : {
+        "en-US" : "An xAPI activity",
+        "it-IT" : "Un'attività xAPI"
+      }
+    }
+  },
+  "attachments" : [
+    {
+      "usageType" : "http://adlnet.gov/expapi/attachments/signature",
+      "display" : {
+        "en-US" : "Signature"
+      },
+      "description" : {
+        "en-US" : "A test signature"
+      },
+      "contentType" : "application/octet-stream",
+      "length" : 4235,
+      "sha2" : "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
+    }
+  ]
+}
