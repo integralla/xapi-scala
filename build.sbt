@@ -10,9 +10,17 @@ lazy val supportedScalaVersions = List(scala2_13, scala3)
 ThisBuild / scalaVersion := scala3
 
 lazy val root = (project in file("."))
+  .aggregate(circe)
+  .settings(
+    name := "Integralla LRS Model",
+    crossScalaVersions := Nil,
+    publish / skip := true
+  )
+
+lazy val circe = (project in file("integralla-lrs-model-circe"))
   .settings(
     name := "LRS Model",
-    normalizedName := "integralla-lrs-model",
+    normalizedName := "integralla-lrs-model-circe",
     libraryDependencies ++= loggingDependencies ++ testDependencies ++ Seq(
       dependencies.circeCore,
       dependencies.circeGeneric,
@@ -25,20 +33,20 @@ lazy val root = (project in file("."))
         "-encoding",
         "UTF-8",
         "-feature",
-        "-language:implicitConversions",
-//        "-Xfatal-warnings"
+        "-language:implicitConversions"
+        //        "-Xfatal-warnings"
       ) ++
         (CrossVersion.partialVersion(scalaVersion.value) match {
           case Some((3, _)) => Seq(
             "-unchecked",
             "-source:3.0-migration"
-//            "-new-syntax"
+            //            "-new-syntax"
           )
           case _ => Seq(
             "-deprecation",
             "-Xfatal-warnings",
-            "-Wunused:imports,privates,locals",
-//            "-Wvalue-discard"
+            "-Wunused:imports,privates,locals"
+            //            "-Wvalue-discard"
           )
         })
     }
