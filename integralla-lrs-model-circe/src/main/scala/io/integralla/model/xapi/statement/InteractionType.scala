@@ -1,6 +1,8 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, DecodingFailure, Encoder, HCursor}
+
+import scala.util.{Failure, Success, Try}
 
 /**
  * Enumeration of supported interaction types
@@ -19,6 +21,20 @@ object InteractionType extends Enumeration {
   val SEQUENCING: InteractionType.Value = Value("sequencing")
   val TRUE_FALSE: InteractionType.Value = Value("true-false")
 
-  implicit val decoder: Decoder[InteractionType.Value] = Decoder.decodeEnumeration(InteractionType)
-  implicit val encoder: Encoder[InteractionType.Value] = Encoder.encodeEnumeration(InteractionType)
+  implicit val decoder: Decoder[InteractionType.Value] = (c: HCursor) => Decoder.decodeString(c).flatMap { str =>
+    Try(InteractionType.withName(str)) match {
+      case Success(a) => Right(a)
+      case Failure(_) =>
+        Left(
+          DecodingFailure(
+            s"Couldn't decode value '$str'. " +
+              s"Allowed values: '${InteractionType.values.mkString(",")}'",
+            c.history
+          )
+        )
+    }
+  }
+  implicit val encoder: Encoder[InteractionType.Value] = (a: InteractionType.Value) => {
+    Encoder.encodeString(a.toString)
+  }
 }

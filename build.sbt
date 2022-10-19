@@ -33,20 +33,17 @@ lazy val circe = (project in file("integralla-lrs-model-circe"))
         "-encoding",
         "UTF-8",
         "-feature",
-        "-language:implicitConversions"
-        //        "-Xfatal-warnings"
+        "-language:implicitConversions",
+        "-Xfatal-warnings"
       ) ++
         (CrossVersion.partialVersion(scalaVersion.value) match {
           case Some((3, _)) => Seq(
-            "-unchecked",
-            "-source:3.0-migration"
-            //            "-new-syntax"
+            "-unchecked"
           )
           case _ => Seq(
             "-deprecation",
             "-Xfatal-warnings",
             "-Wunused:imports,privates,locals"
-            //            "-Wvalue-discard"
           )
         })
     }
