@@ -24,7 +24,7 @@ case class Account(
 
   private def checkHomePage(): Unit = {
     try {
-      AbsoluteUrl.parse(homePage)
+      val _ = AbsoluteUrl.parse(homePage)
     } catch {
       case _: Throwable => throw new StatementValidationException("An Agent account homepage must be a valid URI, with a schema")
     }

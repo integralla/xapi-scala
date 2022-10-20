@@ -32,7 +32,7 @@ sealed trait StatementActor extends StatementModelValidation {
   private def checkOpenId(): Unit = {
     if (openid.isDefined) {
       try {
-        AbsoluteUrl.parse(openid.get)
+        val _ = AbsoluteUrl.parse(openid.get)
       } catch {
         case _: Throwable => throw new StatementValidationException("An Actor openid identifier must be a valid URL")
       }

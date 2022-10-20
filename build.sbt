@@ -43,7 +43,8 @@ lazy val circe = (project in file("integralla-lrs-model-circe"))
           case _ => Seq(
             "-deprecation",
             "-Xfatal-warnings",
-            "-Wunused:imports,privates,locals"
+            "-Wunused:imports,privates,locals",
+            "-Wvalue-discard"
           )
         })
     }
