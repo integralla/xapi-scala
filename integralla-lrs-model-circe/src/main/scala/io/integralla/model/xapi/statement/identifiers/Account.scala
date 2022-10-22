@@ -1,10 +1,10 @@
 package io.integralla.model.xapi.statement.identifiers
 
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
-import io.integralla.model.xapi.statement.{StatementModelBase, StatementModelValidation}
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.statement.StatementModelValidation
+import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.lemonlabs.uri.AbsoluteUrl
 
 /**
@@ -32,10 +32,7 @@ case class Account(
 
 }
 
-object Account extends StatementModelBase {
-
-  override type T = Account
-
-  override implicit val decoder: Decoder[Account] = deriveDecoder[Account]
-  override implicit val encoder: Encoder[Account] = deriveEncoder[Account]
+object Account {
+  implicit val decoder: Decoder[Account] = deriveDecoder[Account]
+  implicit val encoder: Encoder[Account] = deriveEncoder[Account]
 }

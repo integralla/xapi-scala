@@ -19,15 +19,14 @@ case class ContextActivities(
   other: Option[List[Activity]]
 )
 
-object ContextActivities extends StatementModelBase {
-  override type T = ContextActivities
+object ContextActivities {
 
   /**
    * For backwards compatibility, the specification allows an activity provider to set each of the properties to a
    * single activity object rather than an array of activity objects. The LRS, however, is expected to wrap a single
    * activity object in an array and return it as such
    */
-  override implicit val decoder: Decoder[ContextActivities] = (c: HCursor) => {
+  implicit val decoder: Decoder[ContextActivities] = (c: HCursor) => {
     for {
       parent <- c.downField("parent").withFocus((json: Json) => {
         if (json.isArray) json else List(json).asJson
@@ -51,5 +50,5 @@ object ContextActivities extends StatementModelBase {
     }
   }
 
-  override implicit val encoder: Encoder[ContextActivities] = deriveEncoder[ContextActivities].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[ContextActivities] = deriveEncoder[ContextActivities].mapJson(_.dropNullValues)
 }

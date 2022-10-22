@@ -14,8 +14,7 @@ import java.util.UUID
  */
 case class StatementRef(objectType: StatementObjectType, id: UUID)
 
-object StatementRef extends StatementModelBase {
-  override type T = StatementRef
-  override implicit val decoder: Decoder[StatementRef] = deriveDecoder[StatementRef]
-  override implicit val encoder: Encoder[StatementRef] = deriveEncoder[StatementRef]
+object StatementRef {
+  implicit val decoder: Decoder[StatementRef] = deriveDecoder[StatementRef]
+  implicit val encoder: Encoder[StatementRef] = deriveEncoder[StatementRef]
 }

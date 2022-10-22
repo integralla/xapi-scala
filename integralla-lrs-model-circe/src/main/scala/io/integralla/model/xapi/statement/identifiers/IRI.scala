@@ -2,8 +2,8 @@ package io.integralla.model.xapi.statement.identifiers
 
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
+import io.integralla.model.xapi.statement.StatementModelValidation
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
-import io.integralla.model.xapi.statement.{StatementModelBase, StatementModelValidation}
 import io.lemonlabs.uri.Uri
 
 import java.security.MessageDigest
@@ -37,12 +37,10 @@ case class IRI(value: String) extends StatementModelValidation {
   }
 }
 
-object IRI extends StatementModelBase {
-  override type T = IRI
-  override implicit val encoder: Encoder[IRI] = Encoder.encodeString.contramap[IRI](_.value)
-  override implicit val decoder: Decoder[IRI] = Decoder.decodeString.map[IRI](IRI.apply)
+object IRI {
+  implicit val encoder: Encoder[IRI] = Encoder.encodeString.contramap[IRI](_.value)
+  implicit val decoder: Decoder[IRI] = Decoder.decodeString.map[IRI](IRI.apply)
 
   implicit val iriKeyEncoder: KeyEncoder[IRI] = (key: IRI) => key.value
-
   implicit val iriKeyDecoder: KeyDecoder[IRI] = (key: String) => Some(IRI(key))
 }

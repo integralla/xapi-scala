@@ -25,8 +25,7 @@ case class Attachment(
   fileUrl: Option[IRI]
 )
 
-object Attachment extends StatementModelBase {
-  override type T = Attachment
-  override implicit val decoder: Decoder[Attachment] = deriveDecoder[Attachment]
-  override implicit val encoder: Encoder[Attachment] = deriveEncoder[Attachment].mapJson(_.dropNullValues)
+object Attachment {
+  implicit val decoder: Decoder[Attachment] = deriveDecoder[Attachment]
+  implicit val encoder: Encoder[Attachment] = deriveEncoder[Attachment].mapJson(_.dropNullValues)
 }

@@ -41,10 +41,9 @@ sealed trait StatementActor extends StatementModelValidation {
 
 }
 
-object StatementActor extends StatementModelBase {
-  override type T = StatementActor
+object StatementActor {
 
-  override implicit val decoder: Decoder[StatementActor] = (c: HCursor) => for {
+  implicit val decoder: Decoder[StatementActor] = (c: HCursor) => for {
     objectType <- c.get[Option[StatementObjectType]]("objectType")
     name <- c.get[Option[String]]("name")
     mbox <- c.get[Option[MBox]]("mbox")
@@ -60,7 +59,7 @@ object StatementActor extends StatementModelBase {
     }
   } yield actor
 
-  override implicit val encoder: Encoder[StatementActor] = Encoder.instance[StatementActor] {
+  implicit val encoder: Encoder[StatementActor] = Encoder.instance[StatementActor] {
     case group@Group(_, _, _, _, _, _, _) => group.asJson
     case agent@Agent(_, _, _, _, _, _) => agent.asJson
   }
@@ -109,11 +108,9 @@ case class Agent(
 
 }
 
-object Agent extends StatementModelBase {
-  override type T = Agent
-
-  override implicit val decoder: Decoder[Agent] = deriveDecoder[Agent]
-  override implicit val encoder: Encoder[Agent] = deriveEncoder[Agent].mapJson(_.dropNullValues)
+object Agent {
+  implicit val decoder: Decoder[Agent] = deriveDecoder[Agent]
+  implicit val encoder: Encoder[Agent] = deriveEncoder[Agent].mapJson(_.dropNullValues)
 }
 
 /**
@@ -164,9 +161,7 @@ case class Group(
   }
 }
 
-object Group extends StatementModelBase {
-  override type T = Group
-
-  override implicit val decoder: Decoder[Group] = deriveDecoder[Group]
-  override implicit val encoder: Encoder[Group] = deriveEncoder[Group].mapJson(_.dropNullValues)
+object Group {
+  implicit val decoder: Decoder[Group] = deriveDecoder[Group]
+  implicit val encoder: Encoder[Group] = deriveEncoder[Group].mapJson(_.dropNullValues)
 }

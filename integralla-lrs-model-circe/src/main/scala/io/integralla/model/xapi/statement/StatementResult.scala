@@ -41,8 +41,7 @@ case class StatementResult(
   }
 }
 
-object StatementResult extends StatementModelBase {
-  override type T = StatementResult
-  override implicit val decoder: Decoder[StatementResult] = deriveDecoder[StatementResult]
-  override implicit val encoder: Encoder[StatementResult] = deriveEncoder[StatementResult].mapJson(_.dropNullValues)
+object StatementResult {
+  implicit val decoder: Decoder[StatementResult] = deriveDecoder[StatementResult]
+  implicit val encoder: Encoder[StatementResult] = deriveEncoder[StatementResult].mapJson(_.dropNullValues)
 }

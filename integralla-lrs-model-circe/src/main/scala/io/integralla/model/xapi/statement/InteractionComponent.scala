@@ -11,8 +11,7 @@ import io.circe.{Decoder, Encoder}
  */
 case class InteractionComponent(id: String, definition: Option[LanguageMap])
 
-object InteractionComponent extends StatementModelBase {
-  override type T = InteractionComponent
-  override implicit val decoder: Decoder[InteractionComponent] = deriveDecoder[InteractionComponent]
-  override implicit val encoder: Encoder[InteractionComponent] = deriveEncoder[InteractionComponent].mapJson(_.dropNullValues)
+object InteractionComponent {
+  implicit val decoder: Decoder[InteractionComponent] = deriveDecoder[InteractionComponent]
+  implicit val encoder: Encoder[InteractionComponent] = deriveEncoder[InteractionComponent].mapJson(_.dropNullValues)
 }

@@ -1,8 +1,8 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.statement.StatementModelValidation
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
-import io.integralla.model.xapi.statement.{StatementModelBase, StatementModelValidation}
 import io.lemonlabs.uri.UrlWithoutAuthority
 
 import java.security.MessageDigest
@@ -39,8 +39,7 @@ case class MBox(value: String) extends StatementModelValidation {
   }
 }
 
-object MBox extends StatementModelBase {
-  override type T = MBox
-  override implicit val encoder: Encoder[MBox] = Encoder.encodeString.contramap[MBox](_.value)
-  override implicit val decoder: Decoder[MBox] = Decoder.decodeString.map[MBox](MBox.apply)
+object MBox {
+  implicit val encoder: Encoder[MBox] = Encoder.encodeString.contramap[MBox](_.value)
+  implicit val decoder: Decoder[MBox] = Decoder.decodeString.map[MBox](MBox.apply)
 }

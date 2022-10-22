@@ -17,8 +17,7 @@ case class Activity(
   id: IRI,
   definition: Option[ActivityDefinition])
 
-object Activity extends StatementModelBase {
-  override type T = Activity
-  override implicit val decoder: Decoder[Activity] = deriveDecoder[Activity]
-  override implicit val encoder: Encoder[Activity] = deriveEncoder[Activity].mapJson(_.dropNullValues)
+object Activity {
+  implicit val decoder: Decoder[Activity] = deriveDecoder[Activity]
+  implicit val encoder: Encoder[Activity] = deriveEncoder[Activity].mapJson(_.dropNullValues)
 }

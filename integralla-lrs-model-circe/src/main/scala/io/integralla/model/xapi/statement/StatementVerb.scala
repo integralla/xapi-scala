@@ -13,8 +13,7 @@ import io.integralla.model.xapi.statement.identifiers.IRI
  */
 case class StatementVerb(id: IRI, display: Option[LanguageMap])
 
-object StatementVerb extends StatementModelBase {
-  override type T = StatementVerb
-  override implicit val decoder: Decoder[StatementVerb] = deriveDecoder[StatementVerb]
-  override implicit val encoder: Encoder[StatementVerb] = deriveEncoder[StatementVerb].mapJson(_.dropNullValues)
+object StatementVerb {
+  implicit val decoder: Decoder[StatementVerb] = deriveDecoder[StatementVerb]
+  implicit val encoder: Encoder[StatementVerb] = deriveEncoder[StatementVerb].mapJson(_.dropNullValues)
 }

@@ -59,8 +59,7 @@ case class Score(
   }
 }
 
-object Score extends StatementModelBase {
-  override type T = Score
-  override implicit val decoder: Decoder[Score] = deriveDecoder[Score]
-  override implicit val encoder: Encoder[Score] = deriveEncoder[Score].mapJson(_.dropNullValues)
+object Score {
+  implicit val decoder: Decoder[Score] = deriveDecoder[Score]
+  implicit val encoder: Encoder[Score] = deriveEncoder[Score].mapJson(_.dropNullValues)
 }

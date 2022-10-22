@@ -10,13 +10,13 @@ import java.time.OffsetDateTime
 /**
  * A SubStatement is a type of object that can be used to represent an experience that has not already occurred
  *
- * @param objectType SubStatement
- * @param actor An agent or group that identifies whom the statement is about
- * @param verb The action taken by the actor
- * @param `object` An agent, activity, or another statement that is the object of the statement
- * @param result A result object that provides further details representing a measured outcome
- * @param context A context object that provides additional meaning for the statement
- * @param timestamp The time at which the experience occurred
+ * @param objectType  SubStatement
+ * @param actor       An agent or group that identifies whom the statement is about
+ * @param verb        The action taken by the actor
+ * @param `object`    An agent, activity, or another statement that is the object of the statement
+ * @param result      A result object that provides further details representing a measured outcome
+ * @param context     A context object that provides additional meaning for the statement
+ * @param timestamp   The time at which the experience occurred
  * @param attachments An array of attachment objects which provide headers for any attachments associated with the statement
  */
 case class SubStatement(
@@ -42,8 +42,7 @@ case class SubStatement(
   }
 }
 
-object SubStatement extends StatementModelBase {
-  override type T = SubStatement
-  override implicit val decoder: Decoder[SubStatement] = deriveDecoder[SubStatement]
-  override implicit val encoder: Encoder[SubStatement] = deriveEncoder[SubStatement].mapJson(_.dropNullValues)
+object SubStatement {
+  implicit val decoder: Decoder[SubStatement] = deriveDecoder[SubStatement]
+  implicit val encoder: Encoder[SubStatement] = deriveEncoder[SubStatement].mapJson(_.dropNullValues)
 }

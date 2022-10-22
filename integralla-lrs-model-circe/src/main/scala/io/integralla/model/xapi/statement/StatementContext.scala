@@ -19,19 +19,18 @@ import java.util.UUID
  * @param extensions        A map of any other domain-specific context relevant to this statement
  */
 case class StatementContext(
-                             registration: Option[UUID],
-                             instructor: Option[StatementActor],
-                             team: Option[Group],
-                             contextActivities: Option[ContextActivities],
-                             revision: Option[String],
-                             platform: Option[String],
-                             language: Option[String],
-                             statement: Option[StatementRef],
-                             extensions: Option[Extensions]
-                           )
+  registration: Option[UUID],
+  instructor: Option[StatementActor],
+  team: Option[Group],
+  contextActivities: Option[ContextActivities],
+  revision: Option[String],
+  platform: Option[String],
+  language: Option[String],
+  statement: Option[StatementRef],
+  extensions: Option[Extensions]
+)
 
-object StatementContext extends StatementModelBase {
-  override type T = StatementContext
-  override implicit val decoder: Decoder[StatementContext] = deriveDecoder[StatementContext]
-  override implicit val encoder: Encoder[StatementContext] = deriveEncoder[StatementContext].mapJson(_.dropNullValues)
+object StatementContext {
+  implicit val decoder: Decoder[StatementContext] = deriveDecoder[StatementContext]
+  implicit val encoder: Encoder[StatementContext] = deriveEncoder[StatementContext].mapJson(_.dropNullValues)
 }

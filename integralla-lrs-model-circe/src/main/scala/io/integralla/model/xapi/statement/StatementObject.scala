@@ -17,10 +17,9 @@ import java.util.UUID
  */
 case class StatementObject(value: AnyRef)
 
-object StatementObject extends StatementModelBase {
-  override type T = StatementObject
+object StatementObject {
 
-  override implicit val decoder: Decoder[StatementObject] = (c: HCursor) => {
+  implicit val decoder: Decoder[StatementObject] = (c: HCursor) => {
     for {
       objectType <- c.get[Option[StatementObjectType]]("objectType")
 
@@ -92,7 +91,7 @@ object StatementObject extends StatementModelBase {
     }
   }
 
-  override implicit val encoder: Encoder[StatementObject] = (a: StatementObject) => {
+  implicit val encoder: Encoder[StatementObject] = (a: StatementObject) => {
     a.value match {
       case activity@Activity(_, _, _) => activity.asJson
       case agent@Agent(_, _, _, _, _, _) => agent.asJson

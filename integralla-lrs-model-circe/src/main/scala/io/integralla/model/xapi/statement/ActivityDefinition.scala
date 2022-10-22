@@ -125,8 +125,7 @@ case class ActivityDefinition(
   }
 }
 
-object ActivityDefinition extends StatementModelBase {
-  override type T = ActivityDefinition
-  override implicit val decoder: Decoder[ActivityDefinition] = deriveDecoder[ActivityDefinition]
-  override implicit val encoder: Encoder[ActivityDefinition] = deriveEncoder[ActivityDefinition].mapJson(_.dropNullValues)
+object ActivityDefinition {
+  implicit val decoder: Decoder[ActivityDefinition] = deriveDecoder[ActivityDefinition]
+  implicit val encoder: Encoder[ActivityDefinition] = deriveEncoder[ActivityDefinition].mapJson(_.dropNullValues)
 }
