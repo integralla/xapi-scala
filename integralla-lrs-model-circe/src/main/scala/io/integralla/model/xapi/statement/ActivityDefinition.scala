@@ -2,10 +2,11 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.InteractionType.InteractionType
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.xapi.statement.InteractionType.{CHOICE, FILL_IN, InteractionType, LIKERT, LONG_FILL_IN, MATCHING, NUMERIC, OTHER, PERFORMANCE, SEQUENCING, TRUE_FALSE}
 import io.integralla.model.xapi.statement.identifiers.IRI
 import io.lemonlabs.uri.AbsoluteUrl
+
+import scala.util.{Failure, Success}
 
 /**
  * The definition of an activity object
@@ -36,92 +37,97 @@ case class ActivityDefinition(
   steps: Option[List[InteractionComponent]],
   target: Option[List[InteractionComponent]],
   extensions: Option[Extensions]
-) extends StatementModelValidation {
-
-  override def validate(): Unit = {
-    validateInteractionTypeByType()
-    validateInteractionTypeByCorrectResponsePattern()
-    validateInteractionTypeByInteractionComponents()
-    validateInteractionComponentByInteractionType()
-    validateMoreInfoIRL()
+) extends StatementValidation {
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      validateInteractionTypeByType(),
+      validateInteractionTypeByCorrectResponsePattern(),
+      validateInteractionTypeByInteractionComponents(),
+      validateInteractionComponentByInteractionType(),
+      validateMoreInfoIRL()
+    )
   }
 
-  def validateInteractionTypeByType(): Unit = {
+  def validateInteractionTypeByType(): Either[String, Boolean] = {
     val interactionActivityType: String = "http://adlnet.gov/expapi/activities/cmi.interaction"
     `type`.filter(_.value == interactionActivityType)
-      .foreach(_ => {
-        if (interactionType.isEmpty) {
-          throw new StatementValidationException("An interaction type must be specified when the activity type is cmi.interaction")
+      .map(_ => {
+        interactionType match {
+          case Some(_) => Right(true)
+          case None => Left("An interaction type must be specified when the activity type is cmi.interaction")
         }
-      })
+      }).getOrElse(Right(true))
   }
 
-  def validateInteractionTypeByCorrectResponsePattern(): Unit = {
-    if (correctResponsesPattern.isDefined) {
-      if (interactionType.isEmpty) {
-        throw new StatementValidationException("An interaction type must be specified when a correct response pattern is defined")
+  def validateInteractionTypeByCorrectResponsePattern(): Either[String, Boolean] = {
+    correctResponsesPattern.map(_ => {
+      interactionType match {
+        case Some(_) => Right(true)
+        case None => Left("An interaction type must be specified when a correct response pattern is defined")
       }
-    }
+    }).getOrElse(Right(true))
   }
 
-  def validateInteractionTypeByInteractionComponents(): Unit = {
+  def validateInteractionTypeByInteractionComponents(): Either[String, Boolean] = {
     if (List(choices, scale, source, steps, target).exists(_.isDefined)) {
-      if (interactionType.isEmpty) {
-        throw new StatementValidationException("An interaction type must be specified when interaction components are defined")
+      interactionType match {
+        case Some(_) => Right(true)
+        case None => Left("An interaction type must be specified when interaction components are defined")
       }
+    }
+    else Right(true)
+  }
+
+  def validateInteractionComponentByInteractionType(): Either[String, Boolean] = {
+
+    interactionType match {
+      case Some(value) =>
+        value match {
+          case CHOICE | SEQUENCING =>
+            if (List(scale, source, target, steps).exists(_.isDefined)) {
+              Left(s"The $value interaction type only supports the choices interaction component")
+            } else {
+              Right(true)
+            }
+          case FILL_IN | LONG_FILL_IN | NUMERIC | OTHER | TRUE_FALSE =>
+            if (List(choices, scale, source, target, steps).exists(_.isDefined)) {
+              Left(s"The $value interaction type does not support any interaction components")
+            } else {
+              Right(true)
+            }
+          case LIKERT =>
+            if (List(choices, source, target, steps).exists(_.isDefined)) {
+              Left(s"The $value interaction type only supports the scale interaction component")
+            } else {
+              Right(true)
+            }
+          case MATCHING =>
+            if (List(choices, scale, steps).exists(_.isDefined)) {
+              Left(s"The $value interaction type only supports the source and target interaction components")
+            } else {
+              Right(true)
+            }
+          case PERFORMANCE =>
+            if (List(choices, scale, source, target).exists(_.isDefined)) {
+              Left(s"The $value interaction type only supports the steps interaction component")
+            } else {
+              Right(true)
+            }
+        }
+      case None =>
+        if (List(choices, scale, source, target, steps).exists(_.isDefined)) {
+          Left("Interaction Activities MUST have a valid interactionType")
+        } else Right(true)
     }
   }
 
-  def validateInteractionComponentByInteractionType(): Unit = {
-    if (choices.isDefined) {
-      interactionType.foreach((interactionType: InteractionType) => {
-        if (!List(InteractionType.CHOICE, InteractionType.SEQUENCING).contains(interactionType)) {
-          throw new StatementValidationException("The interaction component type of \"choice\" is only supported by for the choice or sequencing interaction types")
-        }
-      })
-    }
-
-    if (scale.isDefined) {
-      interactionType.foreach((interactionType: InteractionType) => {
-        if (interactionType != InteractionType.LIKERT) {
-          throw new StatementValidationException("The interaction component type of \"scale\" is only supported by the likert interaction type")
-        }
-      })
-    }
-
-    if (source.isDefined) {
-      interactionType.foreach((interactionType: InteractionType) => {
-        if (interactionType != InteractionType.MATCHING) {
-          throw new StatementValidationException("The interaction component type of \"source\" is only supported by the matching interaction type")
-        }
-      })
-    }
-
-    if (target.isDefined) {
-      interactionType.foreach((interactionType: InteractionType) => {
-        if (interactionType != InteractionType.MATCHING) {
-          throw new StatementValidationException("The interaction component type of \"target\" is only supported by the matching interaction type")
-        }
-      })
-    }
-
-    if (steps.isDefined) {
-      interactionType.foreach((interactionType: InteractionType) => {
-        if (interactionType != InteractionType.PERFORMANCE) {
-          throw new StatementValidationException("The interaction component type of \"steps\" is only supported by the performance interaction type")
-        }
-      })
-    }
-  }
-
-  def validateMoreInfoIRL(): Unit = {
-    moreInfo.foreach((iri: IRI) => {
-      try {
-        AbsoluteUrl.parse(iri.value)
-      } catch {
-        case _: Throwable => throw new StatementValidationException("The value of moreInfo must be a valid IRL")
+  def validateMoreInfoIRL(): Either[String, Boolean] = {
+    moreInfo.map((iri: IRI) => {
+      AbsoluteUrl.parseTry(iri.value) match {
+        case Failure(exception) => Left(f"The value of moreInfo must be a valid IRL: ${exception.getMessage}")
+        case Success(_) => Right(true)
       }
-    })
+    }).getOrElse(Right(true))
   }
 }
 

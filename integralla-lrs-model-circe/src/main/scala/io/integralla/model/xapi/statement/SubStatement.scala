@@ -3,7 +3,6 @@ package io.integralla.model.xapi.statement
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 
 import java.time.OffsetDateTime
 
@@ -28,17 +27,18 @@ case class SubStatement(
   context: Option[StatementContext],
   timestamp: Option[OffsetDateTime],
   attachments: Option[List[Attachment]]
-) extends StatementModelValidation {
+) extends StatementValidation {
 
-  override def validate(): Unit = {
-    validateObjectIsNotSubStatement()
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(validateObjectIsNotSubStatement)
   }
 
-  def validateObjectIsNotSubStatement(): Unit = {
+  def validateObjectIsNotSubStatement: Either[String, Boolean] = {
     if (`object`.value.isInstanceOf[SubStatement]) {
-      throw new StatementValidationException("A sub-statement cannot contain a sub-statement of it's own")
+      Left("A sub-statement cannot contain a sub-statement of it's own")
+    } else {
+      Right(true)
     }
-
   }
 }
 

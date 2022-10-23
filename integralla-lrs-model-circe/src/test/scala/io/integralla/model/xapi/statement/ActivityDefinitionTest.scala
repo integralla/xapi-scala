@@ -220,63 +220,98 @@ class ActivityDefinitionTest extends UnitSpec {
         val exception = intercept[StatementValidationException] {
           ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), Some(interactionActivityType), Some(moreInfo), None, Some(trueFalseCorrectResponsesPattern), None, None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("An interaction type must be specified when the activity type is cmi.interaction"))
+        assert(exception.getMessage.contains("An interaction type must be specified when the activity type is cmi.interaction"))
       }
 
       it("should throw a statement validation exception when a correct response pattern is defined and an interaction type is not defined") {
         val exception = intercept[StatementValidationException] {
           ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), None, Some(choiceCorrectResponsePattern), Some(choiceInteractionComponents), None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("An interaction type must be specified when a correct response pattern is defined"))
+        assert(exception.getMessage.contains("An interaction type must be specified when a correct response pattern is defined"))
       }
 
       it("should throw a statement validation exception when one or more interaction components are defined and an interaction type is not defined") {
         val exception = intercept[StatementValidationException] {
           ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), None, None, Some(choiceInteractionComponents), None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("An interaction type must be specified when interaction components are defined"))
+        assert(exception.getMessage.contains("An interaction type must be specified when interaction components are defined"))
       }
 
       it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (choice)") {
         val exception = intercept[StatementValidationException] {
-          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, Some(choiceInteractionComponents), None, None, None, None, None)
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.CHOICE), None, None, Some(likertInteractionComponents), None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("The interaction component type of \"choice\" is only supported by for the choice or sequencing interaction types"))
+        assert(exception.getMessage.contains("The choice interaction type only supports the choices interaction component"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (sequencing)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.SEQUENCING), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The sequencing interaction type only supports the choices interaction component"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (fill-in)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.FILL_IN), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The fill-in interaction type does not support any interaction components"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (long-fill-in)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.LONG_FILL_IN), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The long-fill-in interaction type does not support any interaction components"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (numeric)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.NUMERIC), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The numeric interaction type does not support any interaction components"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (other)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The other interaction type does not support any interaction components"))
+      }
+
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (true-false)") {
+        val exception = intercept[StatementValidationException] {
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.TRUE_FALSE), None, None, Some(likertInteractionComponents), None, None, None, None)
+        }
+        assert(exception.getMessage.contains("The true-false interaction type does not support any interaction components"))
       }
 
       it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (likert)") {
         val exception = intercept[StatementValidationException] {
-          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, None, Some(likertInteractionComponents), None, None, None, None)
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.LIKERT), None, Some(choiceInteractionComponents), None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("The interaction component type of \"scale\" is only supported by the likert interaction type"))
+        assert(exception.getMessage.contains("The likert interaction type only supports the scale interaction component"))
       }
 
-      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (source)") {
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (matching)") {
         val exception = intercept[StatementValidationException] {
-          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, None, None, Some(matchingInteractionComponentsSource), None, None, None)
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.MATCHING), None, Some(choiceInteractionComponents), None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("The interaction component type of \"source\" is only supported by the matching interaction type"))
+        assert(exception.getMessage.contains("The matching interaction type only supports the source and target interaction components"))
       }
 
-      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (target)") {
+      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (performance)") {
         val exception = intercept[StatementValidationException] {
-          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, None, None, None, None, Some(matchingInteractionComponentsTarget), None)
+          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.PERFORMANCE), None, Some(choiceInteractionComponents), None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("The interaction component type of \"target\" is only supported by the matching interaction type"))
-      }
-
-      it("should throw a statement validation exception when an interaction component is present that is not supported by the interaction type (steps)") {
-        val exception = intercept[StatementValidationException] {
-          ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(moreInfo), Some(InteractionType.OTHER), None, None, None, None, Some(performanceInteractionComponents), None, None)
-        }
-        assert(exception.getMessage.startsWith("The interaction component type of \"steps\" is only supported by the performance interaction type"))
+        assert(exception.getMessage.contains("The performance interaction type only supports the steps interaction component"))
       }
 
       it("should throw a statement validation exception if the value of moreInfo is not a valid IRL") {
         val exception = intercept[StatementValidationException] {
           ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, Some(IRI("moreInfo:activity:foo")), None, None, None, None, None, None, None, None)
         }
-        assert(exception.getMessage.startsWith("The value of moreInfo must be a valid IRL"))
+        assert(exception.getMessage.contains("The value of moreInfo must be a valid IRL"))
       }
     }
 
