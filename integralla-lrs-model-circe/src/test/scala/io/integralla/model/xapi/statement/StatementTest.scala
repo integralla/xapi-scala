@@ -447,7 +447,7 @@ class StatementTest extends UnitSpec {
             None, None, None, None, None
           )
         }
-        assert(exception.getMessage.startsWith("""The "revision" property on the context object must only be used if the statement's object is an activity"""))
+        assert(exception.getMessage.contains("""The "revision" property on the context object must only be used if the statement's object is an activity"""))
       }
 
       it("should throw a statement validation error if the context.platform property is set when the statements object is not an activity") {
@@ -463,7 +463,7 @@ class StatementTest extends UnitSpec {
             None, None, None, None, None
           )
         }
-        assert(exception.getMessage.startsWith("""The "platform" property on the context object must only be used if the statement's object is an activity"""))
+        assert(exception.getMessage.contains("""The "platform" property on the context object must only be used if the statement's object is an activity"""))
       }
     }
   }

@@ -63,7 +63,7 @@ class StatementVerbTest extends UnitSpec {
         val exception = intercept[StatementValidationException] {
           decode[StatementVerb](data)
         }
-        assert(exception.getMessage.startsWith("An IRI must be a valid URI, with a schema"))
+        assert(exception.getMessage.contains("An IRI must be a valid URI, with a schema"))
       }
     }
   }

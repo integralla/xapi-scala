@@ -8,12 +8,14 @@ import io.integralla.model.xapi.statement.exceptions.StatementValidationExceptio
 import io.integralla.model.xapi.statement.identifiers.{Account, MBox}
 import io.lemonlabs.uri.AbsoluteUrl
 
+import scala.util.{Failure, Success}
+
 /**
  * Actor
  * Used to define whom a statement is about
  * An actor can be either an agent or a group
  */
-sealed trait StatementActor extends StatementModelValidation {
+sealed trait StatementActor extends StatementValidation {
 
   def name: Option[String]
 
@@ -25,18 +27,19 @@ sealed trait StatementActor extends StatementModelValidation {
 
   def account: Option[Account]
 
-  override def validate(): Unit = {
-    checkOpenId()
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      checkOpenId
+    )
   }
 
-  private def checkOpenId(): Unit = {
-    if (openid.isDefined) {
-      try {
-        val _ = AbsoluteUrl.parse(openid.get)
-      } catch {
-        case _: Throwable => throw new StatementValidationException("An Actor openid identifier must be a valid URL")
+  private def checkOpenId: Either[String, Boolean] = {
+    openid.map(openid => {
+      AbsoluteUrl.parseTry(openid) match {
+        case Failure(_) => Left("An Actor openid identifier must be a valid URL")
+        case Success(_) => Right(true)
       }
-    }
+    }).getOrElse(Right(true))
   }
 
 }
@@ -85,25 +88,31 @@ case class Agent(
   account: Option[Account]
 ) extends StatementActor {
 
-  override def validate(): Unit = {
-    super.validate()
-    validateInverseFunctionalIdentifier()
-    validateObjectType()
+  override def validate: Seq[Either[String, Boolean]] = {
+    super.validate ++ Seq(
+      validateInverseFunctionalIdentifier,
+      validateObjectType
+    )
   }
 
-  private def validateInverseFunctionalIdentifier(): Unit = {
-    val ids = List(mbox, mbox_sha1sum, openid, account).filter(id => id.isDefined)
+  private def validateInverseFunctionalIdentifier: Either[String, Boolean] = {
+    val ids = List(mbox, mbox_sha1sum, openid, account).filter(_.isDefined)
     ids.length match {
-      case 1 => ()
-      case 0 => throw new StatementValidationException("An Agent must have an inverse functional identifier")
-      case _ => throw new StatementValidationException("An Agent must not include more than one inverse functional identifier")
+      case 1 => Right(true)
+      case 0 => Left("An Agent must have an inverse functional identifier")
+      case _ => Left("An Agent must not include more than one inverse functional identifier")
     }
   }
 
-  private def validateObjectType(): Unit = {
-    if (objectType.isDefined) {
-      if (objectType.get != StatementObjectType.Agent) throw new StatementValidationException("An Agent must have the object type of 'Agent'")
-    }
+  private def validateObjectType: Either[String, Boolean] = {
+    objectType.map(objectType => {
+      if (objectType != StatementObjectType.Agent) {
+        Left("An Agent must have the object type of 'Agent'")
+      }
+      else {
+        Right(true)
+      }
+    }).getOrElse(Right(true))
   }
 
 }
@@ -126,7 +135,7 @@ object Agent {
  * @param mbox_sha1sum A SHA1 checksum of the group's mailbox identifier
  * @param openid       An openId identifier
  * @param account      An account identifier object
- * @param member      A collection of agents
+ * @param member       A collection of agents
  */
 case class Group(
   objectType: StatementObjectType,
@@ -138,26 +147,31 @@ case class Group(
   member: Option[List[Agent]]
 ) extends StatementActor {
 
-  override def validate(): Unit = {
-    super.validate()
-    validateInverseFunctionalIdentifier()
-    validateObjectType()
+  override def validate: Seq[Either[String, Boolean]] = {
+    super.validate ++ Seq(
+      validateInverseFunctionalIdentifier,
+      validateObjectType
+    )
   }
 
-  private def validateInverseFunctionalIdentifier(): Unit = {
+  private def validateInverseFunctionalIdentifier: Either[String, Boolean] = {
     val ids = List(mbox, mbox_sha1sum, openid, account).filter(id => id.isDefined)
     ids.length match {
-      case 1 => ()
+      case 1 => Right(true)
       case 0 =>
         if (member.isEmpty) {
-          throw new StatementValidationException("A Group must have an inverse functional identifier (identified group) or identified members (anonymous group)")
+          Left("A Group must have an inverse functional identifier (identified group) or identified members (anonymous group)")
         }
-      case _ => throw new StatementValidationException("A Group must not include more than one inverse functional identifier")
+        else {
+          Right(true)
+        }
+      case _ => Left("A Group must not include more than one inverse functional identifier")
     }
   }
 
-  private def validateObjectType(): Unit = {
-    if (objectType != StatementObjectType.Group) throw new StatementValidationException("A Group must have the object type of 'Group'")
+  private def validateObjectType: Either[String, Boolean] = {
+    if (objectType != StatementObjectType.Group) Left("A Group must have the object type of 'Group'")
+    else Right(true)
   }
 }
 

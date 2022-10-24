@@ -2,30 +2,35 @@ package io.integralla.model.xapi.statement.identifiers
 
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
-import io.integralla.model.xapi.statement.StatementModelValidation
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.Uri
 
 import java.security.MessageDigest
+import scala.util.{Failure, Success, Try}
 
 /**
  * An International Resource Identifier (IRI)
  *
  * @param value An IRI string
  */
-case class IRI(value: String) extends StatementModelValidation {
-  override def validate(): Unit = {
-    validateIRI()
+case class IRI(value: String) extends StatementValidation {
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      validateIRI
+    )
   }
 
-  private def validateIRI(): Unit = {
-    try {
-      val parsed = Uri.parse(value)
-      if (parsed.schemeOption.isEmpty) {
-        throw new StatementValidationException("An IRI must be a valid URI, with a schema")
-      }
-    } catch {
-      case _: Throwable => throw new StatementValidationException("An IRI must be a valid URI, with a schema")
+  private def validateIRI: Either[String, Boolean] = {
+    val parsed: Try[Uri] = Uri.parseTry(value)
+    parsed match {
+      case Failure(_) => Left("An IRI must be a valid URI, with a schema")
+      case Success(value) =>
+        if (value.schemeOption.isEmpty) {
+          Left("An IRI must be a valid URI, with a schema")
+        }
+        else {
+          Right(true)
+        }
     }
   }
 

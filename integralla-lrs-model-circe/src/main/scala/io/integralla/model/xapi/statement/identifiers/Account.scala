@@ -3,9 +3,10 @@ package io.integralla.model.xapi.statement.identifiers
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.StatementModelValidation
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.AbsoluteUrl
+
+import scala.util.{Failure, Success, Try}
 
 /**
  * An account object
@@ -16,17 +17,19 @@ import io.lemonlabs.uri.AbsoluteUrl
 case class Account(
   homePage: String,
   name: String
-) extends StatementModelValidation with LazyLogging {
+) extends StatementValidation with LazyLogging {
 
-  override def validate(): Unit = {
-    checkHomePage()
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      checkHomePage
+    )
   }
 
-  private def checkHomePage(): Unit = {
-    try {
-      val _ = AbsoluteUrl.parse(homePage)
-    } catch {
-      case _: Throwable => throw new StatementValidationException("An Agent account homepage must be a valid URI, with a schema")
+  private def checkHomePage: Either[String, Boolean] = {
+    val parsed: Try[AbsoluteUrl] = AbsoluteUrl.parseTry(homePage)
+    parsed match {
+      case Failure(_) => Left("An Agent account homepage must be a valid URI, with a schema")
+      case Success(_) => Right(true)
     }
   }
 

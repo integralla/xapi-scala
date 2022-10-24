@@ -1,20 +1,22 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.StatementModelValidation
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.UrlWithoutAuthority
 
 import java.security.MessageDigest
+import scala.util.{Failure, Success, Try}
 
 /**
  * An MBOX identifier
  *
  * @param value A mailto IRI
  */
-case class MBox(value: String) extends StatementModelValidation {
-  override def validate(): Unit = {
-    checkMbox()
+case class MBox(value: String) extends StatementValidation {
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      checkMbox
+    )
   }
 
   /**
@@ -29,12 +31,17 @@ case class MBox(value: String) extends StatementModelValidation {
   }
 
 
-  private def checkMbox(): Unit = {
-    try {
-      val mailto = UrlWithoutAuthority.parse(value)
-      if (mailto.scheme != "mailto") throw new StatementValidationException("An Agent mbox identifier must use the mailto schema")
-    } catch {
-      case _: Throwable => throw new StatementValidationException("An Agent mbox identifier must be a valid mailto IRI")
+  private def checkMbox: Either[String, Boolean] = {
+    val parsed: Try[UrlWithoutAuthority] = UrlWithoutAuthority.parseTry(value)
+    parsed match {
+      case Failure(_) => Left("An Agent mbox identifier must be a valid mailto IRI")
+      case Success(value) =>
+        if (value.scheme != "mailto") {
+          Left("An Agent mbox identifier must use the mailto schema")
+        }
+        else {
+          Right(true)
+        }
     }
   }
 }

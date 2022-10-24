@@ -2,7 +2,6 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -34,26 +33,45 @@ case class Statement(
   authority: Option[StatementActor],
   version: Option[String],
   attachments: Option[List[Attachment]]
-) extends StatementModelValidation {
+) extends StatementValidation {
 
-  override def validate(): Unit = {
-    validateContextProperties()
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      validateContextPropertiesRevision,
+      validateContextPropertiesPlatform
+    )
   }
 
-  def validateContextProperties(): Unit = {
+  def validateContextPropertiesRevision: Either[String, Boolean] = {
 
-    context.foreach((statementContext: StatementContext) => {
+    context.map((statementContext: StatementContext) => {
       `object`.value match {
-        case Activity(_, _, _) => ()
+        case Activity(_, _, _) => Right(true)
         case _ =>
           if (statementContext.revision.isDefined) {
-            throw new StatementValidationException("""The "revision" property on the context object must only be used if the statement's object is an activity""")
+            Left("""The "revision" property on the context object must only be used if the statement's object is an activity""")
           }
-          if (statementContext.platform.isDefined) {
-            throw new StatementValidationException("""The "platform" property on the context object must only be used if the statement's object is an activity""")
+          else {
+            Right(true)
           }
       }
-    })
+    }).getOrElse(Right(true))
+  }
+
+  def validateContextPropertiesPlatform: Either[String, Boolean] = {
+
+    context.map((statementContext: StatementContext) => {
+      `object`.value match {
+        case Activity(_, _, _) => Right(true)
+        case _ =>
+          if (statementContext.platform.isDefined) {
+            Left("""The "platform" property on the context object must only be used if the statement's object is an activity""")
+          }
+          else {
+            Right(true)
+          }
+      }
+    }).getOrElse(Right(true))
   }
 
 }

@@ -2,7 +2,6 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 
 import java.time.Duration
 import java.time.format.DateTimeParseException
@@ -24,20 +23,23 @@ case class StatementResult(
   response: Option[String],
   duration: Option[String],
   extensions: Option[Extensions]
-) extends StatementModelValidation {
-  override def validate(): Unit = {
-    validateDuration()
+) extends StatementValidation {
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      validateDuration
+    )
   }
 
-  def validateDuration(): Unit = {
-    duration.foreach(duration => {
+  def validateDuration: Either[String, Boolean] = {
+    duration.map(duration => {
       try {
-        Duration.parse(duration)
+        val _ = Duration.parse(duration)
+        Right(true)
       } catch {
-        case e: DateTimeParseException => throw new StatementValidationException(s"The supplied duration could not be parsed: duration(${e.getParsedString}), errorIndex(${e.getErrorIndex})")
-        case _: Throwable => throw new StatementValidationException(s"An error occurred parsing the duration")
+        case e: DateTimeParseException => Left(s"The supplied duration could not be parsed: duration(${e.getParsedString}), errorIndex(${e.getErrorIndex})")
+        case _: Throwable => Left(s"An error occurred parsing the duration")
       }
-    })
+    }).getOrElse(Right(true))
   }
 }
 
