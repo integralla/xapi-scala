@@ -40,15 +40,15 @@ case class ActivityDefinition(
 ) extends StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
-      validateInteractionTypeByType(),
-      validateInteractionTypeByCorrectResponsePattern(),
-      validateInteractionTypeByInteractionComponents(),
-      validateInteractionComponentByInteractionType(),
-      validateMoreInfoIRL()
+      validateInteractionTypeByType,
+      validateInteractionTypeByCorrectResponsePattern,
+      validateInteractionTypeByInteractionComponents,
+      validateInteractionComponentByInteractionType,
+      validateMoreInfoIRL
     )
   }
 
-  def validateInteractionTypeByType(): Either[String, Boolean] = {
+  def validateInteractionTypeByType: Either[String, Boolean] = {
     val interactionActivityType: String = "http://adlnet.gov/expapi/activities/cmi.interaction"
     `type`.filter(_.value == interactionActivityType)
       .map(_ => {
@@ -59,7 +59,7 @@ case class ActivityDefinition(
       }).getOrElse(Right(true))
   }
 
-  def validateInteractionTypeByCorrectResponsePattern(): Either[String, Boolean] = {
+  def validateInteractionTypeByCorrectResponsePattern: Either[String, Boolean] = {
     correctResponsesPattern.map(_ => {
       interactionType match {
         case Some(_) => Right(true)
@@ -68,7 +68,7 @@ case class ActivityDefinition(
     }).getOrElse(Right(true))
   }
 
-  def validateInteractionTypeByInteractionComponents(): Either[String, Boolean] = {
+  def validateInteractionTypeByInteractionComponents: Either[String, Boolean] = {
     if (List(choices, scale, source, steps, target).exists(_.isDefined)) {
       interactionType match {
         case Some(_) => Right(true)
@@ -78,7 +78,7 @@ case class ActivityDefinition(
     else Right(true)
   }
 
-  def validateInteractionComponentByInteractionType(): Either[String, Boolean] = {
+  def validateInteractionComponentByInteractionType: Either[String, Boolean] = {
 
     interactionType match {
       case Some(value) =>
@@ -121,7 +121,7 @@ case class ActivityDefinition(
     }
   }
 
-  def validateMoreInfoIRL(): Either[String, Boolean] = {
+  def validateMoreInfoIRL: Either[String, Boolean] = {
     moreInfo.map((iri: IRI) => {
       AbsoluteUrl.parseTry(iri.value) match {
         case Failure(exception) => Left(f"The value of moreInfo must be a valid IRL: ${exception.getMessage}")
