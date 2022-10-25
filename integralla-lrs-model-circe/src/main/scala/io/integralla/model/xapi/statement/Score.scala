@@ -2,7 +2,6 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 
 /**
  * A score represents the outcome of a graded Activity achieved by an Agent
@@ -17,45 +16,64 @@ case class Score(
   raw: Option[Double],
   min: Option[Double],
   max: Option[Double]
-) extends StatementModelValidation {
-  override def validate(): Unit = {
-    validateScaled()
-    validateRaw()
-    validateScoreBounds()
+) extends StatementValidation {
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      validateScaled,
+      validateRawIsNotLessThanMin,
+      validateRawIsNotGreaterThanMax,
+      validateScoreBounds
+    )
   }
 
-  def validateScaled(): Unit = {
-    scaled.foreach((score: Double) => {
+  def validateScaled: Either[String, Boolean] = {
+    scaled.map((score: Double) => {
       if (score < -1 || score > 1) {
-        throw new StatementValidationException("A scaled score must be a normalized value between -1 and 1, inclusive")
+        Left("A scaled score must be a normalized value between -1 and 1, inclusive")
       }
-    })
+      else {
+        Right(true)
+      }
+    }).getOrElse(Right(true))
   }
 
-  def validateRaw(): Unit = {
-    raw.foreach((rawScore: Double) => {
-      min.foreach((minScore: Double) => {
+  def validateRawIsNotLessThanMin: Either[String, Boolean] = {
+    raw.map((rawScore: Double) => {
+      min.map((minScore: Double) => {
         if (rawScore < minScore) {
-          throw new StatementValidationException("The raw score cannot be less than the lowest possible (min) score defined for the experience")
+          Left("The raw score cannot be less than the lowest possible (min) score defined for the experience")
         }
-      })
-
-      max.foreach((maxScore: Double) => {
-        if (rawScore > maxScore) {
-          throw new StatementValidationException("The raw score cannot be greater than the highest possible (max) score defined for the experience")
+        else {
+          Right(true)
         }
-      })
-    })
+      }).getOrElse(Right(true))
+    }).getOrElse(Right(true))
   }
 
-  def validateScoreBounds(): Unit = {
-    max.foreach((maxScore: Double) => {
-      min.foreach((minScore: Double) => {
-        if (maxScore <= minScore) {
-          throw new StatementValidationException("The highest possible score (max) must be greater than the lowest possible score (min)")
+  def validateRawIsNotGreaterThanMax: Either[String, Boolean] = {
+    raw.map((rawScore: Double) => {
+      max.map((maxScore: Double) => {
+        if (rawScore > maxScore) {
+          Left("The raw score cannot be greater than the highest possible (max) score defined for the experience")
         }
-      })
-    })
+        else {
+          Right(true)
+        }
+      }).getOrElse(Right(true))
+    }).getOrElse(Right(true))
+  }
+
+  def validateScoreBounds: Either[String, Boolean] = {
+    max.map((maxScore: Double) => {
+      min.map((minScore: Double) => {
+        if (maxScore <= minScore) {
+          Left("The highest possible score (max) must be greater than the lowest possible score (min)")
+        }
+        else {
+          Right(true)
+        }
+      }).getOrElse(Right(true))
+    }).getOrElse(Right(true))
   }
 }
 
