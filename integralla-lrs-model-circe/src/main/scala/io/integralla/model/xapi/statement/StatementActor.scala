@@ -42,6 +42,35 @@ sealed trait StatementActor extends StatementValidation {
     }).getOrElse(Right(true))
   }
 
+  /**
+   * @return The IFI type name
+   */
+  def ifiType(): String = {
+    val types = List("mbox", "mbox_sha1sum", "openid", "account")
+    val options = List(mbox, mbox_sha1sum, openid, account)
+    options.zip(types).filter(_._1.isDefined).head._2
+  }
+
+  /**
+   * @return The IFI value as a string
+   */
+  def ifiValue(): String = {
+    ifiType() match {
+      case "mbox" => mbox.get.value
+      case "mbox_sha1sum" => mbox_sha1sum.get
+      case "openid" => openid.get
+      case "account" => List(account.get.homePage, account.get.name).mkString("#")
+      case _ => throw new RuntimeException("Unrecognized IFI type")
+    }
+  }
+
+  /**
+   * @return An IFI key composed of it's type and value
+   */
+  def ifiKey(): String = {
+    List(ifiType(), ifiValue()).mkString("#")
+  }
+
 }
 
 object StatementActor {

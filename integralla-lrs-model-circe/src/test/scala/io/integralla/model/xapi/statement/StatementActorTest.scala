@@ -229,6 +229,65 @@ class StatementActorTest extends UnitSpec {
       }
     }
 
+    describe("[common]") {
+      describe("ifiType()") {
+        it("should return the type of ifi (mbox)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), Some(MBox("mailto:john.doe@example.com")), None, None, None)
+          assert(actor.ifiType() === "mbox")
+        }
+        it("should return the type of ifi (mbox_sha1sum)") {
+          val actor: StatementActor = new Group(StatementObjectType.Group, Some("Team A"), None, Some("5f129e82b8373086d1b517b823521f8186eca5fe"), None, None, None)
+          assert(actor.ifiType() === "mbox_sha1sum")
+        }
+        it("should return the type of ifi (openid)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, Some("http://my.server.name/myname"), None)
+          assert(actor.ifiType() === "openid")
+        }
+        it("should return the type of ifi (account)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, None, Some(Account("http://www.example.com", "123456")))
+          assert(actor.ifiType() === "account")
+        }
+      }
+
+      describe("ifiValue()") {
+        it("should return the type of ifi value (mbox)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), Some(MBox("mailto:john.doe@example.com")), None, None, None)
+          assert(actor.ifiValue() === "mailto:john.doe@example.com")
+        }
+        it("should return the type of ifi value (mbox_sha1sum)") {
+          val actor: StatementActor = new Group(StatementObjectType.Group, Some("Team A"), None, Some("5f129e82b8373086d1b517b823521f8186eca5fe"), None, None, None)
+          assert(actor.ifiValue() === "5f129e82b8373086d1b517b823521f8186eca5fe")
+        }
+        it("should return the type of ifi value (openid)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, Some("http://my.server.name/myname"), None)
+          assert(actor.ifiValue() === "http://my.server.name/myname")
+        }
+        it("should return the type of ifi value (account)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, None, Some(Account("http://www.example.com", "123456")))
+          assert(actor.ifiValue() === "http://www.example.com#123456")
+        }
+      }
+
+      describe("ifiKey()") {
+        it("should return the type of ifi value (mbox)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), Some(MBox("mailto:john.doe@example.com")), None, None, None)
+          assert(actor.ifiKey() === "mbox#mailto:john.doe@example.com")
+        }
+        it("should return the type of ifi value (mbox_sha1sum)") {
+          val actor: StatementActor = new Group(StatementObjectType.Group, Some("Team A"), None, Some("5f129e82b8373086d1b517b823521f8186eca5fe"), None, None, None)
+          assert(actor.ifiKey() === "mbox_sha1sum#5f129e82b8373086d1b517b823521f8186eca5fe")
+        }
+        it("should return the type of ifi value (openid)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, Some("http://my.server.name/myname"), None)
+          assert(actor.ifiKey() === "openid#http://my.server.name/myname")
+        }
+        it("should return the type of ifi value (account)") {
+          val actor: StatementActor = Agent(Some(StatementObjectType.Agent), Some("John Doe"), None, None, None, Some(Account("http://www.example.com", "123456")))
+          assert(actor.ifiKey() === "account#http://www.example.com#123456")
+        }
+      }
+    }
+
     describe("[validation]") {
       it("should throw a statement validation exception when decoding an actor with an invalid openid identifier") {
         val data: String = """{"objectType":"Agent","name":"John Doe","openid":"my.server.name/myname"}"""
