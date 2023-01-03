@@ -8,12 +8,11 @@ import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success, Try}
 
-/**
- * An account object
- *
- * @param homePage The canonical home page for the system the account is on
- * @param name     The unique id or name used to log in to this account
- */
+/** An account object
+  *
+  * @param homePage The canonical home page for the system the account is on
+  * @param name     The unique id or name used to log in to this account
+  */
 case class Account(
   homePage: String,
   name: String

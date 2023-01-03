@@ -31,7 +31,6 @@ class AttachmentTest extends UnitSpec {
       |  "sha2" : "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
       |}""".stripMargin
 
-
   describe("Attachment") {
     describe("[encoding]") {
       it("should successfully encode an attachment") {
@@ -45,7 +44,7 @@ class AttachmentTest extends UnitSpec {
         val decoded: Either[io.circe.Error, Attachment] = decode[Attachment](sampleAttachmentEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleAttachment)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
     }

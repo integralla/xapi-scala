@@ -18,7 +18,7 @@ class MBoxTest extends UnitSpec {
       val expected = Wrapper(MBox("mailto:info@example.com"))
       decoded match {
         case Right(actual) => assert(actual === expected)
-        case Left(_) => false
+        case Left(_)       => false
       }
     }
 
@@ -27,7 +27,7 @@ class MBoxTest extends UnitSpec {
       val decoded: Either[io.circe.Error, Wrapper] = decode[Wrapper](data)
       val success = decoded match {
         case Right(_) => true
-        case Left(_) => false
+        case Left(_)  => false
       }
       assert(success === false)
     }
@@ -61,7 +61,6 @@ class MBoxTest extends UnitSpec {
         assert(actual === expected)
       }
     }
-
 
   }
 }

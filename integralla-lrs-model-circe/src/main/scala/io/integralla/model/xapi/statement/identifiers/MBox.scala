@@ -7,11 +7,10 @@ import io.lemonlabs.uri.UrlWithoutAuthority
 import java.security.MessageDigest
 import scala.util.{Failure, Success, Try}
 
-/**
- * An MBOX identifier
- *
- * @param value A mailto IRI
- */
+/** An MBOX identifier
+  *
+  * @param value A mailto IRI
+  */
 case class MBox(value: String) extends StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
@@ -19,17 +18,16 @@ case class MBox(value: String) extends StatementValidation {
     )
   }
 
-  /**
-   * Returns a SHA1 checksum of the mailto IRI
-   *
-   * @return SHA1 checksum
-   */
+  /** Returns a SHA1 checksum of the mailto IRI
+    *
+    * @return SHA1 checksum
+    */
   def shaChecksum: String = {
-    MessageDigest.getInstance("SHA-1")
+    MessageDigest
+      .getInstance("SHA-1")
       .digest(value.toLowerCase().getBytes("UTF-8"))
       .map("%02x".format(_)).mkString
   }
-
 
   private def checkMbox: Either[String, Boolean] = {
     val parsed: Try[UrlWithoutAuthority] = UrlWithoutAuthority.parseTry(value)
@@ -38,8 +36,7 @@ case class MBox(value: String) extends StatementValidation {
       case Success(value) =>
         if (value.scheme != "mailto") {
           Left("An Agent mbox identifier must use the mailto schema")
-        }
-        else {
+        } else {
           Right(true)
         }
     }

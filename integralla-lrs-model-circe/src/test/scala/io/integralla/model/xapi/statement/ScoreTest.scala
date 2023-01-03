@@ -35,21 +35,35 @@ class ScoreTest extends UnitSpec {
         val exception = intercept[StatementValidationException] {
           Score(None, Some(-0.1), Some(0.0), Some(1.0))
         }
-        assert(exception.getMessage.contains("The raw score cannot be less than the lowest possible (min) score defined for the experience"))
+        assert(
+          exception.getMessage.contains(
+            "The raw score cannot be less than the lowest possible (min) score defined for the experience"
+          )
+        )
       }
 
       it("should throw a statement validation error if the raw score is greater than the defined max score") {
         val exception = intercept[StatementValidationException] {
           Score(None, Some(100.0), Some(0.0), Some(1.0))
         }
-        assert(exception.getMessage.contains("The raw score cannot be greater than the highest possible (max) score defined for the experience"))
+        assert(
+          exception.getMessage.contains(
+            "The raw score cannot be greater than the highest possible (max) score defined for the experience"
+          )
+        )
       }
 
-      it("should throw a statement validation error if the highest possible score (max) is less than the lowest possible score (min)") {
+      it(
+        "should throw a statement validation error if the highest possible score (max) is less than the lowest possible score (min)"
+      ) {
         val exception = intercept[StatementValidationException] {
           Score(None, None, Some(101.0), Some(100.0))
         }
-        assert(exception.getMessage.contains("The highest possible score (max) must be greater than the lowest possible score (min)"))
+        assert(
+          exception.getMessage.contains(
+            "The highest possible score (max) must be greater than the lowest possible score (min)"
+          )
+        )
       }
     }
 
@@ -76,7 +90,7 @@ class ScoreTest extends UnitSpec {
         val expected: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -86,7 +100,7 @@ class ScoreTest extends UnitSpec {
         val expected: Score = Score(Some(0.5), Some(5.0), None, None)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
     }

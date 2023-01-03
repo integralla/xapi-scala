@@ -12,26 +12,46 @@ class StatementResultTest extends UnitSpec {
   val sampleExtensions: Extensions = Map(IRI("http://example.com/extenions/other") -> """{"one": 1, "two": 2}""".asJson)
 
   val sampleResult: StatementResult = StatementResult(
-    Some(sampleScore), Some(true), Some(true), Some("response"), Some("PT4H35M59.14S"), Some(sampleExtensions)
+    Some(sampleScore),
+    Some(true),
+    Some(true),
+    Some("response"),
+    Some("PT4H35M59.14S"),
+    Some(sampleExtensions)
   )
 
-  val sampleResultEncoded: String = """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"response":"response","duration":"PT4H35M59.14S","extensions":{"http://example.com/extenions/other":"{\"one\": 1, \"two\": 2}"}}"""
+  val sampleResultEncoded: String =
+    """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"response":"response","duration":"PT4H35M59.14S","extensions":{"http://example.com/extenions/other":"{\"one\": 1, \"two\": 2}"}}"""
 
   describe("StatementResult") {
     describe("[validation]") {
       it("should not throw a statement validation error for a valid duration") {
         StatementResult(
-          Some(sampleScore), Some(true), Some(true), Some("response"), Some("PT16559.14S"), Some(sampleExtensions)
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("PT16559.14S"),
+          Some(sampleExtensions)
         )
       }
 
       it("should throw a statement validation error for a invalid duration") {
         val exception = intercept[StatementValidationException] {
           StatementResult(
-            Some(sampleScore), Some(true), Some(true), Some("response"), Some("T15M20.345S"), Some(sampleExtensions)
+            Some(sampleScore),
+            Some(true),
+            Some(true),
+            Some("response"),
+            Some("T15M20.345S"),
+            Some(sampleExtensions)
           )
         }
-        assert(exception.getMessage.contains("The supplied duration could not be parsed: duration(T15M20.345S), errorIndex(0)"))
+        assert(
+          exception.getMessage.contains(
+            "The supplied duration could not be parsed: duration(T15M20.345S), errorIndex(0)"
+          )
+        )
       }
     }
 
@@ -47,19 +67,25 @@ class StatementResultTest extends UnitSpec {
         val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](sampleResultEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleResult)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
       it("should successfully decode a result in which some values are not set") {
-        val data: String = """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"duration":"PT4H35M59.14S"}"""
+        val data: String =
+          """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"duration":"PT4H35M59.14S"}"""
         val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](data)
         val expected: StatementResult = StatementResult(
-          Some(sampleScore), Some(true), Some(true), None, Some("PT4H35M59.14S"), None
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          None,
+          Some("PT4H35M59.14S"),
+          None
         )
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
     }

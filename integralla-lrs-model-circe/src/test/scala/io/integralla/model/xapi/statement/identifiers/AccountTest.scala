@@ -17,7 +17,7 @@ class AccountTest extends UnitSpec {
       val expected = Account(homePage = "http://www.example.com", name = "123456")
       decoded match {
         case Right(actual) => assert(actual === expected)
-        case Left(_) => false
+        case Left(_)       => false
       }
     }
 
@@ -26,7 +26,7 @@ class AccountTest extends UnitSpec {
       val decoded: Either[io.circe.Error, Account] = decode[Account](data)
       val success = decoded match {
         case Right(_) => true
-        case Left(_) => false
+        case Left(_)  => false
       }
       assert(success === false)
     }
@@ -36,7 +36,7 @@ class AccountTest extends UnitSpec {
       val decoded: Either[io.circe.Error, Account] = decode[Account](data)
       val success = decoded match {
         case Right(_) => true
-        case Left(_) => false
+        case Left(_)  => false
       }
       assert(success === false)
     }
@@ -46,7 +46,7 @@ class AccountTest extends UnitSpec {
       val decoded: Either[io.circe.Error, Account] = decode[Account](data)
       val success = decoded match {
         case Right(_) => true
-        case Left(_) => false
+        case Left(_)  => false
       }
       assert(success === false)
     }
@@ -56,7 +56,7 @@ class AccountTest extends UnitSpec {
       val decoded: Either[io.circe.Error, Account] = decode[Account](data)
       val success = decoded match {
         case Right(_) => true
-        case Left(_) => false
+        case Left(_)  => false
       }
       assert(success === false)
     }

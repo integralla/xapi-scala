@@ -21,7 +21,8 @@ class StatementVerbTest extends UnitSpec {
         val languageMap: LanguageMap = Map("en-US" -> "will visit", "it-IT" -> "visiterò")
         val verb: StatementVerb = StatementVerb(IRI("http://example.com/visited"), Some(languageMap))
         val encoded: String = verb.asJson.noSpaces
-        val expected: String = """{"id":"http://example.com/visited","display":{"en-US":"will visit","it-IT":"visiterò"}}"""
+        val expected: String =
+          """{"id":"http://example.com/visited","display":{"en-US":"will visit","it-IT":"visiterò"}}"""
         assert(encoded === expected)
       }
     }
@@ -33,7 +34,7 @@ class StatementVerbTest extends UnitSpec {
         val expected: StatementVerb = StatementVerb(IRI("http://example.com/visited"), None)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -44,7 +45,7 @@ class StatementVerbTest extends UnitSpec {
         val expected: StatementVerb = StatementVerb(IRI("http://example.com/visited"), Some(languageMap))
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -54,7 +55,7 @@ class StatementVerbTest extends UnitSpec {
         val expected: StatementVerb = StatementVerb(IRI("http://example.com/فعل/خواندن"), None)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 

@@ -1,6 +1,5 @@
 package io.integralla.model.xapi.statement.identifiers
 
-
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
 import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.Uri
@@ -8,11 +7,10 @@ import io.lemonlabs.uri.Uri
 import java.security.MessageDigest
 import scala.util.{Failure, Success, Try}
 
-/**
- * An International Resource Identifier (IRI)
- *
- * @param value An IRI string
- */
+/** An International Resource Identifier (IRI)
+  *
+  * @param value An IRI string
+  */
 case class IRI(value: String) extends StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
@@ -27,8 +25,7 @@ case class IRI(value: String) extends StatementValidation {
       case Success(value) =>
         if (value.schemeOption.isEmpty) {
           Left("An IRI must be a valid URI, with a schema")
-        }
-        else {
+        } else {
           Right(true)
         }
     }

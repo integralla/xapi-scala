@@ -6,12 +6,11 @@ import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectTyp
 
 import java.util.UUID
 
-/**
- * A pointer to another pre-existing statement
- *
- * @param objectType A statement object type
- * @param id         The UUID of the referenced statement
- */
+/** A pointer to another pre-existing statement
+  *
+  * @param objectType A statement object type
+  * @param id         The UUID of the referenced statement
+  */
 case class StatementRef(objectType: StatementObjectType, id: UUID)
 
 object StatementRef {

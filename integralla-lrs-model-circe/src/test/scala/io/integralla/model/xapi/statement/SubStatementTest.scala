@@ -24,15 +24,29 @@ class SubStatementTest extends UnitSpec {
         Some(
           ActivityDefinition(
             Some(Map("en-US" -> "Some Awesome Website")),
-            None, None, None, None, None, None, None, None, None, None, None
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None
           )
         )
       )
     ),
-    None, None, None, None
+    None,
+    None,
+    None,
+    None
   )
 
-  val sampleActivitySubStatementEncoded: String = Using.resource(Source.fromResource("data/sample-sub-statement-object-is-activity.json"))(_.mkString)
+  val sampleActivitySubStatementEncoded: String =
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-activity.json"))(_.mkString)
 
   /* Agent SubStatement */
   val sampleAgentSubStatement: SubStatement = SubStatement(
@@ -40,11 +54,22 @@ class SubStatementTest extends UnitSpec {
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
     StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
     StatementObject(
-      Agent(Some(StatementObjectType.Agent), Some("Andrew Downes"), Some(MBox("mailto:andrew@example.co.uk")), None, None, None)
+      Agent(
+        Some(StatementObjectType.Agent),
+        Some("Andrew Downes"),
+        Some(MBox("mailto:andrew@example.co.uk")),
+        None,
+        None,
+        None
+      )
     ),
-    None, None, None, None
+    None,
+    None,
+    None,
+    None
   )
-  val sampleAgentSubStatementEncoded: String = Using.resource(Source.fromResource("data/sample-sub-statement-object-is-agent.json"))(_.mkString)
+  val sampleAgentSubStatementEncoded: String =
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-agent.json"))(_.mkString)
 
   /* Group SubStatement */
   val sampleGroupSubStatement: SubStatement = SubStatement(
@@ -53,19 +78,41 @@ class SubStatementTest extends UnitSpec {
     StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
     StatementObject(
       Group(
-        StatementObjectType.Group, Some("Example Group"), None, None, None,
+        StatementObjectType.Group,
+        Some("Example Group"),
+        None,
+        None,
+        None,
         Some(Account("http://example.com/homePage", "GroupAccount")),
         Some(
           List(
-            Agent(Some(StatementObjectType.Agent), Some("Andrew Downes"), Some(MBox("mailto:andrew@example.co.uk")), None, None, None),
-            Agent(Some(StatementObjectType.Agent), Some("Aaron Silvers"), None, None, Some("http://aaron.openid.example.org"), None)
+            Agent(
+              Some(StatementObjectType.Agent),
+              Some("Andrew Downes"),
+              Some(MBox("mailto:andrew@example.co.uk")),
+              None,
+              None,
+              None
+            ),
+            Agent(
+              Some(StatementObjectType.Agent),
+              Some("Aaron Silvers"),
+              None,
+              None,
+              Some("http://aaron.openid.example.org"),
+              None
+            )
           )
         )
       )
     ),
-    None, None, None, None
+    None,
+    None,
+    None,
+    None
   )
-  val sampleGroupSubStatementEncoded: String = Using.resource(Source.fromResource("data/sample-sub-statement-object-is-group.json"))(_.mkString)
+  val sampleGroupSubStatementEncoded: String =
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-group.json"))(_.mkString)
 
   /* StatementRef SubStatement */
   val sampleStatementRefSubStatement: SubStatement = SubStatement(
@@ -75,9 +122,13 @@ class SubStatementTest extends UnitSpec {
     StatementObject(
       StatementRef(StatementObjectType.StatementRef, UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f"))
     ),
-    None, None, None, None
+    None,
+    None,
+    None,
+    None
   )
-  val sampleStatementRefSubStatementEncoded: String = Using.resource(Source.fromResource("data/sample-sub-statement-object-is-statement-ref.json"))(_.mkString)
+  val sampleStatementRefSubStatementEncoded: String =
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-statement-ref.json"))(_.mkString)
 
   describe("SubStatement") {
     describe("[encoding]") {
@@ -107,7 +158,7 @@ class SubStatementTest extends UnitSpec {
         val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleActivitySubStatementEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleActivitySubStatement)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -115,7 +166,7 @@ class SubStatementTest extends UnitSpec {
         val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleAgentSubStatementEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleAgentSubStatement)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -123,7 +174,7 @@ class SubStatementTest extends UnitSpec {
         val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleGroupSubStatementEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleGroupSubStatement)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -131,7 +182,7 @@ class SubStatementTest extends UnitSpec {
         val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleStatementRefSubStatementEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleStatementRefSubStatement)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
     }
@@ -174,7 +225,7 @@ class SubStatementTest extends UnitSpec {
           val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](nestedSubStatements)
           decoded match {
             case Right(actual) => println(actual)
-            case Left(err) => throw new Error(s"Decoding failed: $err")
+            case Left(err)     => throw new Error(s"Decoding failed: $err")
           }
         }
         assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))

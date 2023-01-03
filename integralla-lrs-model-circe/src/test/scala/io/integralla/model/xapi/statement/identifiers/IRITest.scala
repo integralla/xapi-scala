@@ -55,7 +55,7 @@ class IRITest extends UnitSpec {
       val expected = Wrapper(IRI("http://example.com/visited"))
       decoded match {
         case Right(actual) => assert(actual === expected)
-        case Left(_) => false
+        case Left(_)       => false
       }
     }
 

@@ -15,18 +15,46 @@ class StatementObjectTest extends UnitSpec {
   val nameLanguageMap: LanguageMap = Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
   val descriptionLanguageMap: LanguageMap = Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
 
-  val sampleActivityDefinition: ActivityDefinition = ActivityDefinition(Some(nameLanguageMap), Some(descriptionLanguageMap), None, None, None, None, None, None, None, None, None, None)
-  val sampleActivity: Activity = Activity(Some(StatementObjectType.Activity), IRI("http://example.com/xapi/activity/simplestatement"), Some(sampleActivityDefinition))
-  val sampleActivityEncoded: String = """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement","definition":{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"}}}"""
+  val sampleActivityDefinition: ActivityDefinition = ActivityDefinition(
+    Some(nameLanguageMap),
+    Some(descriptionLanguageMap),
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None
+  )
+  val sampleActivity: Activity = Activity(
+    Some(StatementObjectType.Activity),
+    IRI("http://example.com/xapi/activity/simplestatement"),
+    Some(sampleActivityDefinition)
+  )
+  val sampleActivityEncoded: String =
+    """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement","definition":{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"}}}"""
 
-  val sampleAgent: Agent = Agent(Some(StatementObjectType.Agent), Some("John Doe"), Some(MBox("mailto:john.doe@example.com")), None, None, None)
+  val sampleAgent: Agent = Agent(
+    Some(StatementObjectType.Agent),
+    Some("John Doe"),
+    Some(MBox("mailto:john.doe@example.com")),
+    None,
+    None,
+    None
+  )
   val sampleAgentEncoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
 
-  val sampleGroup: Group = Group(StatementObjectType.Group, Some("Team A"), Some(MBox("mailto:team.a@example.com")), None, None, None, None)
+  val sampleGroup: Group =
+    Group(StatementObjectType.Group, Some("Team A"), Some(MBox("mailto:team.a@example.com")), None, None, None, None)
   val sampleGroupEncoded: String = """{"objectType":"Group","name":"Team A","mbox":"mailto:team.a@example.com"}"""
 
-  val sampleStatementRef: StatementRef = StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
-  val sampleStatementRefEncoded: String = """{"objectType":"StatementRef","id":"7cf5941a-9631-4741-83eb-28beb8ff28e2"}"""
+  val sampleStatementRef: StatementRef =
+    StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
+  val sampleStatementRefEncoded: String =
+    """{"objectType":"StatementRef","id":"7cf5941a-9631-4741-83eb-28beb8ff28e2"}"""
 
   val sampleSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
@@ -39,14 +67,28 @@ class StatementObjectTest extends UnitSpec {
         Some(
           ActivityDefinition(
             Some(Map("en-US" -> "Some Awesome Website")),
-            None, None, None, None, None, None, None, None, None, None, None
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None
           )
         )
       )
     ),
-    None, None, None, None
+    None,
+    None,
+    None,
+    None
   )
-  val sampleSubStatementEncoded: String = Using.resource(Source.fromResource("data/sample-sub-statement.json"))(_.mkString)
+  val sampleSubStatementEncoded: String =
+    Using.resource(Source.fromResource("data/sample-sub-statement.json"))(_.mkString)
 
   describe("StatementObject") {
     describe("[encoding]") {
@@ -87,27 +129,30 @@ class StatementObjectTest extends UnitSpec {
         val expected: StatementObject = StatementObject(sampleActivity)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
       it("should successfully decode a statement object that is an activity without an explicit object type") {
         val data: String = """{"id":"http://example.com/xapi/activity/simplestatement"}"""
         val decoded: Either[io.circe.Error, StatementObject] = decode[StatementObject](data)
-        val expected: StatementObject = StatementObject(Activity(None, IRI("http://example.com/xapi/activity/simplestatement"), None))
+        val expected: StatementObject =
+          StatementObject(Activity(None, IRI("http://example.com/xapi/activity/simplestatement"), None))
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
       it("should successfully decode a statement object that is an activity without a definition") {
         val data: String = """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement"}"""
         val decoded: Either[io.circe.Error, StatementObject] = decode[StatementObject](data)
-        val expected: StatementObject = StatementObject(Activity(Some(StatementObjectType.Activity), IRI("http://example.com/xapi/activity/simplestatement"), None))
+        val expected: StatementObject = StatementObject(
+          Activity(Some(StatementObjectType.Activity), IRI("http://example.com/xapi/activity/simplestatement"), None)
+        )
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -116,24 +161,36 @@ class StatementObjectTest extends UnitSpec {
         val expected: StatementObject = StatementObject(sampleAgent)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
-      it("should throw a statement validation exception if the statement object is an agent where the objectType is not explicitly set") {
+      it(
+        "should throw a statement validation exception if the statement object is an agent where the objectType is not explicitly set"
+      ) {
         val agentEncoded: String = """{"name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
         val exception = intercept[StatementValidationException] {
           decode[StatementObject](agentEncoded)
         }
-        assert(exception.getMessage.startsWith("An objectType must be explicitly set for any object type other than Activity"))
+        assert(
+          exception.getMessage.startsWith(
+            "An objectType must be explicitly set for any object type other than Activity"
+          )
+        )
       }
 
-      it("should throw a statement validation exception if the statement object is an statement ref where the objectType is not explicitly set") {
+      it(
+        "should throw a statement validation exception if the statement object is an statement ref where the objectType is not explicitly set"
+      ) {
         val statementRefEncoded: String = """{"id": "2fcbb5ea-4b75-44d5-bf51-e8c2d690d658"}"""
         val exception = intercept[StatementValidationException] {
           decode[StatementObject](statementRefEncoded)
         }
-        assert(exception.getMessage.startsWith("An objectType must be explicitly set for any object type other than Activity"))
+        assert(
+          exception.getMessage.startsWith(
+            "An objectType must be explicitly set for any object type other than Activity"
+          )
+        )
       }
 
       it("should successfully decode a statement object that is a group") {
@@ -141,7 +198,7 @@ class StatementObjectTest extends UnitSpec {
         val expected: StatementObject = StatementObject(sampleGroup)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -150,7 +207,7 @@ class StatementObjectTest extends UnitSpec {
         val expected: StatementObject = StatementObject(sampleStatementRef)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -159,7 +216,7 @@ class StatementObjectTest extends UnitSpec {
         val expected: StatementObject = StatementObject(sampleSubStatement)
         decoded match {
           case Right(actual) => assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
     }
