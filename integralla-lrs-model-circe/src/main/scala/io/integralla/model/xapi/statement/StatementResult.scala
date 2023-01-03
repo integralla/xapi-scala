@@ -29,7 +29,7 @@ case class StatementResult(
     )
   }
 
-  def validateDuration: Either[String, Boolean] = {
+  private def validateDuration: Either[String, Boolean] = {
     duration
       .map(duration => {
         try {

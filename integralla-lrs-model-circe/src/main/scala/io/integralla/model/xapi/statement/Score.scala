@@ -25,7 +25,7 @@ case class Score(
     )
   }
 
-  def validateScaled: Either[String, Boolean] = {
+  private def validateScaled: Either[String, Boolean] = {
     scaled
       .map((score: Double) => {
         if (score < -1 || score > 1) {
@@ -36,7 +36,7 @@ case class Score(
       }).getOrElse(Right(true))
   }
 
-  def validateRawIsNotLessThanMin: Either[String, Boolean] = {
+  private def validateRawIsNotLessThanMin: Either[String, Boolean] = {
     raw
       .map((rawScore: Double) => {
         min
@@ -50,7 +50,7 @@ case class Score(
       }).getOrElse(Right(true))
   }
 
-  def validateRawIsNotGreaterThanMax: Either[String, Boolean] = {
+  private def validateRawIsNotGreaterThanMax: Either[String, Boolean] = {
     raw
       .map((rawScore: Double) => {
         max
@@ -64,7 +64,7 @@ case class Score(
       }).getOrElse(Right(true))
   }
 
-  def validateScoreBounds: Either[String, Boolean] = {
+  private def validateScoreBounds: Either[String, Boolean] = {
     max
       .map((maxScore: Double) => {
         min

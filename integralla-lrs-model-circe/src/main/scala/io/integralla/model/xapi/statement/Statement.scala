@@ -41,7 +41,7 @@ case class Statement(
     )
   }
 
-  def validateContextPropertiesRevision: Either[String, Boolean] = {
+  private def validateContextPropertiesRevision: Either[String, Boolean] = {
 
     context
       .map((statementContext: StatementContext) => {
@@ -59,7 +59,7 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
-  def validateContextPropertiesPlatform: Either[String, Boolean] = {
+  private def validateContextPropertiesPlatform: Either[String, Boolean] = {
 
     context
       .map((statementContext: StatementContext) => {

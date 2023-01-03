@@ -32,7 +32,7 @@ case class SubStatement(
     Seq(validateObjectIsNotSubStatement)
   }
 
-  def validateObjectIsNotSubStatement: Either[String, Boolean] = {
+  private def validateObjectIsNotSubStatement: Either[String, Boolean] = {
     if (`object`.value.isInstanceOf[SubStatement]) {
       Left("A sub-statement cannot contain a sub-statement of it's own")
     } else {
