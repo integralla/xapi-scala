@@ -479,7 +479,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiType() === "mbox")
+          assert(actor.ifiType().get === "mbox")
         }
         it("should return the type of ifi (mbox_sha1sum)") {
           val actor: StatementActor = new Group(
@@ -491,7 +491,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiType() === "mbox_sha1sum")
+          assert(actor.ifiType().get === "mbox_sha1sum")
         }
         it("should return the type of ifi (openid)") {
           val actor: StatementActor = Agent(
@@ -502,7 +502,7 @@ class StatementActorTest extends UnitSpec {
             Some("http://my.server.name/myname"),
             None
           )
-          assert(actor.ifiType() === "openid")
+          assert(actor.ifiType().get === "openid")
         }
         it("should return the type of ifi (account)") {
           val actor: StatementActor = Agent(
@@ -513,7 +513,30 @@ class StatementActorTest extends UnitSpec {
             None,
             Some(Account("http://www.example.com", "123456"))
           )
-          assert(actor.ifiType() === "account")
+          assert(actor.ifiType().get === "account")
+        }
+        it("should return none in the case of an anonymous group") {
+          val actor: StatementActor = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(actor.ifiType().isEmpty)
         }
       }
 
@@ -527,7 +550,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiValue() === "mailto:john.doe@example.com")
+          assert(actor.ifiValue().get === "mailto:john.doe@example.com")
         }
         it("should return the type of ifi value (mbox_sha1sum)") {
           val actor: StatementActor = new Group(
@@ -539,7 +562,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiValue() === "5f129e82b8373086d1b517b823521f8186eca5fe")
+          assert(actor.ifiValue().get === "5f129e82b8373086d1b517b823521f8186eca5fe")
         }
         it("should return the type of ifi value (openid)") {
           val actor: StatementActor = Agent(
@@ -550,7 +573,7 @@ class StatementActorTest extends UnitSpec {
             Some("http://my.server.name/myname"),
             None
           )
-          assert(actor.ifiValue() === "http://my.server.name/myname")
+          assert(actor.ifiValue().get === "http://my.server.name/myname")
         }
         it("should return the type of ifi value (account)") {
           val actor: StatementActor = Agent(
@@ -561,7 +584,30 @@ class StatementActorTest extends UnitSpec {
             None,
             Some(Account("http://www.example.com", "123456"))
           )
-          assert(actor.ifiValue() === "http://www.example.com#123456")
+          assert(actor.ifiValue().get === "http://www.example.com#123456")
+        }
+        it("should return none in the case of an anonymous group") {
+          val actor: StatementActor = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(actor.ifiValue().isEmpty)
         }
       }
 
@@ -575,7 +621,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiKey() === "mbox#mailto:john.doe@example.com")
+          assert(actor.ifiKey().get === "mbox#mailto:john.doe@example.com")
         }
         it("should return the type of ifi value (mbox_sha1sum)") {
           val actor: StatementActor = new Group(
@@ -587,7 +633,7 @@ class StatementActorTest extends UnitSpec {
             None,
             None
           )
-          assert(actor.ifiKey() === "mbox_sha1sum#5f129e82b8373086d1b517b823521f8186eca5fe")
+          assert(actor.ifiKey().get === "mbox_sha1sum#5f129e82b8373086d1b517b823521f8186eca5fe")
         }
         it("should return the type of ifi value (openid)") {
           val actor: StatementActor = Agent(
@@ -598,7 +644,7 @@ class StatementActorTest extends UnitSpec {
             Some("http://my.server.name/myname"),
             None
           )
-          assert(actor.ifiKey() === "openid#http://my.server.name/myname")
+          assert(actor.ifiKey().get === "openid#http://my.server.name/myname")
         }
         it("should return the type of ifi value (account)") {
           val actor: StatementActor = Agent(
@@ -609,7 +655,77 @@ class StatementActorTest extends UnitSpec {
             None,
             Some(Account("http://www.example.com", "123456"))
           )
-          assert(actor.ifiKey() === "account#http://www.example.com#123456")
+          assert(actor.ifiKey().get === "account#http://www.example.com#123456")
+        }
+        it("should return none in the case of an anonymous group") {
+          val actor: StatementActor = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(actor.ifiKey().isEmpty)
+        }
+      }
+      describe("actorType") {
+        it("should return the statement object type for an agent") {
+          val actor: StatementActor = new Agent(
+            Some(StatementObjectType.Agent),
+            Some("John Doe"),
+            Some(MBox("mailto:john.doe@example.com")),
+            None,
+            None,
+            None
+          )
+          assert(actor.actorType() === StatementObjectType.Agent)
+        }
+        it("should return the statement object type for an agent when the type has not been explicitly set") {
+          val actor: StatementActor = new Agent(
+            None,
+            Some("John Doe"),
+            Some(MBox("mailto:john.doe@example.com")),
+            None,
+            None,
+            None
+          )
+          assert(actor.actorType() === StatementObjectType.Agent)
+        }
+        it("should return the statement object type for a group") {
+          val actor: StatementActor = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(actor.actorType() === StatementObjectType.Group)
         }
       }
     }

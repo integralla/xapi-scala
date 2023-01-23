@@ -16,14 +16,19 @@ import scala.util.{Failure, Success}
   */
 sealed trait StatementActor extends StatementValidation {
 
+  /** @return The actor name */
   def name: Option[String]
 
+  /** @return The actor mbox value */
   def mbox: Option[MBox]
 
+  /** @return The actor mbox_sha1sum value */
   def mbox_sha1sum: Option[String]
 
+  /** @return The actor openid value */
   def openid: Option[String]
 
+  /** @return The actor account object */
   def account: Option[Account]
 
   override def validate: Seq[Either[String, Boolean]] = {
@@ -43,15 +48,21 @@ sealed trait StatementActor extends StatementValidation {
   }
 
   /** @return The IFI type name */
-  def ifiType(): String = {
+  def ifiType(): Option[String] = {
     val types = List("mbox", "mbox_sha1sum", "openid", "account")
     val options = List(mbox, mbox_sha1sum, openid, account)
-    options.zip(types).filter(_._1.isDefined).head._2
+    val actual = options.zip(types).filter(_._1.isDefined)
+    actual.size match {
+      case 0 => None
+      case 1 => Some(actual.head._2)
+      case _ => throw new RuntimeException("An actor cannot have more than one IFI")
+    }
+
   }
 
   /** @return The IFI value as a string */
-  def ifiValue(): String = {
-    ifiType() match {
+  def ifiValue(): Option[String] = {
+    ifiType().map {
       case "mbox"         => mbox.get.value
       case "mbox_sha1sum" => mbox_sha1sum.get
       case "openid"       => openid.get
@@ -61,9 +72,15 @@ sealed trait StatementActor extends StatementValidation {
   }
 
   /** @return An IFI key composed of it's type and value */
-  def ifiKey(): String = {
-    List(ifiType(), ifiValue()).mkString("#")
+  def ifiKey(): Option[String] = {
+    if (ifiType().isDefined & ifiValue().isDefined) {
+      Some(List(ifiType().get, ifiValue().get).mkString("#"))
+    } else { None }
+
   }
+
+  /** @return The actor type (Agent, Group) */
+  def actorType(): StatementObjectType
 
 }
 
@@ -138,6 +155,7 @@ case class Agent(
       }).getOrElse(Right(true))
   }
 
+  override def actorType(): StatementObjectType = StatementObjectType.Agent
 }
 
 object Agent {
@@ -196,6 +214,8 @@ case class Group(
     if (objectType != StatementObjectType.Group) Left("A Group must have the object type of 'Group'")
     else Right(true)
   }
+
+  override def actorType(): StatementObjectType = StatementObjectType.Group
 }
 
 object Group {
