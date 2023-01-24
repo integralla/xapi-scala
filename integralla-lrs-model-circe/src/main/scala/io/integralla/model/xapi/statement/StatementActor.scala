@@ -31,22 +31,6 @@ sealed trait StatementActor extends StatementValidation {
   /** @return The actor account object */
   def account: Option[Account]
 
-  override def validate: Seq[Either[String, Boolean]] = {
-    Seq(
-      checkOpenId
-    )
-  }
-
-  private def checkOpenId: Either[String, Boolean] = {
-    openid
-      .map(openid => {
-        AbsoluteUrl.parseTry(openid) match {
-          case Failure(_) => Left("An Actor openid identifier must be a valid URL")
-          case Success(_) => Right(true)
-        }
-      }).getOrElse(Right(true))
-  }
-
   /** @return The IFI type name */
   def ifiType(): Option[String] = {
     val types = List("mbox", "mbox_sha1sum", "openid", "account")
@@ -75,13 +59,30 @@ sealed trait StatementActor extends StatementValidation {
   def ifiKey(): Option[String] = {
     if (ifiType().isDefined & ifiValue().isDefined) {
       Some(List(ifiType().get, ifiValue().get).mkString("#"))
-    } else { None }
+    } else {
+      None
+    }
 
   }
 
   /** @return The actor type (Agent, Group) */
   def actorType(): StatementObjectType
 
+  override def validate: Seq[Either[String, Boolean]] = {
+    Seq(
+      checkOpenId
+    )
+  }
+
+  private def checkOpenId: Either[String, Boolean] = {
+    openid
+      .map(openid => {
+        AbsoluteUrl.parseTry(openid) match {
+          case Failure(_) => Left("An Actor openid identifier must be a valid URL")
+          case Success(_) => Right(true)
+        }
+      }).getOrElse(Right(true))
+  }
 }
 
 object StatementActor {
@@ -128,6 +129,8 @@ case class Agent(
   account: Option[Account]
 ) extends StatementActor {
 
+  override def actorType(): StatementObjectType = StatementObjectType.Agent
+
   override def validate: Seq[Either[String, Boolean]] = {
     super.validate ++ Seq(
       validateInverseFunctionalIdentifier,
@@ -154,8 +157,6 @@ case class Agent(
         }
       }).getOrElse(Right(true))
   }
-
-  override def actorType(): StatementObjectType = StatementObjectType.Agent
 }
 
 object Agent {
@@ -187,6 +188,13 @@ case class Group(
   member: Option[List[Agent]]
 ) extends StatementActor {
 
+  override def actorType(): StatementObjectType = StatementObjectType.Group
+
+  /** @return A boolean indicating whether a group is anonymous or not */
+  def isAnonymous: Boolean = {
+    if (ifiType().isDefined) false else true
+  }
+
   override def validate: Seq[Either[String, Boolean]] = {
     super.validate ++ Seq(
       validateInverseFunctionalIdentifier,
@@ -214,8 +222,6 @@ case class Group(
     if (objectType != StatementObjectType.Group) Left("A Group must have the object type of 'Group'")
     else Right(true)
   }
-
-  override def actorType(): StatementObjectType = StatementObjectType.Group
 }
 
 object Group {

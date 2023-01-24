@@ -466,6 +466,54 @@ class StatementActorTest extends UnitSpec {
           }
         }
       }
+      describe("isAnonymous") {
+        it("should return true for an anonymous group") {
+          val group = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(group.isAnonymous === true)
+        }
+        it("should return false for an identified group") {
+          val group = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            Some(MBox("mailto:team-a@example.com")),
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(group.isAnonymous === false)
+        }
+      }
     }
 
     describe("[common]") {
