@@ -1,10 +1,14 @@
 package io.integralla.model.utils
 
-import io.integralla.model.xapi.statement.{Activity, Agent, StatementActor, StatementObjectType}
+import com.typesafe.scalalogging.LazyLogging
+import io.integralla.model.xapi.statement._
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
-class LRSModelUtilsTest extends UnitSpec {
+import scala.io.Source
+import scala.util.{Try, Using}
+
+class LRSModelUtilsTest extends UnitSpec with LazyLogging {
 
   describe("LRSModelUtils") {
     describe("toJSON") {
@@ -30,6 +34,37 @@ class LRSModelUtilsTest extends UnitSpec {
         val encoded: String = LRSModelUtils.toJSON(actor)
         val expected: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
         assert(encoded === expected)
+      }
+    }
+
+    describe("fromJSON") {
+      it("should decode a JSON string into the specified type (statement)") {
+        val encoded: String = Using.resource(Source.fromResource("data/sample-statement-simplest.json"))(_.mkString)
+        val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
+        logger.info(s"Decoded:\n$decoded")
+        assert(decoded.isSuccess)
+        assert(decoded.get.id.get.toString === "12345678-1234-5678-1234-567812345678")
+      }
+      it("should decode a JSON string into the specified type (agent)") {
+        val encoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
+        val decoded: Try[Agent] = LRSModelUtils.fromJSON[Agent](encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get.mbox.get.value === "mailto:john.doe@example.com")
+      }
+      it("should decode a JSON string into the specified type (actor)") {
+        val encoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
+        val decoded: Try[StatementActor] = LRSModelUtils.fromJSON[StatementActor](encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get.mbox.get.value === "mailto:john.doe@example.com")
+      }
+      it("should return an exception if the JSON string cannot be decoded into the specified type") {
+        val encoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
+        val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
+        assert(decoded.isFailure)
+        val caught = intercept[RuntimeException] {
+          decoded.get
+        }
+        println(caught)
       }
     }
   }
