@@ -34,7 +34,7 @@ case class MBox(value: String) extends StatementValidation {
     parsed match {
       case Failure(_) => Left("An Agent mbox identifier must be a valid mailto IRI")
       case Success(value) =>
-        if (value.scheme != "mailto") {
+        if (value.scheme.toLowerCase() != "mailto") {
           Left("An Agent mbox identifier must use the mailto schema")
         } else {
           Right(true)
