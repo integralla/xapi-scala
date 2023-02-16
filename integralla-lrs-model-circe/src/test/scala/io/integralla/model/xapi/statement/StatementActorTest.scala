@@ -153,6 +153,76 @@ class StatementActorTest extends UnitSpec {
         }
       }
 
+      describe("compare") {
+
+        val common: Agent = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        )
+
+        it("should return true when both instances are logically equivalent [mbox]") {
+          val left = common.copy()
+          val right = common.copy()
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent [mbox_sha1sum]") {
+          val left = common.copy(mbox = None, mbox_sha1sum = Some("b7d8faae0f425985a6e170ed452bf60fb7033758"))
+          val right = common.copy(mbox = None, mbox_sha1sum = Some("b7d8faae0f425985a6e170ed452bf60fb7033758"))
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent [openid]") {
+          val left = common.copy(mbox = None, openid = Some("https://lrs.integralla.io/openid/populus.tremuloides"))
+          val right = common.copy(mbox = None, openid = Some("https://lrs.integralla.io/openid/populus.tremuloides"))
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent [account]") {
+          val left =
+            common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
+          val right =
+            common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent, excepting object type definition") {
+          val left = common.copy()
+          val right = common.copy(objectType = None)
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent, excepting case sensitivity") {
+          val left = common.copy()
+          val right = common.copy(mbox = Some(MBox("MAILTO:POPULUS.TREMULOIDES@INTEGRALLA.IO")))
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent, excepting case sensitivity [account]") {
+          val left =
+            common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
+          val right =
+            common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "POPULUS.TREMULOIDES")))
+          assert(left.compare(right))
+        }
+
+        it("should return false when both instances are not logically equivalent [different value]") {
+          val left = common.copy()
+          val right = common.copy(name = Some("Quaking Aspen"))
+          assert(left.compare(right) === false)
+        }
+
+        it("should return false when both instances are not logically equivalent [no value]") {
+          val left = common.copy()
+          val right = common.copy(name = None)
+          assert(left.compare(right) === false)
+        }
+      }
+
     }
 
     describe("Group") {
@@ -514,6 +584,64 @@ class StatementActorTest extends UnitSpec {
           assert(group.isAnonymous === false)
         }
       }
+
+      describe("compare") {
+
+        val common: Group = new Group(
+          StatementObjectType.Group,
+          Some("Team A"),
+          Some(MBox("mailto:team.a@integralla.io")),
+          None,
+          None,
+          None,
+          Some(
+            List(
+              Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
+              Agent(None, None, Some(MBox("mailto:fraxinus.americana@integralla.io")), None, None, None)
+            )
+          )
+        )
+        it("should return true when both instances are logically equivalent [identified group]") {
+          val left = common.copy()
+          val right = common.copy()
+          assert(left.compare(right))
+        }
+
+        it("should return true when both instances are logically equivalent [anonymous group]") {
+          val left = common.copy(mbox = None)
+          val right = common.copy(mbox = None)
+          assert(left.compare(right))
+        }
+        it("should return false when both instances are not logically equivalent [different name]") {
+          val left = common.copy()
+          val right = common.copy(name = Some("Team Alpha"))
+          assert(left.compare(right) === false)
+        }
+        it("should return false when both instances are not logically equivalent [different member set]") {
+          val left = common.copy()
+          val right = common.copy(member =
+            Some(
+              List(
+                Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
+                Agent(None, None, Some(MBox("mailto:fraxinus.pennsylvanica@integralla.io")), None, None, None)
+              )
+            )
+          )
+          assert(left.compare(right) === false)
+        }
+        it("should return false when both instances are not logically equivalent [different member agent signature]") {
+          val left = common.copy()
+          val right = common.copy(member =
+            Some(
+              List(
+                Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
+                Agent(None, Some("Green Ash"), Some(MBox("mailto:fraxinus.americana@integralla.io")), None, None, None)
+              )
+            )
+          )
+          assert(left.compare(right) === false)
+        }
+      }
     }
 
     describe("[common]") {
@@ -775,6 +903,52 @@ class StatementActorTest extends UnitSpec {
           )
           assert(actor.actorType() === StatementObjectType.Group)
         }
+      }
+
+      describe("compare") {
+
+        val agent = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        )
+
+        val group = new Group(
+          StatementObjectType.Group,
+          Some("Team A"),
+          Some(MBox("mailto:team.a@integralla.io")),
+          None,
+          None,
+          None,
+          Some(
+            List(
+              Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
+              Agent(None, None, Some(MBox("mailto:fraxinus.americana@integralla.io")), None, None, None)
+            )
+          )
+        )
+
+        it("should compare actors that are agents") {
+          val left = agent.copy().asInstanceOf[StatementActor]
+          val right = agent.copy().asInstanceOf[StatementActor]
+          assert(left.compare(right))
+        }
+
+        it("should compare actors that are groups") {
+          val left = group.copy().asInstanceOf[StatementActor]
+          val right = group.copy().asInstanceOf[StatementActor]
+          assert(left.compare(right))
+        }
+
+        it("should compare an agent to a group") {
+          val left = agent.copy().asInstanceOf[StatementActor]
+          val right = group.copy().asInstanceOf[StatementActor]
+          assert(left.compare(right) === false)
+        }
+
       }
     }
 

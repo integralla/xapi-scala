@@ -3,18 +3,20 @@ package io.integralla.model.xapi.statement
 import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
+import io.integralla.model.utils.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, MBox}
 import io.lemonlabs.uri.AbsoluteUrl
 
+import java.util.Locale
 import scala.util.{Failure, Success}
 
 /** Actor
   * Used to define whom a statement is about
   * An actor can be either an agent or a group
   */
-sealed trait StatementActor extends StatementValidation {
+sealed trait StatementActor extends StatementValidation with Equivalence {
 
   /** @return The actor name */
   def name: Option[String]
@@ -74,6 +76,13 @@ sealed trait StatementActor extends StatementValidation {
     )
   }
 
+  override protected def signature(): String = {
+    actorType() match {
+      case StatementObjectType.Agent => this.asInstanceOf[Agent].signature()
+      case StatementObjectType.Group => this.asInstanceOf[Group].signature()
+    }
+  }
+
   private def checkOpenId: Either[String, Boolean] = {
     openid
       .map(openid => {
@@ -127,7 +136,7 @@ case class Agent(
   mbox_sha1sum: Option[String],
   openid: Option[String],
   account: Option[Account]
-) extends StatementActor {
+) extends StatementActor with Equivalence {
 
   override def actorType(): StatementObjectType = StatementObjectType.Agent
 
@@ -135,6 +144,20 @@ case class Agent(
     super.validate ++ Seq(
       validateInverseFunctionalIdentifier,
       validateObjectType
+    )
+  }
+
+  override protected[statement] def signature(): String = {
+    hash(
+      List(
+        this.objectType.getOrElse(StatementObjectType.Agent),
+        this.name.getOrElse(placeholder),
+        this.mbox.getOrElse(placeholder),
+        this.mbox_sha1sum.getOrElse(placeholder),
+        this.openid.getOrElse(placeholder),
+        this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
+      ).mkString(separator)
+        .toLowerCase(Locale.ROOT)
     )
   }
 
@@ -186,7 +209,7 @@ case class Group(
   openid: Option[String],
   account: Option[Account],
   member: Option[List[Agent]]
-) extends StatementActor {
+) extends StatementActor with Equivalence {
 
   override def actorType(): StatementObjectType = StatementObjectType.Group
 
@@ -199,6 +222,24 @@ case class Group(
     super.validate ++ Seq(
       validateInverseFunctionalIdentifier,
       validateObjectType
+    )
+  }
+
+  override protected[statement] def signature(): String = {
+    hash(
+      List(
+        this.objectType,
+        this.name.getOrElse(placeholder),
+        this.mbox.getOrElse(placeholder),
+        this.mbox_sha1sum.getOrElse(placeholder),
+        this.openid.getOrElse(placeholder),
+        this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
+        this.member
+          .map(agents => {
+            agents.map(_.signature()).sorted.mkString(separator)
+          }).getOrElse(placeholder)
+      ).mkString(separator)
+        .toLowerCase(Locale.ROOT)
     )
   }
 
