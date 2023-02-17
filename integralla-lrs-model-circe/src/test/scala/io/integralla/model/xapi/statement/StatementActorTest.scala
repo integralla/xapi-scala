@@ -206,7 +206,7 @@ class StatementActorTest extends UnitSpec {
           val left =
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
           val right =
-            common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "POPULUS.TREMULOIDES")))
+            common.copy(mbox = None, account = Some(Account("https://LRS.INTEGRALLA.IO/id/", "populus.tremuloides")))
           assert(left.isEquivalentTo(right))
         }
 

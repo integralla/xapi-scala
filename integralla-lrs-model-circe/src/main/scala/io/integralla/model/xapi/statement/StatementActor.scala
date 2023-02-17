@@ -148,17 +148,15 @@ case class Agent(
 
   override protected[statement] def signature(): String = {
     hash {
-      lower {
-        combine {
-          List(
-            this.objectType.getOrElse(StatementObjectType.Agent).toString,
-            this.name.getOrElse(placeholder),
-            this.mbox.getOrElse(placeholder).toString,
-            this.mbox_sha1sum.getOrElse(placeholder),
-            this.openid.getOrElse(placeholder),
-            this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
-          )
-        }
+      combine {
+        List(
+          this.objectType.getOrElse(StatementObjectType.Agent).toString,
+          this.name.getOrElse(placeholder),
+          lower(this.mbox.getOrElse(placeholder).toString),
+          lower(this.mbox_sha1sum.getOrElse(placeholder)),
+          this.openid.getOrElse(placeholder),
+          this.account.map(a => s"${lower(a.homePage)}/${a.name}").getOrElse(placeholder)
+        )
       }
     }
   }
@@ -229,21 +227,19 @@ case class Group(
 
   override protected[statement] def signature(): String = {
     hash {
-      lower {
-        combine {
-          List(
-            this.objectType.toString,
-            this.name.getOrElse(placeholder),
-            this.mbox.getOrElse(placeholder).toString,
-            this.mbox_sha1sum.getOrElse(placeholder),
-            this.openid.getOrElse(placeholder),
-            this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
-            this.member
-              .map(agents => {
-                agents.map(_.signature()).sorted.mkString(separator)
-              }).getOrElse(placeholder)
-          )
-        }
+      combine {
+        List(
+          this.objectType.toString,
+          this.name.getOrElse(placeholder),
+          lower(this.mbox.getOrElse(placeholder).toString),
+          lower(this.mbox_sha1sum.getOrElse(placeholder)),
+          this.openid.getOrElse(placeholder),
+          this.account.map(a => s"${lower(a.homePage)}/${a.name}").getOrElse(placeholder),
+          this.member
+            .map(agents => {
+              agents.map(_.signature()).sorted.mkString(separator)
+            }).getOrElse(placeholder)
+        )
       }
     }
   }
