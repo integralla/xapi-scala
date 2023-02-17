@@ -85,6 +85,30 @@ class ActivityTest extends UnitSpec {
         }
       }
     }
+
+    describe("[equivalence]") {
+      val activity: Activity = Activity(
+        Some(StatementObjectType.Activity),
+        IRI("https://example.com/xapi/activity/simplestatement"),
+        Some(sampleActivityDefinition)
+      )
+
+      it("should return true if the identifiers of both activities match") {
+        val left = activity.copy()
+        val right = activity.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if the identifiers of both activities match (other properties do not)") {
+        val left = activity.copy()
+        val right = activity.copy(objectType = None, definition = None)
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if the identifiers of the activities don't match") {
+        val left = activity.copy()
+        val right = activity.copy(id = IRI("https://example.com/xapi/activity/other"))
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
   }
 
 }
