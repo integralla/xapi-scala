@@ -39,7 +39,7 @@ case class Account(
     *
     * @return A string identifier
     */
-  override protected def signature(): String = {
+  override protected[statement] def signature(): String = {
     IRI(s"$homePage#$name").signature()
   }
 }
