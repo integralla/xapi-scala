@@ -1,6 +1,7 @@
 package io.integralla.model.utils
 
 import java.security.MessageDigest
+import java.util.Locale
 
 /** Provides methods for comparing one instance of an object that implements this trait to another */
 trait Equivalence {
@@ -22,6 +23,22 @@ trait Equivalence {
       .map("%02x".format(_)).mkString
   }
 
+  /** Transforms a string to lower case
+    * @param str The string to transform
+    * @return The string transformed to lower case
+    */
+  protected def lower(str: String): String = {
+    str.toLowerCase(Locale.ROOT)
+  }
+
+  /** Combines a list of strings into a single string with a fixed separator
+    * @param strings List of strings to combine
+    * @return The combined string
+    */
+  protected def combine(strings: List[String]): String = {
+    strings.mkString(separator)
+  }
+
   /** Generates a signature for what the object logically represents
     * @return A string identifier
     */
@@ -32,7 +49,7 @@ trait Equivalence {
     * @tparam A The type of the instance to be compared
     * @return True if logically equivalent, else false
     */
-  def compare[A <: Equivalence](instance: A): Boolean = {
+  def isEquivalentTo[A <: Equivalence](instance: A): Boolean = {
     this.signature() == instance.signature()
   }
 

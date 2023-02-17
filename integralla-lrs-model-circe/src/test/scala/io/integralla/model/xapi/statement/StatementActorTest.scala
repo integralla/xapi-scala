@@ -153,7 +153,7 @@ class StatementActorTest extends UnitSpec {
         }
       }
 
-      describe("compare") {
+      describe("isEquivalentTo") {
 
         val common: Agent = Agent(
           Some(StatementObjectType.Agent),
@@ -167,19 +167,19 @@ class StatementActorTest extends UnitSpec {
         it("should return true when both instances are logically equivalent [mbox]") {
           val left = common.copy()
           val right = common.copy()
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent [mbox_sha1sum]") {
           val left = common.copy(mbox = None, mbox_sha1sum = Some("b7d8faae0f425985a6e170ed452bf60fb7033758"))
           val right = common.copy(mbox = None, mbox_sha1sum = Some("b7d8faae0f425985a6e170ed452bf60fb7033758"))
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent [openid]") {
           val left = common.copy(mbox = None, openid = Some("https://lrs.integralla.io/openid/populus.tremuloides"))
           val right = common.copy(mbox = None, openid = Some("https://lrs.integralla.io/openid/populus.tremuloides"))
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent [account]") {
@@ -187,19 +187,19 @@ class StatementActorTest extends UnitSpec {
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
           val right =
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent, excepting object type definition") {
           val left = common.copy()
           val right = common.copy(objectType = None)
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent, excepting case sensitivity") {
           val left = common.copy()
           val right = common.copy(mbox = Some(MBox("MAILTO:POPULUS.TREMULOIDES@INTEGRALLA.IO")))
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent, excepting case sensitivity [account]") {
@@ -207,19 +207,19 @@ class StatementActorTest extends UnitSpec {
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
           val right =
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "POPULUS.TREMULOIDES")))
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return false when both instances are not logically equivalent [different value]") {
           val left = common.copy()
           val right = common.copy(name = Some("Quaking Aspen"))
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
 
         it("should return false when both instances are not logically equivalent [no value]") {
           val left = common.copy()
           val right = common.copy(name = None)
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
       }
 
@@ -585,7 +585,7 @@ class StatementActorTest extends UnitSpec {
         }
       }
 
-      describe("compare") {
+      describe("isEquivalentTo") {
 
         val common: Group = new Group(
           StatementObjectType.Group,
@@ -604,18 +604,18 @@ class StatementActorTest extends UnitSpec {
         it("should return true when both instances are logically equivalent [identified group]") {
           val left = common.copy()
           val right = common.copy()
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return true when both instances are logically equivalent [anonymous group]") {
           val left = common.copy(mbox = None)
           val right = common.copy(mbox = None)
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
         it("should return false when both instances are not logically equivalent [different name]") {
           val left = common.copy()
           val right = common.copy(name = Some("Team Alpha"))
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
         it("should return false when both instances are not logically equivalent [different member set]") {
           val left = common.copy()
@@ -627,7 +627,7 @@ class StatementActorTest extends UnitSpec {
               )
             )
           )
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
         it("should return false when both instances are not logically equivalent [different member agent signature]") {
           val left = common.copy()
@@ -639,7 +639,7 @@ class StatementActorTest extends UnitSpec {
               )
             )
           )
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
       }
     }
@@ -905,7 +905,7 @@ class StatementActorTest extends UnitSpec {
         }
       }
 
-      describe("compare") {
+      describe("isEquivalentTo") {
 
         val agent = Agent(
           Some(StatementObjectType.Agent),
@@ -931,22 +931,22 @@ class StatementActorTest extends UnitSpec {
           )
         )
 
-        it("should compare actors that are agents") {
+        it("should test for equivalence between actors that are agents") {
           val left = agent.copy().asInstanceOf[StatementActor]
           val right = agent.copy().asInstanceOf[StatementActor]
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
-        it("should compare actors that are groups") {
+        it("should test for equivalence between  actors that are groups") {
           val left = group.copy().asInstanceOf[StatementActor]
           val right = group.copy().asInstanceOf[StatementActor]
-          assert(left.compare(right))
+          assert(left.isEquivalentTo(right))
         }
 
-        it("should compare an agent to a group") {
+        it("should test for equivalence between an agent to a group") {
           val left = agent.copy().asInstanceOf[StatementActor]
           val right = group.copy().asInstanceOf[StatementActor]
-          assert(left.compare(right) === false)
+          assert(left.isEquivalentTo(right) === false)
         }
 
       }

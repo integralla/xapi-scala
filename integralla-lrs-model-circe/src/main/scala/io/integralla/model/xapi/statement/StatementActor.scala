@@ -9,7 +9,6 @@ import io.integralla.model.xapi.statement.exceptions.StatementValidationExceptio
 import io.integralla.model.xapi.statement.identifiers.{Account, MBox}
 import io.lemonlabs.uri.AbsoluteUrl
 
-import java.util.Locale
 import scala.util.{Failure, Success}
 
 /** Actor
@@ -148,17 +147,20 @@ case class Agent(
   }
 
   override protected[statement] def signature(): String = {
-    hash(
-      List(
-        this.objectType.getOrElse(StatementObjectType.Agent),
-        this.name.getOrElse(placeholder),
-        this.mbox.getOrElse(placeholder),
-        this.mbox_sha1sum.getOrElse(placeholder),
-        this.openid.getOrElse(placeholder),
-        this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
-      ).mkString(separator)
-        .toLowerCase(Locale.ROOT)
-    )
+    hash {
+      lower {
+        combine {
+          List(
+            this.objectType.getOrElse(StatementObjectType.Agent).toString,
+            this.name.getOrElse(placeholder),
+            this.mbox.getOrElse(placeholder).toString,
+            this.mbox_sha1sum.getOrElse(placeholder),
+            this.openid.getOrElse(placeholder),
+            this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
+          )
+        }
+      }
+    }
   }
 
   private def validateInverseFunctionalIdentifier: Either[String, Boolean] = {
@@ -226,21 +228,24 @@ case class Group(
   }
 
   override protected[statement] def signature(): String = {
-    hash(
-      List(
-        this.objectType,
-        this.name.getOrElse(placeholder),
-        this.mbox.getOrElse(placeholder),
-        this.mbox_sha1sum.getOrElse(placeholder),
-        this.openid.getOrElse(placeholder),
-        this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
-        this.member
-          .map(agents => {
-            agents.map(_.signature()).sorted.mkString(separator)
-          }).getOrElse(placeholder)
-      ).mkString(separator)
-        .toLowerCase(Locale.ROOT)
-    )
+    hash {
+      lower {
+        combine {
+          List(
+            this.objectType.toString,
+            this.name.getOrElse(placeholder),
+            this.mbox.getOrElse(placeholder).toString,
+            this.mbox_sha1sum.getOrElse(placeholder),
+            this.openid.getOrElse(placeholder),
+            this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
+            this.member
+              .map(agents => {
+                agents.map(_.signature()).sorted.mkString(separator)
+              }).getOrElse(placeholder)
+          )
+        }
+      }
+    }
   }
 
   private def validateInverseFunctionalIdentifier: Either[String, Boolean] = {
