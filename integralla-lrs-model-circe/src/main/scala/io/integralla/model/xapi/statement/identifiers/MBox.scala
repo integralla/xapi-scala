@@ -49,16 +49,18 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
     *
     * @return A string identifier
     */
-  override protected def signature(): String = {
-    UrlWithoutAuthority
-      .parseOption(value).map(url => {
-        UrlWithoutAuthority(
-          scheme = lower(url.scheme),
-          path = UrlPath(url.path.parts.map(lower)),
-          query = url.query,
-          fragment = url.fragment
-        ).toString()
-      }).getOrElse(value)
+  override protected[statement] def signature(): String = {
+    hash {
+      UrlWithoutAuthority
+        .parseOption(value).map(url => {
+          UrlWithoutAuthority(
+            scheme = lower(url.scheme),
+            path = UrlPath(url.path.parts.map(lower)),
+            query = url.query,
+            fragment = url.fragment
+          ).toString()
+        }).getOrElse(value)
+    }
   }
 }
 
