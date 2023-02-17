@@ -1,17 +1,16 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
-import io.integralla.model.xapi.statement.StatementValidation
-import io.lemonlabs.uri.Uri
+import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
+import io.lemonlabs.uri.{QueryString, Uri, Url}
 
-import java.security.MessageDigest
 import scala.util.{Failure, Success, Try}
 
 /** An International Resource Identifier (IRI)
   *
   * @param value An IRI string
   */
-case class IRI(value: String) extends StatementValidation {
+case class IRI(value: String) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateIRI
@@ -31,11 +30,22 @@ case class IRI(value: String) extends StatementValidation {
     }
   }
 
-  def toSHA1: String = {
-    MessageDigest
-      .getInstance("SHA-1")
-      .digest(value.toLowerCase().getBytes("UTF-8"))
-      .map("%02x".format(_)).mkString
+  override protected[statement] def signature(): String = {
+    hash {
+      Url
+        .parseOption(value).map(url => {
+        Url(
+          scheme = url.schemeOption.map(lower).orNull,
+          user = url.user.orNull,
+          password = url.password.orNull,
+          host = url.hostOption.map(host => lower(host.value)).orNull,
+          port = url.port.getOrElse(-1),
+          path = url.path.toString(),
+          query = QueryString.apply(url.query.params.sorted),
+          fragment = url.fragment.orNull
+        ).toString()
+      }).getOrElse(value)
+    }
   }
 }
 

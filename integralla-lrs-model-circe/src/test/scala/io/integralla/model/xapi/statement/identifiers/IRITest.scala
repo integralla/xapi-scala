@@ -67,4 +67,66 @@ class IRITest extends UnitSpec {
     }
   }
 
+  describe("[equivalence]") {
+    it("should return true if both IRIs match") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match except for the schema case") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("HTTPS://lrs.integralla.io/path/resource?a=1&b=2")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match except for the host case") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("https://LRS.INTEGRALLA.IO/path/resource?a=1&b=2")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match except for ordering of query string parameters") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("https://lrs.integralla.io/path/resource?b=2&a=1")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match except for percent encoding") {
+      val left = IRI("https://example.org/~user")
+      val right = IRI("https://example.org/%7euser")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match except for percent encoding (case)") {
+      val left = IRI("https://example.org/~user")
+      val right = IRI("https://example.org/%7Euser")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if both IRIs match with international characters") {
+      val left = IRI("https://example.com/فعل/خواندن")
+      val right = IRI("https://example.com/فعل/خواندن")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return false if both IRIs do not match (domain)") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("https://lrs.integralla.com/path/resource?a=1&b=2")
+      assert(left.isEquivalentTo(right) === false)
+    }
+    it("should return false if both IRIs do not match (path case)") {
+      val left = IRI("https://lrs.integralla.io/path/resource?a=1&b=2")
+      val right = IRI("https://lrs.integralla.io/PATH/resource?a=1&b=2")
+      assert(left.isEquivalentTo(right) === false)
+    }
+    it("should return true if two URNs are the same") {
+      val left = IRI("example:verb:visiterò")
+      val right = IRI("example:verb:visiterò")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return true if two URNs are the same except for schema case") {
+      val left = IRI("example:verb:visiterò")
+      val right = IRI("EXAMPLE:verb:visiterò")
+      assert(left.isEquivalentTo(right))
+    }
+    it("should return false if two URNs are not the same") {
+      val left = IRI("example:verb:visiterò")
+      val right = IRI("example:verb:visited")
+      assert(left.isEquivalentTo(right) === false)
+    }
+  }
 }
