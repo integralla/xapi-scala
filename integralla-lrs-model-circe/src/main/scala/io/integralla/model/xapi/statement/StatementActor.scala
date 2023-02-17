@@ -3,7 +3,6 @@ package io.integralla.model.xapi.statement
 import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
-import io.integralla.model.utils.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, MBox}

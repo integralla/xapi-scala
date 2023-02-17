@@ -1,4 +1,4 @@
-package io.integralla.model.utils
+package io.integralla.model.xapi.statement
 
 import java.security.MessageDigest
 import java.util.Locale
