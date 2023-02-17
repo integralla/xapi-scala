@@ -77,6 +77,34 @@ class AccountTest extends UnitSpec {
       }
     }
 
+    describe("compare") {
+      it("should return true if both accounts match") {
+        val left = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        val right = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both accounts match except for the home page schema case") {
+        val left = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        val right = Account(homePage = "HTTPS://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both accounts match except for the home page host case") {
+        val left = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        val right = Account(homePage = "https://LRS.INTEGRALLA.IO/accounts/", name = "populus.tremuloides")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if the accounts don't match (homepage)") {
+        val left = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        val right = Account(homePage = "https://lrs.integralla.com/accounts/", name = "populus.tremuloides")
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the accounts don't match (name case)") {
+        val left = Account(homePage = "https://lrs.integralla.io/accounts/", name = "populus.tremuloides")
+        val right = Account(homePage = "https://lrs.integralla.io/accounts/", name = "POPULUS.TREMULOIDES")
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
+
   }
 
 }

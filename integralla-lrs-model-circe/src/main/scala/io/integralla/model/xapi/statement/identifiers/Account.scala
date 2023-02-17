@@ -3,7 +3,7 @@ package io.integralla.model.xapi.statement.identifiers
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.StatementValidation
+import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success, Try}
@@ -16,7 +16,7 @@ import scala.util.{Failure, Success, Try}
 case class Account(
   homePage: String,
   name: String
-) extends StatementValidation with LazyLogging {
+) extends StatementValidation with Equivalence with LazyLogging {
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
@@ -32,6 +32,16 @@ case class Account(
     }
   }
 
+  /** Generates a signature for what the object logically represents
+    *
+    * To generate the signature, the account name is appended to the
+    * homepage as a URL fragment and the combined value handled as an IRI
+    *
+    * @return A string identifier
+    */
+  override protected def signature(): String = {
+    IRI(s"$homePage#$name").signature()
+  }
 }
 
 object Account {
