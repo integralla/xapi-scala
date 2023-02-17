@@ -155,7 +155,7 @@ case class Agent(
           lower(this.mbox.getOrElse(placeholder).toString),
           lower(this.mbox_sha1sum.getOrElse(placeholder)),
           this.openid.getOrElse(placeholder),
-          this.account.map(a => s"${lower(a.homePage)}/${a.name}").getOrElse(placeholder)
+          this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
         )
       }
     }
@@ -234,7 +234,7 @@ case class Group(
           lower(this.mbox.getOrElse(placeholder).toString),
           lower(this.mbox_sha1sum.getOrElse(placeholder)),
           this.openid.getOrElse(placeholder),
-          this.account.map(a => s"${lower(a.homePage)}/${a.name}").getOrElse(placeholder),
+          this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
           this.member
             .map(agents => {
               agents.map(_.signature()).sorted.mkString(separator)
