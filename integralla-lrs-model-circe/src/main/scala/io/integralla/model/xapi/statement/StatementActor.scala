@@ -5,7 +5,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
-import io.integralla.model.xapi.statement.identifiers.{Account, MBox}
+import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success}
@@ -145,16 +145,27 @@ case class Agent(
     )
   }
 
+  /** Generates a signature for what the object logically represents
+    *
+    * For an agent, the following process is applied to generate the signature:
+    *  - The `objectType` is set to Agent if not defined
+    *  - If `name` is defined, use as is
+    *  - If `mbox` is defined, use signature
+    *  - If `mbox_sha1sum` is defined, use lower case value
+    *  - If `openid` is defined, treat as an IRI and use signature
+    *  - If `account` is defined, use signature
+    *  @return A string identifier
+    */
   override protected[statement] def signature(): String = {
     hash {
       combine {
         List(
           this.objectType.getOrElse(StatementObjectType.Agent).toString,
           this.name.getOrElse(placeholder),
-          lower(this.mbox.getOrElse(placeholder).toString),
+          this.mbox.map(_.signature()).getOrElse(placeholder),
           lower(this.mbox_sha1sum.getOrElse(placeholder)),
-          this.openid.getOrElse(placeholder),
-          this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder)
+          this.openid.map(url => IRI(url).signature()).getOrElse(placeholder),
+          this.account.map(_.signature()).getOrElse(placeholder)
         )
       }
     }
@@ -224,16 +235,29 @@ case class Group(
     )
   }
 
+  /** Generates a signature for what the object logically represents
+    *
+    * For an agent, the following process is applied to generate the signature:
+    *  - If `name` is defined, use as is
+    *  - If `mbox` is defined, use signature
+    *  - If `mbox_sha1sum` is defined, use lower case value
+    *  - If `openid` is defined, treat as an IRI and use signature
+    *  - If `account` is defined, use signature
+    *  - If `member` is defined, generate a string composed of the sorted
+    *  signatures from each member agent
+    *
+    * @return A string identifier
+    */
   override protected[statement] def signature(): String = {
     hash {
       combine {
         List(
           this.objectType.toString,
           this.name.getOrElse(placeholder),
-          lower(this.mbox.getOrElse(placeholder).toString),
+          this.mbox.map(_.signature()).getOrElse(placeholder),
           lower(this.mbox_sha1sum.getOrElse(placeholder)),
-          this.openid.getOrElse(placeholder),
-          this.account.map(a => s"${a.homePage}/${a.name}").getOrElse(placeholder),
+          this.openid.map(url => IRI(url).signature()).getOrElse(placeholder),
+          this.account.map(_.signature()).getOrElse(placeholder),
           this.member
             .map(agents => {
               agents.map(_.signature()).sorted.mkString(separator)

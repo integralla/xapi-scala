@@ -202,12 +202,14 @@ class StatementActorTest extends UnitSpec {
           assert(left.isEquivalentTo(right))
         }
 
-        it("should return false when both instances are not logically equivalent [IRI case sensitivity]") {
+        it(
+          "should return true when both instances are logically equivalent, excepting case sensitivity [IRI case sensitivity]"
+        ) {
           val left =
             common.copy(mbox = None, account = Some(Account("https://lrs.integralla.io/id/", "populus.tremuloides")))
           val right =
             common.copy(mbox = None, account = Some(Account("https://LRS.INTEGRALLA.IO/id/", "populus.tremuloides")))
-          assert(left.isEquivalentTo(right) === false)
+          assert(left.isEquivalentTo(right))
         }
 
         it("should return false when both instances are not logically equivalent [different value]") {
