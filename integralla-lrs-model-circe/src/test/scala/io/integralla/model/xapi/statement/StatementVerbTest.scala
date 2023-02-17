@@ -67,6 +67,28 @@ class StatementVerbTest extends UnitSpec {
         assert(exception.getMessage.contains("An IRI must be a valid URI, with a schema"))
       }
     }
+    describe("[equivalence]") {
+      val verb: StatementVerb = StatementVerb(
+        IRI("http://example.com/visited"),
+        Some(Map("en-US" -> "will visit", "it-IT" -> "visiterò"))
+      )
+
+      it("should return true if the identifiers of two verbs match") {
+        val left = verb.copy()
+        val right = verb.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if the identifiers of two verbs match when the language map does not") {
+        val left = verb.copy()
+        val right = verb.copy(display = None)
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if the identifiers of two verbs do not match") {
+        val left = verb.copy()
+        val right = verb.copy(id = IRI("http://example.com/visiterò"))
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
   }
 
 }

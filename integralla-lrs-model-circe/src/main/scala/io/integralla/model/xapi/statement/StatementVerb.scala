@@ -9,7 +9,16 @@ import io.integralla.model.xapi.statement.identifiers.IRI
   * @param id      An IRI that corresponds to a Verb definition
   * @param display A language map where the key is a RFC 5646 Language Tag, and the value is a string in the language specified in the tag
   */
-case class StatementVerb(id: IRI, display: Option[LanguageMap])
+case class StatementVerb(id: IRI, display: Option[LanguageMap]) extends Equivalence {
+
+  /** Generates a signature for what the object logically represents
+    * For a statement verb, only the verb identifier is used
+    *  @return A string identifier
+    */
+  override protected def signature(): String = {
+    id.signature()
+  }
+}
 
 object StatementVerb {
   implicit val decoder: Decoder[StatementVerb] = deriveDecoder[StatementVerb]
