@@ -1,8 +1,8 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.StatementValidation
-import io.lemonlabs.uri.UrlWithoutAuthority
+import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
+import io.lemonlabs.uri.{UrlPath, UrlWithoutAuthority}
 
 import java.security.MessageDigest
 import scala.util.{Failure, Success, Try}
@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
   *
   * @param value A mailto IRI
   */
-case class MBox(value: String) extends StatementValidation {
+case class MBox(value: String) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       checkMbox
@@ -40,6 +40,25 @@ case class MBox(value: String) extends StatementValidation {
           Right(true)
         }
     }
+  }
+
+  /** Generates a signature for what the object logically represents
+    *
+    * For the purposes of generating the signature, we generate a version of
+    * the MBox IRI with the schema and path parts all lower cased
+    *
+    * @return A string identifier
+    */
+  override protected def signature(): String = {
+    UrlWithoutAuthority
+      .parseOption(value).map(url => {
+        UrlWithoutAuthority(
+          scheme = lower(url.scheme),
+          path = UrlPath(url.path.parts.map(lower)),
+          query = url.query,
+          fragment = url.fragment
+        ).toString()
+      }).getOrElse(value)
   }
 }
 

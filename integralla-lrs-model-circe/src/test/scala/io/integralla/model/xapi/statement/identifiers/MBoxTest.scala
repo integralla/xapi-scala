@@ -62,5 +62,27 @@ class MBoxTest extends UnitSpec {
       }
     }
 
+    describe("compare") {
+      it("should return true if both mbox values match") {
+        val left = MBox("mailto:populus.tremuloides@integralla.io")
+        val right = MBox("mailto:populus.tremuloides@integralla.io")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both mbox values match except the schema case") {
+        val left = MBox("mailto:populus.tremuloides@integralla.io")
+        val right = MBox("MAILTO:populus.tremuloides@integralla.io")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both mbox values match except the email case") {
+        val left = MBox("mailto:populus.tremuloides@integralla.io")
+        val right = MBox("mailto:POPULUS.TREMULOIDES@INTEGRALLA.IO")
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if the mbox values don't match") {
+        val left = MBox("mailto:populus.tremuloides@integralla.io")
+        val right = MBox("mailto:populus.tremuloides@integralla.com")
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
   }
 }
