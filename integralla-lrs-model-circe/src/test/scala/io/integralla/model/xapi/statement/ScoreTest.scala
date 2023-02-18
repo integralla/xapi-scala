@@ -105,5 +105,26 @@ class ScoreTest extends UnitSpec {
       }
     }
 
+    describe("[equivalence]") {
+      val score: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
+      it("should return true if both scores are the same") {
+        val left = score.copy()
+        val right = score.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both scores are the same excepting trailing zeros") {
+        val left = score.copy()
+        val right = score.copy(
+          scaled = Some(0.5000000)
+        )
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if the scores are not the same") {
+        val left = score.copy()
+        val right = score.copy(min = None, max = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
+
   }
 }

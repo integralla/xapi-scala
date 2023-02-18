@@ -15,7 +15,7 @@ case class Score(
   raw: Option[Double],
   min: Option[Double],
   max: Option[Double]
-) extends StatementValidation {
+) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateScaled,
@@ -76,6 +76,28 @@ case class Score(
             }
           }).getOrElse(Right(true))
       }).getOrElse(Right(true))
+  }
+
+  /** Generates a signature for what the object logically represents
+    *
+    * The signature is composed of each property, cast as a string when
+    * defined, or replaced with the default placeholder value when undefined
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+
+    def format(double: Double): String = "%1.16f".format(double)
+    hash {
+      combine {
+        List(
+          scaled.map(format).getOrElse(placeholder),
+          raw.map(format).getOrElse(placeholder),
+          min.map(format).getOrElse(placeholder),
+          max.map(format).getOrElse(placeholder)
+        )
+      }
+    }
   }
 }
 
