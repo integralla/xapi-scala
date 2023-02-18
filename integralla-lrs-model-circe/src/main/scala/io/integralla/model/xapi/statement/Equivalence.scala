@@ -42,7 +42,7 @@ trait Equivalence {
   /** Generates a signature for what the object logically represents
     * @return A string identifier
     */
-  protected def signature(): String
+  protected[statement] def signature(): String
 
   /** Compares this instance to another for logical equivalency
     * @param instance The instance to which this will be compared
