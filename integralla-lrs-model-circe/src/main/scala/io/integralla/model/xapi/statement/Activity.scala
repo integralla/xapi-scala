@@ -23,7 +23,7 @@ case class Activity(objectType: Option[StatementObjectType], id: IRI, definition
     *
     * @return A string identifier
     */
-  override protected def signature(): String = {
+  override protected[statement] def signature(): String = {
     id.signature()
   }
 }

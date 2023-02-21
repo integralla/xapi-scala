@@ -74,7 +74,7 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
     )
   }
 
-  override protected def signature(): String = {
+  override protected[statement] def signature(): String = {
     actorType() match {
       case StatementObjectType.Agent => this.asInstanceOf[Agent].signature()
       case StatementObjectType.Group => this.asInstanceOf[Group].signature()

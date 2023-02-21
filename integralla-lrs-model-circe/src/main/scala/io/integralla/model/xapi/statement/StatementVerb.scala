@@ -15,7 +15,7 @@ case class StatementVerb(id: IRI, display: Option[LanguageMap]) extends Equivale
     * For a statement verb, only the verb identifier is used
     *  @return A string identifier
     */
-  override protected def signature(): String = {
+  override protected[statement] def signature(): String = {
     id.signature()
   }
 }
