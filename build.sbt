@@ -25,7 +25,8 @@ lazy val circe = (project in file("integralla-lrs-model-circe"))
       dependencies.circeCore,
       dependencies.circeGeneric,
       dependencies.circeParser,
-      dependencies.scalaUri
+      dependencies.scalaUri,
+      dependencies.time4j
     ),
     crossScalaVersions := supportedScalaVersions,
     scalacOptions ++= {
@@ -61,6 +62,7 @@ lazy val versions = new {
   val scalaLogging = "3.9.5"
   val scalatest = "3.2.12"
   val scalaUri = "4.0.3"
+  val time4J = "5.9.2"
 
   val integrallaTest = "0.1.0-SNAPSHOT"
 }
@@ -72,6 +74,7 @@ lazy val dependencies = new {
   val logbackClassic = "ch.qos.logback" % "logback-classic" % versions.logback
   val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % versions.scalaLogging
   val scalaUri = "io.lemonlabs" %% "scala-uri" % versions.scalaUri
+  val time4j = "net.time4j" % "time4j-base" % versions.time4J
 
   val integrallaTest = "io.integralla" %% "integralla-test" % versions.integrallaTest
 }

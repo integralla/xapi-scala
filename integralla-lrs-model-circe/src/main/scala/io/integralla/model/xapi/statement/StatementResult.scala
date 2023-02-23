@@ -1,10 +1,10 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import net.time4j.Duration
 
-import java.time.Duration
-import java.time.format.DateTimeParseException
+import java.text.ParseException
 
 /** A Result represents a measured outcome related to the statement in which it is included
   *
@@ -33,12 +33,12 @@ case class StatementResult(
     duration
       .map(duration => {
         try {
-          val _ = Duration.parse(duration)
+          val _ = Duration.parsePeriod(duration)
           Right(true)
         } catch {
-          case e: DateTimeParseException =>
+          case e: ParseException =>
             Left(
-              s"The supplied duration could not be parsed: duration(${e.getParsedString}), errorIndex(${e.getErrorIndex})"
+              s"The supplied duration could not be parsed: duration($duration), errorIndex(${e.getErrorOffset})"
             )
           case _: Throwable => Left(s"An error occurred parsing the duration")
         }

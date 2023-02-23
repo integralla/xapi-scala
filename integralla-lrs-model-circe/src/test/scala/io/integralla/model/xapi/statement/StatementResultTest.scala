@@ -25,13 +25,35 @@ class StatementResultTest extends UnitSpec {
 
   describe("StatementResult") {
     describe("[validation]") {
-      it("should not throw a statement validation error for a valid duration") {
+      it("should not throw a statement validation error for a valid duration [time]") {
         StatementResult(
           Some(sampleScore),
           Some(true),
           Some(true),
           Some("response"),
           Some("PT16559.14S"),
+          Some(sampleExtensions)
+        )
+      }
+
+      it("should not throw a statement validation error for a valid duration [period]") {
+        StatementResult(
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("P4W"),
+          Some(sampleExtensions)
+        )
+      }
+
+      it("should not throw a statement validation error for a valid duration [period + time]") {
+        StatementResult(
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("P3Y1M29DT4H35M59.14S"),
           Some(sampleExtensions)
         )
       }
