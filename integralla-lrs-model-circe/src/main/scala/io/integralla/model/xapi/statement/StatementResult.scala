@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import net.time4j.Duration
+import net.time4j.{ClockUnit, Duration}
 
 import java.text.ParseException
 
@@ -22,7 +22,7 @@ case class StatementResult(
   response: Option[String],
   duration: Option[String],
   extensions: Option[ExtensionMap]
-) extends StatementValidation {
+) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateDuration
@@ -43,6 +43,39 @@ case class StatementResult(
           case _: Throwable => Left(s"An error occurred parsing the duration")
         }
       }).getOrElse(Right(true))
+  }
+
+  /** Generates a signature for what the object logically represents
+    *
+    * Per the specification, when comparing durations, any precision
+    * beyond 0.01 second precision SHOULD* NOT be included in the
+    * comparison. To accommodate this requirement, we extract the
+    * nano-seconds from the duration and round it to the nearest
+    * ten-millionth
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+
+    def truncateDuration(duration: String): String = {
+      val d = Duration.parsePeriod(duration)
+      val nanos = d.getPartialAmount(ClockUnit.NANOS)
+      val excess = nanos - ((nanos / 10e6).floor * 10e6).toInt
+      d.plus(-excess, ClockUnit.NANOS).toString
+    }
+
+    hash {
+      combine {
+        List(
+          score.map(_.signature()).getOrElse(placeholder),
+          success.map(_.toString).getOrElse(placeholder),
+          completion.map(_.toString).getOrElse(placeholder),
+          response.getOrElse(placeholder),
+          duration.map(truncateDuration).getOrElse(placeholder),
+          extensions.map(_.signature()).getOrElse(placeholder)
+        )
+      }
+    }
   }
 }
 
