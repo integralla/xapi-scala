@@ -1,6 +1,7 @@
 package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
+import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.IRI
@@ -13,11 +14,13 @@ class ActivityDefinitionTest extends UnitSpec {
   val descriptionLanguageMap: LanguageMap = Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
   val interactionActivityType: IRI = IRI("http://adlnet.gov/expapi/activities/cmi.interaction")
   val moreInfo: IRI = IRI("https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#Appendix2C")
-  val extensions: Extensions = Map(
-    IRI("http://example.com/extenions/boolean") -> true.asJson,
-    IRI("http://example.com/extenions/double") -> 1.0.asJson,
-    IRI("http://example.com/extenions/string") -> "string".asJson,
-    IRI("http://example.com/extenions/other") -> """{"one": 1, "two": 2}""".asJson
+  val extensions: ExtensionMap = ExtensionMap(
+    Map(
+      IRI("http://example.com/extenions/boolean") -> true.asJson,
+      IRI("http://example.com/extenions/double") -> 1.0.asJson,
+      IRI("http://example.com/extenions/string") -> "string".asJson,
+      IRI("http://example.com/extenions/other") -> parser.parse("""{"one": 1, "two": 2}""").toOption.get
+    )
   )
 
   /* Non-Interaction Activity */
@@ -54,7 +57,7 @@ class ActivityDefinitionTest extends UnitSpec {
     Some(extensions)
   )
   val activityWithExtensionsEncoded: String =
-    """{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"},"extensions":{"http://example.com/extenions/boolean":true,"http://example.com/extenions/double":1.0,"http://example.com/extenions/string":"string","http://example.com/extenions/other":"{\"one\": 1, \"two\": 2}"}}"""
+    """{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"},"extensions":{"http://example.com/extenions/boolean":true,"http://example.com/extenions/double":1.0,"http://example.com/extenions/string":"string","http://example.com/extenions/other":{"one":1,"two":2}}}"""
 
   /* Choice Interaction Activity */
   val choiceCorrectResponsePattern: List[String] = List("golf[,]tetris")

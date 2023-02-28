@@ -1,15 +1,19 @@
 package io.integralla.model.xapi.statement
 
+import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
+import io.circe.parser._
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.IRI
 import io.integralla.testing.spec.UnitSpec
 
-class StatementResultTest extends UnitSpec {
+class StatementResultTest extends UnitSpec with StrictLogging {
 
   val sampleScore: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
-  val sampleExtensions: Extensions = Map(IRI("http://example.com/extenions/other") -> """{"one": 1, "two": 2}""".asJson)
+  val sampleExtensions: ExtensionMap = ExtensionMap(
+    Map(IRI("https://example.com/extenions/other") -> parse("""{"one": 1, "two": 2}""").toOption.get)
+  )
 
   val sampleResult: StatementResult = StatementResult(
     Some(sampleScore),
@@ -21,7 +25,7 @@ class StatementResultTest extends UnitSpec {
   )
 
   val sampleResultEncoded: String =
-    """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"response":"response","duration":"PT4H35M59.14S","extensions":{"http://example.com/extenions/other":"{\"one\": 1, \"two\": 2}"}}"""
+    """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"response":"response","duration":"PT4H35M59.14S","extensions":{"https://example.com/extenions/other":{"one":1,"two":2}}}"""
 
   describe("StatementResult") {
     describe("[validation]") {
@@ -79,7 +83,10 @@ class StatementResultTest extends UnitSpec {
 
     describe("[encoding]") {
       it("should successfully encode a result") {
+        logger.info(s"SAMPLE: $sampleResult")
         val actual: String = sampleResult.asJson.noSpaces
+        logger.info(s"Encoded: $actual")
+        logger.info(s"Expected: $sampleResultEncoded")
         assert(actual === sampleResultEncoded)
       }
     }
@@ -88,8 +95,10 @@ class StatementResultTest extends UnitSpec {
       it("should successfully decode a result") {
         val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](sampleResultEncoded)
         decoded match {
-          case Right(actual) => assert(actual === sampleResult)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
+          case Right(actual) =>
+            logger.info(s"Decoded: $actual")
+            assert(actual === sampleResult)
+          case Left(err) => throw new Error(s"Decoding failed: $err")
         }
       }
 
@@ -106,8 +115,10 @@ class StatementResultTest extends UnitSpec {
           None
         )
         decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
+          case Right(actual) =>
+            logger.info(s"Decoded: $actual")
+            assert(actual === expected)
+          case Left(err) => throw new Error(s"Decoding failed: $err")
         }
       }
     }

@@ -21,7 +21,7 @@ case class StatementResult(
   completion: Option[Boolean],
   response: Option[String],
   duration: Option[String],
-  extensions: Option[Extensions]
+  extensions: Option[ExtensionMap]
 ) extends StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(

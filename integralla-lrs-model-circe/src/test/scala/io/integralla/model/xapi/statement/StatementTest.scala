@@ -1,5 +1,6 @@
 package io.integralla.model.xapi.statement
 
+import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
@@ -11,7 +12,7 @@ import java.util.UUID
 import scala.io.Source
 import scala.util.Using
 
-class StatementTest extends UnitSpec {
+class StatementTest extends UnitSpec with StrictLogging {
 
   val basicStatement: Statement = Statement(
     Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
@@ -771,6 +772,8 @@ class StatementTest extends UnitSpec {
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         decoded match {
           case Right(actual) =>
+            logger.info(s"DECODED: $actual")
+            logger.info(s"RE-ENCODED: ${actual.asJson}")
             assert(actual.id === Some(UUID.fromString("6690e6c9-3ef0-4ed3-8b37-7f3964730bee")))
             actual.actor match {
               case group: Group => assert(group.member.isDefined)

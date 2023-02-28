@@ -47,7 +47,7 @@ case class ActivityDefinition(
   source: Option[List[InteractionComponent]],
   steps: Option[List[InteractionComponent]],
   target: Option[List[InteractionComponent]],
-  extensions: Option[Extensions]
+  extensions: Option[ExtensionMap]
 ) extends StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(

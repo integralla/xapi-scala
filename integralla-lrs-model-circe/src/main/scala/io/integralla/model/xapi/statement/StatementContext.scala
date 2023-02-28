@@ -26,7 +26,7 @@ case class StatementContext(
   platform: Option[String],
   language: Option[String],
   statement: Option[StatementRef],
-  extensions: Option[Extensions]
+  extensions: Option[ExtensionMap]
 )
 
 object StatementContext {

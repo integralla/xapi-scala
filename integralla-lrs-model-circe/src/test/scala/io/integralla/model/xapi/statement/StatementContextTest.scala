@@ -66,8 +66,10 @@ class StatementContextTest extends UnitSpec {
     StatementRef(StatementObjectType.StatementRef, UUID.fromString("6690e6c9-3ef0-4ed3-8b37-7f3964730bee"))
 
   val sampleExtensionValue: Json = Map("name" -> "Kilby", "id" -> "http://example.com/rooms/342").asJson
-  val sampleExtensions: Extensions = Map(
-    IRI("http://example.com/profiles/meetings/activitydefinitionextensions/room") -> sampleExtensionValue
+  val sampleExtensions: ExtensionMap = ExtensionMap(
+    Map(
+      IRI("http://example.com/profiles/meetings/activitydefinitionextensions/room") -> sampleExtensionValue
+    )
   )
 
   val sampleContext: StatementContext = StatementContext(
