@@ -1,8 +1,8 @@
 package io.integralla.model.xapi.statement
 
+import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax.EncoderOps
-import io.circe.{Decoder, Encoder, HCursor, Json}
 
 /** A map of the types of learning activity context that the statement is related to
   *
@@ -16,7 +16,29 @@ case class ContextActivities(
   grouping: Option[List[Activity]],
   category: Option[List[Activity]],
   other: Option[List[Activity]]
-)
+) extends Equivalence {
+
+  /** Generates a signature for what the object logically represents
+    *
+    * The signature for context activities is computed by extracting the activity signature for each activity,
+    * in each context classification, sorting them, and then concatenating the results together. The resulting
+    * strings generated for each classification are then concatenated themselves and hashed
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(
+          parent.map(activities => activities.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder),
+          grouping.map(activities => activities.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder),
+          category.map(activities => activities.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder),
+          other.map(activities => activities.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder)
+        )
+      }
+    }
+  }
+}
 
 object ContextActivities {
 
