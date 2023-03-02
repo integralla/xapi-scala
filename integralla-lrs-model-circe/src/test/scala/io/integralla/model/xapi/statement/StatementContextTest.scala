@@ -103,5 +103,20 @@ class StatementContextTest extends UnitSpec {
         }
       }
     }
+
+    describe("[equivalence]") {
+      describe("compare") {
+        it("should return true if both objects are equivalent") {
+          val left: StatementContext = sampleContext.copy()
+          val right: StatementContext = sampleContext.copy()
+          assert(left.isEquivalentTo(right))
+        }
+        it("should return false if both objects are not equivalent") {
+          val left: StatementContext = sampleContext.copy()
+          val right: StatementContext = sampleContext.copy(registration = Some(UUID.randomUUID()))
+          assert(left.isEquivalentTo(right) === false)
+        }
+      }
+    }
   }
 }

@@ -27,7 +27,30 @@ case class StatementContext(
   language: Option[String],
   statement: Option[StatementRef],
   extensions: Option[ExtensionMap]
-)
+) extends Equivalence {
+
+  /** Generates a signature for what the object logically represents
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(
+          registration.map(_.toString).getOrElse(placeholder),
+          instructor.map(_.signature()).getOrElse(placeholder),
+          team.map(_.signature()).getOrElse(placeholder),
+          contextActivities.map(_.signature()).getOrElse(placeholder),
+          revision.getOrElse(placeholder),
+          platform.getOrElse(placeholder),
+          language.getOrElse(placeholder),
+          statement.map(_.signature()).getOrElse(placeholder),
+          extensions.map(_.signature()).getOrElse(placeholder)
+        )
+      }
+    }
+  }
+}
 
 object StatementContext {
   implicit val decoder: Decoder[StatementContext] = deriveDecoder[StatementContext]
