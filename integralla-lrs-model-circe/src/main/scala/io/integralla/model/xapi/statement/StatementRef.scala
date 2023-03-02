@@ -11,7 +11,20 @@ import java.util.UUID
   * @param objectType A statement object type
   * @param id         The UUID of the referenced statement
   */
-case class StatementRef(objectType: StatementObjectType, id: UUID)
+case class StatementRef(objectType: StatementObjectType, id: UUID) extends Equivalence {
+
+  /** Generates a signature for what the object logically represents
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(objectType.toString, id.toString)
+      }
+    }
+  }
+}
 
 object StatementRef {
   implicit val decoder: Decoder[StatementRef] = deriveDecoder[StatementRef]
