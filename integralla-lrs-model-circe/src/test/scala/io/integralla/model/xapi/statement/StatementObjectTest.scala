@@ -220,5 +220,49 @@ class StatementObjectTest extends UnitSpec {
         }
       }
     }
+
+    describe("[equivalence]") {
+      it("should return true if both objects are equivalent activities") {
+        val left: StatementObject = StatementObject(sampleActivity.copy())
+        val right: StatementObject = StatementObject(sampleActivity.copy())
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both objects are equivalent agents") {
+        val left: StatementObject = StatementObject(sampleAgent.copy())
+        val right: StatementObject = StatementObject(sampleAgent.copy())
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both objects are equivalent groups") {
+        val left: StatementObject = StatementObject(sampleGroup.copy())
+        val right: StatementObject = StatementObject(sampleGroup.copy())
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both objects are equivalent statement references") {
+        val left: StatementObject = StatementObject(sampleStatementRef.copy())
+        val right: StatementObject = StatementObject(sampleStatementRef.copy())
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both objects are equivalent sub-statements") {
+        val left: StatementObject = StatementObject(sampleSubStatement.copy())
+        val right: StatementObject = StatementObject(sampleSubStatement.copy())
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return false if the objects are not equivalent") {
+        val left: StatementObject = StatementObject(sampleStatementRef.copy())
+        val right: StatementObject = StatementObject(sampleStatementRef.copy(id = UUID.randomUUID()))
+        assert(left.isEquivalentTo(right) === false)
+      }
+
+      it("should return false if the objects are of a different type") {
+        val left: StatementObject = StatementObject(sampleActivity.copy())
+        val right: StatementObject = StatementObject(sampleStatementRef.copy())
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
   }
 }

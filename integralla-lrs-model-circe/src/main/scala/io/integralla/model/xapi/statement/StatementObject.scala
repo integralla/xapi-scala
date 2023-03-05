@@ -14,7 +14,22 @@ import java.util.UUID
   *
   * @param value – An object of one of the five supported statement object types
   */
-case class StatementObject(value: AnyRef)
+case class StatementObject(value: AnyRef) extends Equivalence {
+
+  /** Generates a signature for what the object logically represents
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    value match {
+      case activity: Activity         => activity.signature()
+      case agent: Agent               => agent.signature()
+      case group: Group               => group.signature()
+      case statementRef: StatementRef => statementRef.signature()
+      case subStatement: SubStatement => subStatement.signature()
+    }
+  }
+}
 
 object StatementObject {
 
