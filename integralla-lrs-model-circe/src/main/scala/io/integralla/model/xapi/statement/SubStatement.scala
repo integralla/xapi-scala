@@ -26,7 +26,7 @@ case class SubStatement(
   context: Option[StatementContext],
   timestamp: Option[OffsetDateTime],
   attachments: Option[List[Attachment]]
-) extends StatementValidation {
+) extends StatementValidation with Equivalence {
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(validateObjectIsNotSubStatement)
@@ -37,6 +37,25 @@ case class SubStatement(
       Left("A sub-statement cannot contain a sub-statement of it's own")
     } else {
       Right(true)
+    }
+  }
+
+  /** Generates a signature for what the object logically represents
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(
+          objectType.toString,
+          actor.signature(),
+          verb.signature(),
+          `object`.signature(),
+          result.map(_.signature()).getOrElse(placeholder),
+          context.map(_.signature()).getOrElse(placeholder)
+        )
+      }
     }
   }
 }

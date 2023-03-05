@@ -231,5 +231,44 @@ class SubStatementTest extends UnitSpec {
         assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))
       }
     }
+
+    describe("[equivalence]") {
+      it("should return true if both sub-statements are equivalent (activity object)") {
+        val left: SubStatement = sampleActivitySubStatement.copy()
+        val right: SubStatement = sampleActivitySubStatement.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both sub-statements are equivalent (agent object)") {
+        val left: SubStatement = sampleAgentSubStatement.copy()
+        val right: SubStatement = sampleAgentSubStatement.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both sub-statements are equivalent (group object)") {
+        val left: SubStatement = sampleGroupSubStatement.copy()
+        val right: SubStatement = sampleGroupSubStatement.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both sub-statements are equivalent (statement ref object)") {
+        val left: SubStatement = sampleStatementRefSubStatement.copy()
+        val right: SubStatement = sampleStatementRefSubStatement.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return false if both sub-statements are not equivalent") {
+        val left: SubStatement = sampleActivitySubStatement.copy()
+        val right: SubStatement = sampleActivitySubStatement.copy(
+          verb = StatementVerb(IRI("http://example.com/observed"), Some(Map("en-US" -> "observed")))
+        )
+        assert(left.isEquivalentTo(right) === false)
+      }
+
+      it("should return false if both sub-statements have different object types") {
+        val left: SubStatement = sampleActivitySubStatement.copy()
+        val right: SubStatement = sampleAgentSubStatement.copy()
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
   }
 }
