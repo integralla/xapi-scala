@@ -3,8 +3,8 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / startYear := Some(2022)
 ThisBuild / versionScheme := Some("semver-spec")
 
-lazy val scala2_13 = "2.13.9"
-lazy val scala3 = "3.2.0"
+lazy val scala2_13 = "2.13.10"
+lazy val scala3 = "3.2.2"
 lazy val supportedScalaVersions = List(scala2_13, scala3)
 
 ThisBuild / scalaVersion := scala3
