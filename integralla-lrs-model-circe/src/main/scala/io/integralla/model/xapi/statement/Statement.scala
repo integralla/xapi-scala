@@ -32,7 +32,7 @@ case class Statement(
   authority: Option[StatementActor],
   version: Option[String],
   attachments: Option[List[Attachment]]
-) extends StatementValidation {
+) extends StatementValidation with Equivalence {
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
@@ -77,6 +77,23 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
+  /** Generates a signature for what the object logically represents
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(
+          actor.signature(),
+          verb.signature(),
+          `object`.signature(),
+          result.map(_.signature()).getOrElse(placeholder),
+          context.map(_.signature()).getOrElse(placeholder)
+        )
+      }
+    }
+  }
 }
 
 object Statement {

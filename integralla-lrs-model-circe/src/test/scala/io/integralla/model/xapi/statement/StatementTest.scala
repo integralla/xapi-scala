@@ -3,11 +3,12 @@ package io.integralla.model.xapi.statement
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
-import java.time.OffsetDateTime
+import java.time.{OffsetDateTime, ZoneId}
 import java.util.UUID
 import scala.io.Source
 import scala.util.Using
@@ -244,6 +245,14 @@ class StatementTest extends UnitSpec with StrictLogging {
     "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634",
     None
   )
+
+  def getStatementResource(path: String): String = {
+    Using.resource(Source.fromResource(path))(_.mkString)
+  }
+
+  def getStatementFromResource(path: String): Statement = {
+    LRSModelUtils.fromJSON[Statement](getStatementResource(path)).get
+  }
 
   describe("Statement") {
     describe("[encoding]") {
@@ -860,6 +869,129 @@ class StatementTest extends UnitSpec with StrictLogging {
           )
         )
       }
+    }
+
+    describe("[equivalence]") {
+      it("should return true if both statements are equivalent") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting id") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(id = Some(UUID.randomUUID()))
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting authority") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(authority =
+            Some(Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None))
+          )
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting stored") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(stored = Some(OffsetDateTime.now(ZoneId.of("UTC"))))
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting timestamp") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(timestamp = Some(OffsetDateTime.now(ZoneId.of("UTC"))))
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting version") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(version = Some("1.0.3"))
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent, excepting attachments") {
+        val left: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
+          .copy(attachments = None)
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return false if both statements are not equivalent") {
+        val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
+          .copy(actor =
+            Agent(
+              Some(StatementObjectType.Agent),
+              None,
+              Some(MBox("mailto:populus.tremuloides@integralla.io")),
+              None,
+              None,
+              None
+            )
+          )
+        assert(left.isEquivalentTo(right) === false)
+      }
+
+      it("should return true if both statements are equivalent (actor is agent)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-actor-is-agent.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-actor-is-agent.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (actor is group)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-actor-is-group.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-actor-is-group.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (object is agent)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-object-is-agent.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-object-is-agent.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (object is group)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-object-is-group.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-object-is-group.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (object is statement reference)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (object is sub-statement)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (with attachments)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (CMI5 example)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-cmi5-example.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-cmi5-example.json")
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true if both statements are equivalent (property showcase example)") {
+        val left: Statement = getStatementFromResource("data/sample-statement-property-showcase.json")
+        val right: Statement = getStatementFromResource("data/sample-statement-property-showcase.json")
+        assert(left.isEquivalentTo(right))
+      }
+
     }
   }
 }
