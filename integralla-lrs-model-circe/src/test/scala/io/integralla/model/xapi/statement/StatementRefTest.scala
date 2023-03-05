@@ -32,23 +32,21 @@ class StatementRefTest extends UnitSpec {
     }
 
     describe("[equivalence]") {
-      describe("compare") {
-        it("should return true if both objects are equivalent") {
-          val left: StatementRef = StatementRef(
-            StatementObjectType.StatementRef,
-            UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
-          )
-          val right: StatementRef = left.copy()
-          assert(left.isEquivalentTo(right))
-        }
-        it("should return false if both objects are not equivalent") {
-          val left: StatementRef = StatementRef(
-            StatementObjectType.StatementRef,
-            UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
-          )
-          val right: StatementRef = left.copy(id = UUID.randomUUID())
-          assert(left.isEquivalentTo(right) === false)
-        }
+      it("should return true if both objects are equivalent") {
+        val left: StatementRef = StatementRef(
+          StatementObjectType.StatementRef,
+          UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
+        )
+        val right: StatementRef = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return false if both objects are not equivalent") {
+        val left: StatementRef = StatementRef(
+          StatementObjectType.StatementRef,
+          UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
+        )
+        val right: StatementRef = left.copy(id = UUID.randomUUID())
+        assert(left.isEquivalentTo(right) === false)
       }
     }
   }

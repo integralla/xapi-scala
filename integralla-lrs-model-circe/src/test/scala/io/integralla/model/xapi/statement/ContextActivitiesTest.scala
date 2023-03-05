@@ -76,46 +76,44 @@ class ContextActivitiesTest extends UnitSpec {
     }
 
     describe("[equivalence]") {
-      describe("compare") {
-        it("should return true if both context activity objects are equivalent") {
-          val left: ContextActivities = sampleContextActivities.copy()
-          val right: ContextActivities = sampleContextActivities.copy()
-          assert(left.isEquivalentTo(right))
-        }
+      it("should return true if both context activity objects are equivalent") {
+        val left: ContextActivities = sampleContextActivities.copy()
+        val right: ContextActivities = sampleContextActivities.copy()
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return true if both context activity objects are equivalent, excepting list order") {
-          val left: ContextActivities = ContextActivities(
-            parent = None,
-            grouping = None,
-            category = None,
-            other = Some(
-              List(
-                Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None),
-                Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None)
-              )
+      it("should return true if both context activity objects are equivalent, excepting list order") {
+        val left: ContextActivities = ContextActivities(
+          parent = None,
+          grouping = None,
+          category = None,
+          other = Some(
+            List(
+              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None),
+              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None)
             )
           )
+        )
 
-          val right: ContextActivities = ContextActivities(
-            parent = None,
-            grouping = None,
-            category = None,
-            other = Some(
-              List(
-                Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None),
-                Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None)
-              )
+        val right: ContextActivities = ContextActivities(
+          parent = None,
+          grouping = None,
+          category = None,
+          other = Some(
+            List(
+              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None),
+              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None)
             )
           )
+        )
 
-          assert(left.isEquivalentTo(right))
-        }
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return false if both context activity objects are not equivalent") {
-          val left: ContextActivities = sampleContextActivities.copy()
-          val right: ContextActivities = sampleContextActivities.copy(parent = None)
-          assert(left.isEquivalentTo(right) === false)
-        }
+      it("should return false if both context activity objects are not equivalent") {
+        val left: ContextActivities = sampleContextActivities.copy()
+        val right: ContextActivities = sampleContextActivities.copy(parent = None)
+        assert(left.isEquivalentTo(right) === false)
       }
     }
   }

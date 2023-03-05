@@ -124,52 +124,50 @@ class StatementResultTest extends UnitSpec with StrictLogging {
     }
 
     describe("[equivalence]") {
-      describe("compare") {
-        it("should return true if both results are equivalent") {
-          val left: StatementResult = StatementResult(
-            Some(sampleScore),
-            Some(true),
-            Some(true),
-            Some("response"),
-            Some("PT4H35M59.14S"),
-            Some(sampleExtensions)
-          )
+      it("should return true if both results are equivalent") {
+        val left: StatementResult = StatementResult(
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("PT4H35M59.14S"),
+          Some(sampleExtensions)
+        )
 
-          val right: StatementResult = left.copy()
-          assert(left.isEquivalentTo(right))
-        }
+        val right: StatementResult = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return true if both results are equivalent, excepting duration precision") {
-          val left: StatementResult = StatementResult(
-            Some(sampleScore),
-            Some(true),
-            Some(true),
-            Some("response"),
-            Some("PT4H35M59.14S"),
-            Some(sampleExtensions)
-          )
+      it("should return true if both results are equivalent, excepting duration precision") {
+        val left: StatementResult = StatementResult(
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("PT4H35M59.14S"),
+          Some(sampleExtensions)
+        )
 
-          val right: StatementResult = left.copy(
-            duration = Some("PT4H35M59.149S")
-          )
-          assert(left.isEquivalentTo(right))
-        }
+        val right: StatementResult = left.copy(
+          duration = Some("PT4H35M59.149S")
+        )
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return false if both results are not equivalent") {
-          val left: StatementResult = StatementResult(
-            Some(sampleScore),
-            Some(true),
-            Some(true),
-            Some("response"),
-            Some("PT4H35M59.14S"),
-            Some(sampleExtensions)
-          )
+      it("should return false if both results are not equivalent") {
+        val left: StatementResult = StatementResult(
+          Some(sampleScore),
+          Some(true),
+          Some(true),
+          Some("response"),
+          Some("PT4H35M59.14S"),
+          Some(sampleExtensions)
+        )
 
-          val right: StatementResult = left.copy(
-            duration = Some("PT16559.14S")
-          )
-          assert(left.isEquivalentTo(right) === false)
-        }
+        val right: StatementResult = left.copy(
+          duration = Some("PT16559.14S")
+        )
+        assert(left.isEquivalentTo(right) === false)
       }
     }
   }

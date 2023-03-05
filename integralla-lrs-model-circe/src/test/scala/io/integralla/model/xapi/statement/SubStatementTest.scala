@@ -131,6 +131,51 @@ class SubStatementTest extends UnitSpec {
     Using.resource(Source.fromResource("data/sample-sub-statement-object-is-statement-ref.json"))(_.mkString)
 
   describe("SubStatement") {
+    describe("[validation]") {
+      it("should throw a statement validation exception if the sub-statement includes a nested sub-statement") {
+        val nestedSubStatements: String =
+          """{
+            |  "objectType" : "SubStatement",
+            |  "actor" : {
+            |    "objectType" : "Agent",
+            |    "mbox" : "mailto:test@example.com"
+            |  },
+            |  "verb" : {
+            |    "id" : "http://example.com/visited",
+            |    "display" : {
+            |      "en-US" : "will confirm"
+            |    }
+            |  },
+            |  "object" : {
+            |    "objectType": "SubStatement",
+            |    "actor" : {
+            |      "objectType": "Agent",
+            |      "mbox":"mailto:agent@example.com"
+            |    },
+            |    "verb" : {
+            |      "id":"http://example.com/confirmed",
+            |      "display":{
+            |        "en":"confirmed"
+            |      }
+            |    },
+            |    "object": {
+            |      "objectType":"StatementRef",
+            |      "id" :"9e13cefd-53d3-4eac-b5ed-2cf6693903bb"
+            |    }
+            |  }
+            |}""".stripMargin
+
+        val exception = intercept[StatementValidationException] {
+          val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](nestedSubStatements)
+          decoded match {
+            case Right(actual) => println(actual)
+            case Left(err) => throw new Error(s"Decoding failed: $err")
+          }
+        }
+        assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))
+      }
+    }
+
     describe("[encoding]") {
       it("should successfully encode a sub-statement (activity)") {
         val actual: String = sampleActivitySubStatement.asJson.spaces2
@@ -184,51 +229,6 @@ class SubStatementTest extends UnitSpec {
           case Right(actual) => assert(actual === sampleStatementRefSubStatement)
           case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
-      }
-    }
-
-    describe("[validation]") {
-      it("should throw a statement validation exception if the sub-statement includes a nested sub-statement") {
-        val nestedSubStatements: String =
-          """{
-            |  "objectType" : "SubStatement",
-            |  "actor" : {
-            |    "objectType" : "Agent",
-            |    "mbox" : "mailto:test@example.com"
-            |  },
-            |  "verb" : {
-            |    "id" : "http://example.com/visited",
-            |    "display" : {
-            |      "en-US" : "will confirm"
-            |    }
-            |  },
-            |  "object" : {
-            |    "objectType": "SubStatement",
-            |    "actor" : {
-            |      "objectType": "Agent",
-            |      "mbox":"mailto:agent@example.com"
-            |    },
-            |    "verb" : {
-            |      "id":"http://example.com/confirmed",
-            |      "display":{
-            |        "en":"confirmed"
-            |      }
-            |    },
-            |    "object": {
-            |      "objectType":"StatementRef",
-            |      "id" :"9e13cefd-53d3-4eac-b5ed-2cf6693903bb"
-            |    }
-            |  }
-            |}""".stripMargin
-
-        val exception = intercept[StatementValidationException] {
-          val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](nestedSubStatements)
-          decoded match {
-            case Right(actual) => println(actual)
-            case Left(err)     => throw new Error(s"Decoding failed: $err")
-          }
-        }
-        assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))
       }
     }
 

@@ -153,7 +153,7 @@ class StatementActorTest extends UnitSpec {
         }
       }
 
-      describe("isEquivalentTo") {
+      describe("[equivalence]") {
 
         val common: Agent = Agent(
           Some(StatementObjectType.Agent),
@@ -538,56 +538,8 @@ class StatementActorTest extends UnitSpec {
           }
         }
       }
-      describe("isAnonymous") {
-        it("should return true for an anonymous group") {
-          val group = new Group(
-            StatementObjectType.Group,
-            Some("Team A"),
-            None,
-            None,
-            None,
-            None,
-            Some(
-              List(
-                Agent(
-                  Some(StatementObjectType.Agent),
-                  Some("John Doe"),
-                  Some(MBox("mailto:john.doe@example.com")),
-                  None,
-                  None,
-                  None
-                )
-              )
-            )
-          )
-          assert(group.isAnonymous === true)
-        }
-        it("should return false for an identified group") {
-          val group = new Group(
-            StatementObjectType.Group,
-            Some("Team A"),
-            Some(MBox("mailto:team-a@example.com")),
-            None,
-            None,
-            None,
-            Some(
-              List(
-                Agent(
-                  Some(StatementObjectType.Agent),
-                  Some("John Doe"),
-                  Some(MBox("mailto:john.doe@example.com")),
-                  None,
-                  None,
-                  None
-                )
-              )
-            )
-          )
-          assert(group.isAnonymous === false)
-        }
-      }
 
-      describe("isEquivalentTo") {
+      describe("[equivalence]") {
 
         val common: Group = new Group(
           StatementObjectType.Group,
@@ -644,9 +596,112 @@ class StatementActorTest extends UnitSpec {
           assert(left.isEquivalentTo(right) === false)
         }
       }
+
+      describe("isAnonymous") {
+        it("should return true for an anonymous group") {
+          val group = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            None,
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(group.isAnonymous === true)
+        }
+        it("should return false for an identified group") {
+          val group = new Group(
+            StatementObjectType.Group,
+            Some("Team A"),
+            Some(MBox("mailto:team-a@example.com")),
+            None,
+            None,
+            None,
+            Some(
+              List(
+                Agent(
+                  Some(StatementObjectType.Agent),
+                  Some("John Doe"),
+                  Some(MBox("mailto:john.doe@example.com")),
+                  None,
+                  None,
+                  None
+                )
+              )
+            )
+          )
+          assert(group.isAnonymous === false)
+        }
+      }
     }
 
     describe("[common]") {
+      describe("[validation]") {
+        it("should throw a statement validation exception when decoding an actor with an invalid openid identifier") {
+          val data: String = """{"objectType":"Agent","name":"John Doe","openid":"my.server.name/myname"}"""
+          assertThrows[StatementValidationException] {
+            decode[StatementActor](data)
+          }
+        }
+      }
+
+      describe("[equivalence]") {
+
+        val agent = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        )
+
+        val group = new Group(
+          StatementObjectType.Group,
+          Some("Team A"),
+          Some(MBox("mailto:team.a@integralla.io")),
+          None,
+          None,
+          None,
+          Some(
+            List(
+              Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
+              Agent(None, None, Some(MBox("mailto:fraxinus.americana@integralla.io")), None, None, None)
+            )
+          )
+        )
+
+        it("should test for equivalence between actors that are agents") {
+          val left = agent.copy().asInstanceOf[StatementActor]
+          val right = agent.copy().asInstanceOf[StatementActor]
+          assert(left.isEquivalentTo(right))
+        }
+
+        it("should test for equivalence between  actors that are groups") {
+          val left = group.copy().asInstanceOf[StatementActor]
+          val right = group.copy().asInstanceOf[StatementActor]
+          assert(left.isEquivalentTo(right))
+        }
+
+        it("should test for equivalence between an agent to a group") {
+          val left = agent.copy().asInstanceOf[StatementActor]
+          val right = group.copy().asInstanceOf[StatementActor]
+          assert(left.isEquivalentTo(right) === false)
+        }
+      }
+
       describe("ifiType()") {
         it("should return the type of ifi (mbox)") {
           val actor: StatementActor = Agent(
@@ -904,61 +959,6 @@ class StatementActorTest extends UnitSpec {
             )
           )
           assert(actor.actorType() === StatementObjectType.Group)
-        }
-      }
-
-      describe("isEquivalentTo") {
-
-        val agent = Agent(
-          Some(StatementObjectType.Agent),
-          Some("Populus Tremuloides"),
-          Some(MBox("mailto:populus.tremuloides@integralla.io")),
-          None,
-          None,
-          None
-        )
-
-        val group = new Group(
-          StatementObjectType.Group,
-          Some("Team A"),
-          Some(MBox("mailto:team.a@integralla.io")),
-          None,
-          None,
-          None,
-          Some(
-            List(
-              Agent(None, None, Some(MBox("mailto:elaeagnus.angustifolia@integralla.io")), None, None, None),
-              Agent(None, None, Some(MBox("mailto:fraxinus.americana@integralla.io")), None, None, None)
-            )
-          )
-        )
-
-        it("should test for equivalence between actors that are agents") {
-          val left = agent.copy().asInstanceOf[StatementActor]
-          val right = agent.copy().asInstanceOf[StatementActor]
-          assert(left.isEquivalentTo(right))
-        }
-
-        it("should test for equivalence between  actors that are groups") {
-          val left = group.copy().asInstanceOf[StatementActor]
-          val right = group.copy().asInstanceOf[StatementActor]
-          assert(left.isEquivalentTo(right))
-        }
-
-        it("should test for equivalence between an agent to a group") {
-          val left = agent.copy().asInstanceOf[StatementActor]
-          val right = group.copy().asInstanceOf[StatementActor]
-          assert(left.isEquivalentTo(right) === false)
-        }
-
-      }
-    }
-
-    describe("[validation]") {
-      it("should throw a statement validation exception when decoding an actor with an invalid openid identifier") {
-        val data: String = """{"objectType":"Agent","name":"John Doe","openid":"my.server.name/myname"}"""
-        assertThrows[StatementValidationException] {
-          decode[StatementActor](data)
         }
       }
     }

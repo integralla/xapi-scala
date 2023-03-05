@@ -79,64 +79,62 @@ class ExtensionMapTest extends UnitSpec with StrictLogging {
     }
 
     describe("[equivalence]") {
-      describe("compare") {
-        it("should return true of both extension maps are equivalent") {
-          val left: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson,
-              IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get
-            )
+      it("should return true of both extension maps are equivalent") {
+        val left: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson,
+            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get
           )
-          val right = left.copy()
-          assert(left.isEquivalentTo(right))
-        }
-        it("should return true of both extension maps are equivalent, excepting key order") {
-          val left: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
-              IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
-            )
+        )
+        val right = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true of both extension maps are equivalent, excepting key order") {
+        val left: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
           )
-          val right: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get,
-              IRI("https://lrs.integralla.io/extensions/object") -> true.asJson
-            )
+        )
+        val right: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/object") -> true.asJson
           )
-          assert(left.isEquivalentTo(right))
-        }
+        )
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return true of both extension maps are equivalent, excepting IRI exceptions [case]") {
-          val left: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
-              IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
-            )
+      it("should return true of both extension maps are equivalent, excepting IRI exceptions [case]") {
+        val left: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
           )
-          val right: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://LRS.INTEGRALLA.IO/extensions/object") -> true.asJson,
-              IRI("https://LRS.INTEGRALLA.IO/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
-            )
+        )
+        val right: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://LRS.INTEGRALLA.IO/extensions/object") -> true.asJson,
+            IRI("https://LRS.INTEGRALLA.IO/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
           )
-          assert(left.isEquivalentTo(right))
-        }
+        )
+        assert(left.isEquivalentTo(right))
+      }
 
-        it("should return false if both extension maps are not equivalent") {
-          val left: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
-              IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson
-            )
+      it("should return false if both extension maps are not equivalent") {
+        val left: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson
           )
-          val right: ExtensionMap = ExtensionMap(
-            Map(
-              IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
-              IRI("https://lrs.integralla.io/extensions/boolean") -> false.asJson
-            )
+        )
+        val right: ExtensionMap = ExtensionMap(
+          Map(
+            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/boolean") -> false.asJson
           )
-          assert(left.isEquivalentTo(right) === false)
-        }
+        )
+        assert(left.isEquivalentTo(right) === false)
       }
     }
   }

@@ -258,7 +258,7 @@ class StatementTest extends UnitSpec with StrictLogging {
     describe("[encoding]") {
       it("should encode a simple statement") {
         val actual: String = basicStatement.asJson.spaces2
-        val expected: String = Using.resource(Source.fromResource("data/sample-statement-simplest.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-simplest.json")
         assert(actual === expected)
       }
 
@@ -266,8 +266,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         val statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-actor-is-agent.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-actor-is-agent.json")
         assert(actual === expected)
       }
 
@@ -275,8 +274,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         val statement =
           Statement(None, sampleGroupActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-actor-is-group.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-actor-is-group.json")
         assert(actual === expected)
       }
 
@@ -295,8 +293,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-choice-activity.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-object-is-choice-activity.json")
         assert(actual === expected)
       }
 
@@ -304,8 +301,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         val statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-agent.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-object-is-agent.json")
         assert(actual === expected)
       }
 
@@ -313,8 +309,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         val statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleGroupObject, None, None, None, None, None, None, None)
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-group.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-object-is-group.json")
         assert(actual === expected)
       }
 
@@ -333,8 +328,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-statement-ref.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-object-is-statement-ref.json")
         assert(actual === expected)
       }
 
@@ -353,8 +347,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-sub-statement.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-object-is-sub-statement.json")
         assert(actual === expected)
       }
 
@@ -373,7 +366,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String = Using.resource(Source.fromResource("data/sample-statement-with-result.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-result.json")
         assert(actual === expected)
       }
 
@@ -392,8 +385,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-context.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-context.json")
         assert(actual === expected)
       }
 
@@ -412,8 +404,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-timestamp.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-timestamp.json")
         assert(actual === expected)
       }
 
@@ -432,7 +423,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String = Using.resource(Source.fromResource("data/sample-statement-with-stored.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-stored.json")
         assert(actual === expected)
       }
 
@@ -451,8 +442,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-authority.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-authority.json")
         assert(actual === expected)
       }
 
@@ -471,8 +461,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-version.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-version.json")
         assert(actual === expected)
       }
 
@@ -491,15 +480,14 @@ class StatementTest extends UnitSpec with StrictLogging {
           Some(List(sampleAttachment))
         )
         val actual = statement.asJson.spaces2
-        val expected: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-attachments.json"))(_.mkString)
+        val expected: String = getStatementResource("data/sample-statement-with-attachments.json")
         assert(actual === expected)
       }
     }
 
     describe("[decoding]") {
       it("should successfully decode a simple statement") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-simplest.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-simplest.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         decoded match {
           case Right(actual) => assert(actual === basicStatement)
@@ -508,7 +496,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the actor is an agent") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-actor-is-agent.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-actor-is-agent.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
@@ -519,7 +507,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the actor is an group") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-actor-is-group.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-actor-is-group.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement =
           Statement(None, sampleGroupActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
@@ -530,8 +518,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the object is an activity object") {
-        val data: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-choice-activity.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-object-is-choice-activity.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -553,7 +540,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the object is an agent") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-object-is-agent.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-object-is-agent.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
@@ -564,7 +551,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the object is a group") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-object-is-group.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-object-is-group.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleGroupObject, None, None, None, None, None, None, None)
@@ -575,8 +562,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the object is a statement reference") {
-        val data: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-statement-ref.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-object-is-statement-ref.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -598,8 +584,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement where the object is a sub-statement") {
-        val data: String =
-          Using.resource(Source.fromResource("data/sample-statement-object-is-sub-statement.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-object-is-sub-statement.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -621,7 +606,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with a result object") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-result.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-result.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -643,7 +628,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with a context object") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-context.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-context.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -665,7 +650,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with a timestamp property") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-timestamp.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-timestamp.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -687,7 +672,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with a stored property") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-stored.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-stored.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -709,7 +694,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with an authority property") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-authority.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-authority.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -731,7 +716,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with a version property") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-with-version.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-version.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -753,8 +738,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement with an attachments property") {
-        val data: String =
-          Using.resource(Source.fromResource("data/sample-statement-with-attachments.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-with-attachments.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         val expected: Statement = Statement(
           None,
@@ -776,8 +760,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a complex statement that showcases most statement properties") {
-        val data: String =
-          Using.resource(Source.fromResource("data/sample-statement-property-showcase.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-property-showcase.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         decoded match {
           case Right(actual) =>
@@ -800,7 +783,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it("should successfully decode a statement following the cmi5 Community of Practice") {
-        val data: String = Using.resource(Source.fromResource("data/sample-statement-cmi5-example.json"))(_.mkString)
+        val data: String = getStatementResource("data/sample-statement-cmi5-example.json")
         val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
         decoded match {
           case Right(actual) =>
