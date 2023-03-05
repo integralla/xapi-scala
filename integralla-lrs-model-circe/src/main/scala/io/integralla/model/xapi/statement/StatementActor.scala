@@ -145,7 +145,7 @@ case class Agent(
     )
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * For an agent, the following process is applied to generate the signature:
     *  - The `objectType` is set to Agent if not defined
@@ -235,7 +235,7 @@ case class Group(
     )
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * For an agent, the following process is applied to generate the signature:
     *  - If `name` is defined, use as is

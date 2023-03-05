@@ -14,7 +14,7 @@ import io.integralla.model.xapi.statement.identifiers.IRI
 case class Activity(objectType: Option[StatementObjectType], id: IRI, definition: Option[ActivityDefinition])
     extends Equivalence {
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * The signature of an activity is based solely on it's identifier
     * which is handled as a IRI. As per the specification, the activity

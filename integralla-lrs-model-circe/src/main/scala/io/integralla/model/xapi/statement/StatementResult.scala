@@ -45,7 +45,7 @@ case class StatementResult(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * Per the specification, when comparing durations, any precision
     * beyond 0.01 second precision SHOULD* NOT be included in the

@@ -169,7 +169,7 @@ class SubStatementTest extends UnitSpec {
           val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](nestedSubStatements)
           decoded match {
             case Right(actual) => println(actual)
-            case Left(err) => throw new Error(s"Decoding failed: $err")
+            case Left(err)     => throw new Error(s"Decoding failed: $err")
           }
         }
         assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))

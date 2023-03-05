@@ -16,7 +16,7 @@ import java.util.UUID
   */
 case class StatementObject(value: AnyRef) extends Equivalence {
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * @return A string identifier
     */

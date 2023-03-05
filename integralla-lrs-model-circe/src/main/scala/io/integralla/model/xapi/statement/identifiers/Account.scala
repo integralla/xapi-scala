@@ -1,8 +1,8 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import com.typesafe.scalalogging.LazyLogging
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
 import io.lemonlabs.uri.AbsoluteUrl
 
@@ -32,7 +32,7 @@ case class Account(
     }
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * To generate the signature, the account name is appended to the
     * homepage as a URL fragment and the combined value handled as an IRI

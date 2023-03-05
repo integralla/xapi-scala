@@ -11,7 +11,7 @@ import io.integralla.model.xapi.statement.identifiers.IRI
   */
 case class StatementVerb(id: IRI, display: Option[LanguageMap]) extends Equivalence {
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     * For a statement verb, only the verb identifier is used
     *  @return A string identifier
     */

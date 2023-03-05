@@ -9,7 +9,7 @@ import io.integralla.model.xapi.statement.identifiers.IRI
   */
 case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * For extensions, the signature is computed first by concatenating the signature of each
     * IRI with a string representation of the JSON data structure/value, sorted by keys and

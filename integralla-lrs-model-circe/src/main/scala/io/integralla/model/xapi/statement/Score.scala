@@ -78,7 +78,7 @@ case class Score(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * The signature is composed of each property, cast as a string when
     * defined, or replaced with the default placeholder value when undefined

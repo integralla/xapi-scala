@@ -30,7 +30,7 @@ case class IRI(value: String) extends StatementValidation with Equivalence {
     }
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * As per the xAPI specification, when comparing IRIs, LRSs SHOULD* handle them
     * only by using one or more of the approaches described in 5.3.1 (Simple String

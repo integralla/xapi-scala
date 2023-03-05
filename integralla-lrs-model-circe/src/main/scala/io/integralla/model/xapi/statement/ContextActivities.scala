@@ -18,7 +18,7 @@ case class ContextActivities(
   other: Option[List[Activity]]
 ) extends Equivalence {
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * The signature for context activities is computed by extracting the activity signature for each activity,
     * in each context classification, sorting them, and then concatenating the results together. The resulting

@@ -39,7 +39,7 @@ trait Equivalence {
     strings.mkString(separator)
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     * @return A string identifier
     */
   protected[statement] def signature(): String

@@ -42,7 +42,7 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
     }
   }
 
-  /** Generates a signature for what the object logically represents
+  /** Generates a signature that can be used to test logical equivalence between objects
     *
     * For the purposes of generating the signature, we generate a version of
     * the MBox IRI with the schema and path parts all lower cased
