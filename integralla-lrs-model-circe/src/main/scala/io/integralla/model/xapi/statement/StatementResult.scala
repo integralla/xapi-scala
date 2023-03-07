@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import net.time4j.{ClockUnit, Duration}
+import net.time4j.{ClockUnit, Duration, IsoUnit}
 
 import java.text.ParseException
 
@@ -58,7 +58,7 @@ case class StatementResult(
   override protected[statement] def signature(): String = {
 
     def truncateDuration(duration: String): String = {
-      val d = Duration.parsePeriod(duration)
+      val d: Duration[IsoUnit] = Duration.parsePeriod(duration)
       val nanos = d.getPartialAmount(ClockUnit.NANOS)
       val excess = nanos - ((nanos / 10e6).floor * 10e6).toInt
       d.plus(-excess, ClockUnit.NANOS).toString
