@@ -974,7 +974,97 @@ class StatementTest extends UnitSpec with StrictLogging {
         val right: Statement = getStatementFromResource("data/sample-statement-property-showcase.json")
         assert(left.isEquivalentTo(right))
       }
+    }
 
+    describe("getActorReferences") {
+      val testStatement: Statement = Statement(
+        id = Some(UUID.randomUUID()),
+        actor = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        ),
+        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(Map("en-US" -> "met"))),
+        `object` = StatementObject(
+          Agent(
+            Some(StatementObjectType.Agent),
+            Some("Prunus Persica"),
+            Some(MBox("mailto:prunus.persica@integralla.io")),
+            None,
+            None,
+            None
+          )
+        ),
+        result = None,
+        context = Some(
+          StatementContext(
+            registration = None,
+            instructor = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None)),
+            team = Some(
+              Group(
+                StatementObjectType.Group,
+                None,
+                Some(MBox("mailto:team@integralla.io")),
+                None,
+                None,
+                None,
+                None
+              )
+            ),
+            contextActivities = None,
+            revision = None,
+            platform = None,
+            language = None,
+            statement = None,
+            extensions = None
+          )
+        ),
+        timestamp = None,
+        stored = None,
+        authority = Some(
+          Agent(None, None, Some(MBox("mailto:lrp@integralla.io")), None, None, None)
+        ),
+        version = None,
+        attachments = None
+      )
+
+      it("should return all actors referenced by the statement") {
+        val statement: Statement = testStatement.copy()
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 5)
+
+        val expected: List[String] = List(
+          "mailto:populus.tremuloides@integralla.io",
+          "mailto:prunus.persica@integralla.io",
+          "mailto:instructors@integralla.io",
+          "mailto:team@integralla.io",
+          "mailto:lrp@integralla.io"
+        )
+        actors
+          .map(actor => actor.mbox).filter(_.isDefined).map(_.get.value)
+          .foreach(mbox => assert(expected.contains(mbox)))
+      }
+
+      it("should return a distinct list of actors referenced by the statement") {
+        val statement: Statement = testStatement.copy(
+          authority = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None))
+        )
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 4)
+
+        val expected: List[String] = List(
+          "mailto:populus.tremuloides@integralla.io",
+          "mailto:prunus.persica@integralla.io",
+          "mailto:instructors@integralla.io",
+          "mailto:team@integralla.io"
+        )
+        actors
+          .map(actor => actor.mbox).filter(_.isDefined).map(_.get.value)
+          .foreach(mbox => assert(expected.contains(mbox)))
+      }
     }
   }
 }

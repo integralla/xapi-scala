@@ -34,6 +34,18 @@ case class Statement(
   attachments: Option[List[Attachment]]
 ) extends StatementValidation with Equivalence {
 
+  /** A list of actors referenced by the statement
+    * @return A list of identified actors
+    */
+  def getActorReferences: List[StatementActor] = {
+    List(
+      actor.asList(),
+      `object`.getActorReferences,
+      context.map(context => context.getActorReferences).getOrElse(List.empty[StatementActor]),
+      authority.map(authority => authority.asList()).getOrElse(List.empty[StatementActor])
+    ).flatten.distinct
+  }
+
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateContextPropertiesRevision,
@@ -42,7 +54,6 @@ case class Statement(
   }
 
   private def validateContextPropertiesRevision: Either[String, Boolean] = {
-
     context
       .map((statementContext: StatementContext) => {
         `object`.value match {
@@ -60,7 +71,6 @@ case class Statement(
   }
 
   private def validateContextPropertiesPlatform: Either[String, Boolean] = {
-
     context
       .map((statementContext: StatementContext) => {
         `object`.value match {

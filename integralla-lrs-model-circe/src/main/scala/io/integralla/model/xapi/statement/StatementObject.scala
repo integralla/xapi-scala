@@ -16,6 +16,19 @@ import java.util.UUID
   */
 case class StatementObject(value: AnyRef) extends Equivalence {
 
+  /** A list of actors referenced by the statement object
+    * Actors can be referenced when the statement object is one of: agent, group, sub-statement
+    * @return A list of identified actors
+    */
+  def getActorReferences: List[StatementActor] = {
+    value match {
+      case agent: Agent               => agent.asList()
+      case group: Group               => group.asList()
+      case subStatement: SubStatement => subStatement.getActorReferences
+      case _                          => List.empty[StatementActor]
+    }
+  }
+
   /** Generates a signature that can be used to test logical equivalence between objects
     *
     * @return A string identifier

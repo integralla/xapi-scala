@@ -28,6 +28,17 @@ case class SubStatement(
   attachments: Option[List[Attachment]]
 ) extends StatementValidation with Equivalence {
 
+  /** A list of actors referenced by a sub-statement
+    * @return A list of identified actors
+    */
+  def getActorReferences: List[StatementActor] = {
+    List(
+      actor.asList(),
+      `object`.getActorReferences,
+      context.map(context => context.getActorReferences).getOrElse(List.empty[StatementActor])
+    ).flatten.distinct
+  }
+
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(validateObjectIsNotSubStatement)
   }

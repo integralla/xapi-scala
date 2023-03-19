@@ -50,6 +50,16 @@ case class StatementContext(
       }
     }
   }
+
+  /** A list of actors composed of the those identified by the instructor and team properties
+    * @return A list of identified actors
+    */
+  def getActorReferences: List[StatementActor] = {
+    List(
+      instructor.map(instructor => instructor.asList()).getOrElse(List.empty[StatementActor]),
+      team.map(team => team.asList()).getOrElse(List.empty[StatementActor])
+    ).flatten.distinct
+  }
 }
 
 object StatementContext {

@@ -270,5 +270,94 @@ class SubStatementTest extends UnitSpec {
         assert(left.isEquivalentTo(right) === false)
       }
     }
+
+    describe("getActorReferences") {
+      val subStatement: SubStatement = SubStatement(
+        objectType = StatementObjectType.SubStatement,
+        actor = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        ),
+        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(Map("en-US" -> "met"))),
+        `object` = StatementObject(
+          Agent(
+            Some(StatementObjectType.Agent),
+            Some("Prunus Persica"),
+            Some(MBox("mailto:prunus.persica@integralla.io")),
+            None,
+            None,
+            None
+          )
+        ),
+        result = None,
+        context = Some(
+          StatementContext(
+            registration = None,
+            instructor = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None)),
+            team = Some(
+              Group(
+                StatementObjectType.Group,
+                None,
+                Some(MBox("mailto:team@integralla.io")),
+                None,
+                None,
+                None,
+                None
+              )
+            ),
+            contextActivities = None,
+            revision = None,
+            platform = None,
+            language = None,
+            statement = None,
+            extensions = None
+          )
+        ),
+        timestamp = None,
+        attachments = None
+      )
+      it("should return a list of actors referenced in the actor, object, and context properties") {
+        val statement: SubStatement = subStatement.copy()
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 4)
+      }
+
+      it("should return a distinct list of actors referenced in the actor, object, and context properties") {
+        val statement: SubStatement = subStatement.copy(
+          `object` = StatementObject(
+            Agent(
+              Some(StatementObjectType.Agent),
+              Some("Populus Tremuloides"),
+              Some(MBox("mailto:populus.tremuloides@integralla.io")),
+              None,
+              None,
+              None
+            )
+          )
+        )
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 3)
+      }
+
+      it("should return a list of actors referenced in the actor, object, and context properties (context undefined)") {
+        val statement: SubStatement = subStatement.copy(context = None)
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 2)
+      }
+
+      it(
+        "should return a list of actors referenced in the actor, object, and context properties (object has no references)"
+      ) {
+        val statement: SubStatement = subStatement.copy(`object` =
+          StatementObject(StatementRef(objectType = StatementObjectType.StatementRef, id = UUID.randomUUID()))
+        )
+        val actors: List[StatementActor] = statement.getActorReferences
+        assert(actors.length === 3)
+      }
+    }
   }
 }
