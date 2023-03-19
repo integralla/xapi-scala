@@ -914,6 +914,7 @@ class StatementActorTest extends UnitSpec {
           assert(actor.ifiKey().isEmpty)
         }
       }
+
       describe("actorType") {
         it("should return the statement object type for an agent") {
           val actor: StatementActor = new Agent(
@@ -959,6 +960,59 @@ class StatementActorTest extends UnitSpec {
             )
           )
           assert(actor.actorType() === StatementObjectType.Group)
+        }
+      }
+
+      describe("asList") {
+
+        val agent: Agent = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        )
+
+        val group: Group = Group(
+          StatementObjectType.Group,
+          Some("Team A"),
+          Some(MBox("mailto:team-a@integralla.io")),
+          None,
+          None,
+          None,
+          Some(
+            List(agent)
+          )
+        )
+
+        it("should return a list with a single actor if the actor is an agent") {
+          val actor: StatementActor = agent.copy()
+          val identities = actor.asList()
+          assert(identities.nonEmpty)
+          assert(identities.length === 1)
+        }
+
+        it("should return a list with a single actor if the actor is an identified group with no members") {
+          val actor: StatementActor = group.copy(member = None)
+          val identities = actor.asList()
+          assert(identities.nonEmpty)
+          assert(identities.length === 1)
+        }
+        it("should return a list with the group and all members if the actor is an identified group with members") {
+          val actor: StatementActor = group.copy()
+          val identities = actor.asList()
+          assert(identities.nonEmpty)
+          assert(identities.length === 2)
+          assert(identities.map(_.mbox.get.value).contains("mailto:populus.tremuloides@integralla.io"))
+          assert(identities.map(_.mbox.get.value).contains("mailto:team-a@integralla.io"))
+        }
+        it("should return a list with all members if the actor is an anonymous group") {
+          val actor: StatementActor = group.copy(mbox = None)
+          val identities = actor.asList()
+          assert(identities.nonEmpty)
+          assert(identities.length === 1)
+          assert(identities.head.mbox.get.value === "mailto:populus.tremuloides@integralla.io")
         }
       }
     }

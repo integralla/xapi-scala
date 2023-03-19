@@ -62,8 +62,14 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
     } else {
       None
     }
-
   }
+
+  /** @return A list of identified actors
+    *         - If actor is an agent, the list will only contain the agent itself
+    *         - If actor is a group, the list will include the group itself if it's
+    *         not anonymous, plus all members (if defined)
+    */
+  def asList(): List[StatementActor]
 
   /** @return The actor type (Agent, Group) */
   def actorType(): StatementObjectType
@@ -75,9 +81,9 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
   }
 
   override protected[statement] def signature(): String = {
-    actorType() match {
-      case StatementObjectType.Agent => this.asInstanceOf[Agent].signature()
-      case StatementObjectType.Group => this.asInstanceOf[Group].signature()
+    this match {
+      case agent: Agent => agent.signature()
+      case group: Group => group.signature()
     }
   }
 
@@ -137,6 +143,8 @@ case class Agent(
 ) extends StatementActor with Equivalence {
 
   override def actorType(): StatementObjectType = StatementObjectType.Agent
+
+  override def asList(): List[StatementActor] = List(this)
 
   override def validate: Seq[Either[String, Boolean]] = {
     super.validate ++ Seq(
@@ -226,6 +234,13 @@ case class Group(
   /** @return A boolean indicating whether a group is anonymous or not */
   def isAnonymous: Boolean = {
     if (ifiType().isDefined) false else true
+  }
+
+  override def asList(): List[StatementActor] = {
+    List(
+      if (!isAnonymous) List(this) else List.empty[StatementActor],
+      member.map(members => members).getOrElse(List.empty[StatementActor])
+    ).flatten
   }
 
   override def validate: Seq[Either[String, Boolean]] = {
