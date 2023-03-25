@@ -1,9 +1,23 @@
-# IDE
-.idea
+# IntelliJ
+# User-specific stuff
+.idea/
 
-# BSP
+auto-import.
+*.iml
+*.ipr
+
+# SBT
+lib_managed
+target
+project/boot
+project/build/target
+project/plugins/lib_managed
+project/plugins/src_managed
+project/plugins/target
+project/plugins/project/build.properties
+
+# Other Build System
+.bloop
 .bsp
-
-# SBT / Scala
-target/
-
+.metals
+project/metals.sbt
