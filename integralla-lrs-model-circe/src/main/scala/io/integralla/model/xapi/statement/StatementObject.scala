@@ -16,6 +16,18 @@ import java.util.UUID
   */
 case class StatementObject(value: AnyRef) extends Equivalence {
 
+  /** A list of activities (if any) referenced by the statement object
+    * Activities can be referenced via the statement object, or in a sub-statement
+    * @return A list of activities
+    */
+  def getActivityReferences: List[Activity] = {
+    value match {
+      case activity: Activity         => List(activity)
+      case subStatement: SubStatement => subStatement.getActivityReferences
+      case _                          => List.empty[Activity]
+    }
+  }
+
   /** A list of actors referenced by the statement object
     * Actors can be referenced when the statement object is one of: agent, group, sub-statement
     * @return A list of identified actors
@@ -30,7 +42,6 @@ case class StatementObject(value: AnyRef) extends Equivalence {
   }
 
   /** Generates a signature that can be used to test logical equivalence between objects
-    *
     * @return A string identifier
     */
   override protected[statement] def signature(): String = {

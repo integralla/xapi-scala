@@ -976,6 +976,49 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
     }
 
+    describe("getActivityReferences") {
+      it("should return a list with an activity if the statement object is an activity") {
+        val statement: Statement = basicStatement.copy()
+        val activities: List[Activity] = statement.getActivityReferences
+        assert(activities.length === 1)
+      }
+      it("should return a list that includes context activities if context activities are defined") {
+        val statement: Statement = basicStatement.copy(
+          context = Some(sampleContext)
+        )
+        val activities: List[Activity] = statement.getActivityReferences
+        assert(activities.length === 2)
+      }
+      it("should return a distinct list of activities") {
+        val activity: Activity = Activity(None, IRI("https://lrs.integralla.io/activity/1"), None)
+        val statement: Statement = basicStatement.copy(
+          `object` = StatementObject(activity),
+          context = Some(
+            sampleContext.copy(contextActivities =
+              Some(
+                ContextActivities(
+                  parent = Some(List(activity)),
+                  grouping = None,
+                  category = None,
+                  other = None
+                )
+              )
+            )
+          )
+        )
+        val activities: List[Activity] = statement.getActivityReferences
+        assert(activities.length === 1)
+      }
+      it(
+        "should return an empty list if the statement object is not an activity, and no context activities are defined"
+      ) {
+        val statement =
+          Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
+        val activities: List[Activity] = statement.getActivityReferences
+        assert(activities.isEmpty)
+      }
+    }
+
     describe("getActorReferences") {
       val testStatement: Statement = Statement(
         id = Some(UUID.randomUUID()),

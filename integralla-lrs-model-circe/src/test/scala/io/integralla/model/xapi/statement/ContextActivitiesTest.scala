@@ -116,5 +116,46 @@ class ContextActivitiesTest extends UnitSpec {
         assert(left.isEquivalentTo(right) === false)
       }
     }
+
+    describe("getActivityReferences") {
+      val baseContextActivities: ContextActivities = ContextActivities(
+        parent = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))),
+        grouping = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
+        category = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))),
+        other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None)))
+      )
+
+      it("should return a distinct list of all activities referenced as context activities") {
+        val contextActivities: ContextActivities = baseContextActivities.copy()
+        val activities: List[Activity] = contextActivities.getActivityReferences
+        val iris: List[String] = activities.map(activity => activity.id.value)
+
+        assert(activities.length === 4)
+        assert(iris.contains("https://lrs.integralla.io/activity/parent"))
+        assert(iris.contains("https://lrs.integralla.io/activity/grouping"))
+        assert(iris.contains("https://lrs.integralla.io/activity/category"))
+        assert(iris.contains("https://lrs.integralla.io/activity/other"))
+      }
+
+      it("should return a distinct list") {
+        val contextActivities: ContextActivities = baseContextActivities.copy(
+          other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None)))
+        )
+        val activities: List[Activity] = contextActivities.getActivityReferences
+        assert(activities.length === 3)
+      }
+
+      it("should return an empty list if none or defined") {
+        val contextActivities: ContextActivities = baseContextActivities.copy(
+          parent = None,
+          grouping = None,
+          category = None,
+          other = None
+        )
+        val activities: List[Activity] = contextActivities.getActivityReferences
+        assert(activities.isEmpty)
+      }
+
+    }
   }
 }

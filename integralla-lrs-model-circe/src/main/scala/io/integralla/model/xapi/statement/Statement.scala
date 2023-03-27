@@ -34,7 +34,17 @@ case class Statement(
   attachments: Option[List[Attachment]]
 ) extends StatementValidation with Equivalence {
 
-  /** A list of actors referenced by the statement
+  /** Extracts and returns all activities (if any) referenced by the statement
+    *  @return A distinct list of all activities referenced in the statement
+    */
+  def getActivityReferences: List[Activity] = {
+    List(
+      `object`.getActivityReferences,
+      context.flatMap(_.contextActivities.map(_.getActivityReferences)).getOrElse(List.empty[Activity])
+    ).flatten.distinct
+  }
+
+  /** Extracts and returns all identified actors (agents or identified groups) referenced by the statement
     * @return A list of identified actors
     */
   def getActorReferences: List[StatementActor] = {

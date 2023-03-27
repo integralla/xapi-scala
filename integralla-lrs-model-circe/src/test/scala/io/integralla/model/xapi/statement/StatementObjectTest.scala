@@ -265,6 +265,25 @@ class StatementObjectTest extends UnitSpec {
       }
     }
 
+    describe("getActivityReferences") {
+      it("should return a list with a single activity if the statement object is an activity") {
+        val statementObject: StatementObject = StatementObject(sampleActivity.copy())
+        val activities: List[Activity] = statementObject.getActivityReferences
+        assert(activities.length === 1)
+      }
+
+      it("should return a non-empty list of the statement object is a sub-statement where the object is an activity") {
+        val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
+        val activities: List[Activity] = statementObject.getActivityReferences
+        assert(activities.length === 1)
+      }
+      it("should return an empty list if the statement object is not an activity nor a sub-statement") {
+        val statementObject: StatementObject = StatementObject(sampleAgent.copy())
+        val activities: List[Activity] = statementObject.getActivityReferences
+        assert(activities.isEmpty)
+      }
+    }
+
     describe("getActorReferences") {
       it("should return a list composed of a single actor when the statement object is an agent") {
         val statementObject: StatementObject = StatementObject(sampleAgent.copy())

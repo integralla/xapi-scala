@@ -18,6 +18,12 @@ case class ContextActivities(
   other: Option[List[Activity]]
 ) extends Equivalence {
 
+  /** @return A distinct list of all activities referenced in the context */
+  def getActivityReferences: List[Activity] = {
+    List(parent, grouping, category, other)
+      .filter(_.isDefined).flatMap(_.get).distinct
+  }
+
   /** Generates a signature that can be used to test logical equivalence between objects
     *
     * The signature for context activities is computed by extracting the activity signature for each activity,

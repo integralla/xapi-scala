@@ -28,9 +28,15 @@ case class SubStatement(
   attachments: Option[List[Attachment]]
 ) extends StatementValidation with Equivalence {
 
-  /** A list of actors referenced by a sub-statement
-    * @return A list of identified actors
-    */
+  /** @return A distinct list of all activities referenced in the sub-statement */
+  def getActivityReferences: List[Activity] = {
+    List(
+      `object`.getActivityReferences,
+      context.flatMap(_.contextActivities.map(_.getActivityReferences)).getOrElse(List.empty[Activity])
+    ).flatten.distinct
+  }
+
+  /** @return A distinct list of all actors referenced by a sub-statement */
   def getActorReferences: List[StatementActor] = {
     List(
       actor.asList(),
