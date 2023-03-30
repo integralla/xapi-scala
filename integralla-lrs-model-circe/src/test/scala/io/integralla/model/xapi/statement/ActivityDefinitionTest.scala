@@ -60,7 +60,7 @@ class ActivityDefinitionTest extends UnitSpec {
     """{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"},"extensions":{"http://example.com/extenions/boolean":true,"http://example.com/extenions/double":1.0,"http://example.com/extenions/string":"string","http://example.com/extenions/other":{"one":1,"two":2}}}"""
 
   /* Choice Interaction Activity */
-  val choiceCorrectResponsePattern: List[String] = List("golf[,]tetris")
+  val choiceCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("golf[,]tetris"))
   val choiceInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("golf", Some(Map("en-US" -> "Golf Example"))),
     InteractionComponent("facebook", Some(Map("en-US" -> "Facebook App"))),
@@ -93,7 +93,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Fill-In Interaction Activity */
-  val fillInCorrectResponsesPattern: List[String] = List("Lorum ipsum")
+  val fillInCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("Lorum ipsum"))
   val fillInInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
@@ -119,7 +119,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Likert Interaction Activity */
-  val likertCorrectResponsePattern: List[String] = List("likert_3")
+  val likertCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("likert_3"))
   val likertInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("likert_0", Some(Map("en-US" -> "It's OK"))),
     InteractionComponent("likert_1", Some(Map("en-US" -> "It's Pretty Cool"))),
@@ -152,8 +152,10 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Long Fill-In Interaction Activity */
-  val longFillInCorrectResponsesPattern: List[String] = List(
-    "{case_matters=false}{lang=en}The purpose of the xAPI is to store and provide access to learning experiences."
+  val longFillInCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(
+    List(
+      "{case_matters=false}{lang=en}The purpose of the xAPI is to store and provide access to learning experiences."
+    )
   )
   val longFillInInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -180,7 +182,9 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Matching Interaction Activity */
-  val matchingCorrectResponsePattern: List[String] = List("ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1")
+  val matchingCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1")
+  )
   val matchingInteractionComponentsSource: List[InteractionComponent] = List(
     InteractionComponent("ben", Some(Map("en-US" -> "Ben"))),
     InteractionComponent("chris", Some(Map("en-US" -> "Chris"))),
@@ -220,7 +224,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Numeric Interaction Activity */
-  val numericCorrectResponsesPattern: List[String] = List("4[:]")
+  val numericCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("4[:]"))
   val numericInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
@@ -246,7 +250,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Other Interaction Activity */
-  val otherCorrectResponsesPattern: List[String] = List("(35.937432,-86.868896)")
+  val otherCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("(35.937432,-86.868896)"))
   val otherInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
@@ -272,7 +276,9 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Performance Interaction Activity */
-  val performanceCorrectResponsePattern: List[String] = List("pong[.]1:[,]dg[.]:10[,]lunch[.]")
+  val performanceCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("pong[.]1:[,]dg[.]:10[,]lunch[.]")
+  )
   val performanceInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("pong", Some(Map("en-US" -> "Net pong matches won"))),
     InteractionComponent("dg", Some(Map("en-US" -> "Strokes over par in disc golf at Liberty"))),
@@ -304,7 +310,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* Sequencing Interaction Activity */
-  val sequencingCorrectResponsePattern: List[String] = List("tim[,]mike[,]ells[,]ben")
+  val sequencingCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("tim[,]mike[,]ells[,]ben"))
   val sequencingInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("tim", Some(Map("en-US" -> "Tim"))),
     InteractionComponent("ben", Some(Map("en-US" -> "Ben"))),
@@ -337,7 +343,7 @@ class ActivityDefinitionTest extends UnitSpec {
       |}""".stripMargin
 
   /* True/False Interaction Activity */
-  val trueFalseCorrectResponsesPattern: List[String] = List("true")
+  val trueFalseCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("true"))
   val trueFalseInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
@@ -915,6 +921,5 @@ class ActivityDefinitionTest extends UnitSpec {
         }
       }
     }
-
   }
 }

@@ -41,7 +41,7 @@ case class ActivityDefinition(
   `type`: Option[IRI],
   moreInfo: Option[IRI],
   interactionType: Option[InteractionType],
-  correctResponsesPattern: Option[List[String]],
+  correctResponsesPattern: Option[CorrectResponsePattern],
   choices: Option[List[InteractionComponent]],
   scale: Option[List[InteractionComponent]],
   source: Option[List[InteractionComponent]],

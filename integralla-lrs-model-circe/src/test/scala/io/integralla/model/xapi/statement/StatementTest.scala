@@ -105,7 +105,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           Some(IRI("http://adlnet.gov/expapi/activities/cmi.interaction")),
           Some(IRI("https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#Appendix2C")),
           Some(InteractionType.CHOICE),
-          Some(List("golf[,]tetris")),
+          Some(CorrectResponsePattern(List("golf[,]tetris"))),
           Some(
             List(
               InteractionComponent("golf", Some(Map("en-US" -> "Golf Example"))),
