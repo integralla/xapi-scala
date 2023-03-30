@@ -56,8 +56,8 @@ lazy val circe = (project in file("integralla-lrs-model-circe"))
  */
 
 lazy val versions = new {
-  val circe = "0.14.3"
-  val logback = "1.4.5"
+  val circe = "0.14.5"
+  val logback = "1.4.6"
   val scalactic = "3.2.12"
   val scalaLogging = "3.9.5"
   val scalatest = "3.2.12"
