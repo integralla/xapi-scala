@@ -921,5 +921,111 @@ class ActivityDefinitionTest extends UnitSpec {
         }
       }
     }
+
+    describe("isCompatibleWith") {
+      val baseDefinition: ActivityDefinition = ActivityDefinition(
+        name = None,
+        description = None,
+        `type` = None,
+        moreInfo = None,
+        interactionType = None,
+        correctResponsesPattern = None,
+        choices = None,
+        scale = None,
+        source = None,
+        steps = None,
+        target = None,
+        extensions = None
+      )
+
+      describe("[interaction type only]") {
+        it("should return true if the interaction types are the same") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE)
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE)
+          )
+          assert(left.isCompatibleWith(right))
+        }
+        it("should return true if the interaction type is not defined on the compared instance") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE)
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = None
+          )
+          assert(left.isCompatibleWith(right))
+        }
+        it("should return false if the interaction types are different") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE)
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.MATCHING)
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+
+        it("should return false if the interaction type has been unset on the new") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = None
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.MATCHING)
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+      }
+
+      describe("[with correct response pattern]") {
+        it("should return true if the interaction type and correct response patterns are compatible") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if the correct response patterns is not defined on the compared instance") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE)
+          )
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return false if correct response patterns are not logically equivalent") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("crystal")))
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+
+        it("should return false if the correct response patterns is unset on this instance") {
+          val left: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = None
+          )
+          val right: ActivityDefinition = baseDefinition.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+      }
+    }
   }
 }

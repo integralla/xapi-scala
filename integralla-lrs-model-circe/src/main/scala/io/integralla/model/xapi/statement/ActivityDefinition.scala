@@ -49,6 +49,46 @@ case class ActivityDefinition(
   target: Option[List[InteractionComponent]],
   extensions: Option[ExtensionMap]
 ) extends StatementValidation {
+
+  /** Computes whether this activity definition is compatible with another instance
+    *
+    * @param instance The instance to compare this activity definition with
+    * @return True if this instance is compatible with the provided instance
+    */
+  def isCompatibleWith(instance: ActivityDefinition): Boolean = {
+
+    /** Computes compatibility based on the interaction type
+      *
+      * The interaction type is treated as compatible if it is undefined on the compared instance or if the
+      * interaction type for both instances is the same
+      *
+      * @return True if the interaction type is compatible, else false
+      */
+    def interactionTypeIsCompatible(): Boolean = {
+      if (instance.interactionType.isDefined) {
+        if (this.interactionType == instance.interactionType) true else false
+      } else true
+    }
+
+    /** Computes compatibility based on the correct response pattern
+      *
+      * The correct response pattern is treated as compatible if it is undefined on the compared instance or if the
+      * correct response patterns for both are logically equivalent
+      *
+      * @return True if the correct response pattern is compatible, else false
+      */
+    def correctResponsePatternIsCompatible(): Boolean = {
+      if (instance.correctResponsesPattern.isDefined) {
+        this.correctResponsesPattern.exists(pattern => pattern.isEquivalentTo(instance.correctResponsesPattern.get))
+      } else true
+    }
+
+    List(
+      interactionTypeIsCompatible(),
+      correctResponsePatternIsCompatible()
+    ).find(!_).getOrElse(true)
+  }
+
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateInteractionTypeByType,
