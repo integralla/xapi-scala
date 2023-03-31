@@ -1,14 +1,30 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 /** Interaction Component
   *
   * @param id         Identifies the interaction component within the list
   * @param definition A description of the interaction component (for example, the text for a given choice in a multiple-choice interaction)
   */
-case class InteractionComponent(id: String, definition: Option[LanguageMap])
+case class InteractionComponent(id: String, definition: Option[LanguageMap]) extends Equivalence {
+
+  /** Generates a signature that can be used to test logical equivalence between objects
+    *
+    * The signature for an interaction component is computed by concatenating the identifier and the signature of the
+    * definition language map with a standard separator and then hashing
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(id, definition.map(_.signature()).getOrElse(placeholder))
+      }
+    }
+  }
+}
 
 object InteractionComponent {
   implicit val decoder: Decoder[InteractionComponent] = deriveDecoder[InteractionComponent]

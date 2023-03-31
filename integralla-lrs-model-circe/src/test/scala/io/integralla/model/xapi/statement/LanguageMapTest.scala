@@ -34,7 +34,7 @@ class LanguageMapTest extends UnitSpec {
           assert(actual.value("es") === "¡Hola Mundo!")
           assert(actual.value("it") === "Ciao mondo!")
           assert(actual.value("hi") === "हैलो वर्ल्ड!")
-        case Left(_) => false
+        case Left(err) => throw err
       }
     }
   }
