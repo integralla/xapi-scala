@@ -38,4 +38,47 @@ class LanguageMapTest extends UnitSpec {
       }
     }
   }
+
+  describe("[equivalence]") {
+
+    val sample: LanguageMap = LanguageMap(
+      Map(
+        "en" -> "Hello, World!",
+        "es" -> "¡Hola Mundo!",
+        "it" -> "Ciao mondo!",
+        "hi" -> "हैलो वर्ल्ड!"
+      )
+    )
+
+    it("should return true if both language maps are equivalent") {
+      val left: LanguageMap = sample.copy()
+      val right: LanguageMap = sample.copy()
+      assert(left.isEquivalentTo(right))
+    }
+
+    it("should return true if both language maps are equivalent excepting order") {
+      val left: LanguageMap = sample.copy()
+      val right: LanguageMap = LanguageMap(
+        Map(
+          "hi" -> "हैलो वर्ल्ड!",
+          "en" -> "Hello, World!",
+          "it" -> "Ciao mondo!",
+          "es" -> "¡Hola Mundo!"
+        )
+      )
+      assert(left.isEquivalentTo(right))
+    }
+
+    it("should return true if both language maps are equivalent excepting language code case") {
+      val left: LanguageMap = LanguageMap(Map("en-US" -> "Hello, World!"))
+      val right: LanguageMap = LanguageMap(Map("en-us" -> "Hello, World!"))
+      assert(left.isEquivalentTo(right))
+    }
+
+    it("should return false if the language maps are not equivalent") {
+      val left: LanguageMap = LanguageMap(Map("en-US" -> "Hello, World!"))
+      val right: LanguageMap = LanguageMap(Map("en-us" -> "Greetings, World!"))
+      assert(left.isEquivalentTo(right) === false)
+    }
+  }
 }

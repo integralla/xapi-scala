@@ -19,10 +19,13 @@ case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
     */
   override protected[statement] def signature(): String = {
     hash {
-      value
-        .map(ext => {
-          List(ext._1.signature(), ext._2.noSpacesSortKeys).mkString(separator)
-        }).toList.sorted.mkString(separator)
+      combine {
+        value
+          .map(ext => {
+            combine(List(ext._1.signature(), ext._2.noSpacesSortKeys))
+          }).toList.sorted
+      }
+
     }
   }
 }
