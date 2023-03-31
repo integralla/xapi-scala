@@ -39,6 +39,16 @@ trait Equivalence {
     strings.mkString(separator)
   }
 
+  /** Generates a signature from a list of objects that extend this class
+    *
+    * @param list A list of objects of the same type that extend this class
+    * @tparam A The type of objects in the list
+    * @return A string identifier
+    */
+  protected def signatureFromList[A <: Equivalence](list: List[A]): String = {
+    hash(combine(list.map(_.signature()).sorted))
+  }
+
   /** Generates a signature that can be used to test logical equivalence between objects
     * @return A string identifier
     */

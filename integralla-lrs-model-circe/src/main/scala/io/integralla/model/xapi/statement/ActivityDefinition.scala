@@ -48,7 +48,7 @@ case class ActivityDefinition(
   steps: Option[List[InteractionComponent]],
   target: Option[List[InteractionComponent]],
   extensions: Option[ExtensionMap]
-) extends StatementValidation {
+) extends StatementValidation with Equivalence {
 
   /** Computes whether this activity definition is compatible with another instance
     *
@@ -181,6 +181,37 @@ case class ActivityDefinition(
           case Success(_)         => Right(true)
         }
       }).getOrElse(Right(true))
+  }
+
+  /** Generates a signature that can be used to test logical equivalence between objects
+    *
+    * The signature for the activity definition is computed by extracting a signature from each property, or a
+    * placeholder value, and then concatenating with a standard separator and hashing as usual
+    *
+    * For list of interaction components, a signature is extracted from each component, and then those are sorted,
+    * combined, and hashed as usual
+    *
+    * @return A string identifier
+    */
+  override protected[statement] def signature(): String = {
+    hash {
+      combine {
+        List(
+          name.map(_.signature()).getOrElse(placeholder),
+          description.map(_.signature()).getOrElse(placeholder),
+          `type`.map(_.signature()).getOrElse(placeholder),
+          moreInfo.map(_.signature()).getOrElse(placeholder),
+          interactionType.map(_.toString).getOrElse(placeholder),
+          correctResponsesPattern.map(_.signature()).getOrElse(placeholder),
+          choices.map(choices => signatureFromList(choices)).getOrElse(placeholder),
+          scale.map(scale => signatureFromList(scale)).getOrElse(placeholder),
+          source.map(source => signatureFromList(source)).getOrElse(placeholder),
+          steps.map(steps => signatureFromList(steps)).getOrElse(placeholder),
+          target.map(target => signatureFromList(target)).getOrElse(placeholder),
+          extensions.map(_.signature()).getOrElse(placeholder)
+        )
+      }
+    }
   }
 }
 

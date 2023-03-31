@@ -924,6 +924,211 @@ class ActivityDefinitionTest extends UnitSpec {
       }
     }
 
+    describe("[equivalence]") {
+
+      val sample: ActivityDefinition = ActivityDefinition(
+        name = Some(LanguageMap(Map("en" -> "Sample"))),
+        description = Some(LanguageMap(Map("en" -> "Sample Activity"))),
+        `type` = Some(IRI("https://lrs.integralla.io/xapi/activity-types/homework")),
+        moreInfo = Some(IRI("http://adlnet.gov/expapi/activities/cmi.interaction")),
+        interactionType = None,
+        correctResponsesPattern = None,
+        choices = None,
+        scale = None,
+        source = None,
+        steps = None,
+        target = None,
+        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
+      )
+
+      it("should return true of both definitions are equivalent (no interaction type)") {
+        val left: ActivityDefinition = sample.copy()
+        val right: ActivityDefinition = sample.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (choice)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.CHOICE),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+          choices = Some(
+            List(
+              InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+              InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+              InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (fill-in)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.FILL_IN),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (likert)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.LIKERT),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("likert_1"))),
+          scale = Some(
+            List(
+              InteractionComponent(id = "likert_1", definition = Some(LanguageMap(Map("en" -> "Never")))),
+              InteractionComponent(id = "likert_2", definition = Some(LanguageMap(Map("en" -> "Rarely")))),
+              InteractionComponent(id = "likert_3", definition = Some(LanguageMap(Map("en" -> "Sometimes")))),
+              InteractionComponent(id = "likert_4", definition = Some(LanguageMap(Map("en" -> "Often")))),
+              InteractionComponent(id = "likert_5", definition = Some(LanguageMap(Map("en" -> "Always"))))
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (long-fill-in)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.LONG_FILL_IN),
+          correctResponsesPattern = Some(
+            CorrectResponsePattern(
+              List("{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2).")
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (matching)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.MATCHING),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("abies.concolor[.]1"))),
+          source = Some(
+            List(
+              InteractionComponent(
+                id = "abies.concolor",
+                definition = Some(LanguageMap(Map("en" -> "Abies Concolor")))
+              ),
+              InteractionComponent(
+                id = "abies.lasiocarpa",
+                definition = Some(LanguageMap(Map("en" -> "Abies Lasiocarpa")))
+              )
+            )
+          ),
+          target = Some(
+            List(
+              InteractionComponent(id = "1", definition = Some(LanguageMap(Map("en" -> "White Fir")))),
+              InteractionComponent(id = "2", definition = Some(LanguageMap(Map("en" -> "Subalpine Fir"))))
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (numeric)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.NUMERIC),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("4[:]")))
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (other)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.OTHER),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("(35.937432,-86.868896)")))
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (performance)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.PERFORMANCE),
+          correctResponsesPattern = Some(
+            CorrectResponsePattern(List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:"))
+          ),
+          steps = Some(
+            List(
+              InteractionComponent(id = "git-commits", definition = Some(LanguageMap(Map("en" -> "Git Commits")))),
+              InteractionComponent(
+                id = "git-mr-comments-own",
+                definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself")))
+              ),
+              InteractionComponent(
+                id = "git-mr-comments-other",
+                definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by another")))
+              )
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (sequencing)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.SEQUENCING),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
+          choices = Some(
+            List(
+              InteractionComponent(id = "commit", definition = Some(LanguageMap(Map("en" -> "Commit work")))),
+              InteractionComponent(
+                id = "pull-request",
+                definition = Some(LanguageMap(Map("en" -> "Create pull request")))
+              ),
+              InteractionComponent(
+                id = "approve",
+                definition = Some(LanguageMap(Map("en" -> "Get approval for pull request")))
+              ),
+              InteractionComponent(id = "merge", definition = Some(LanguageMap(Map("en" -> "Merge pull request"))))
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent (true-false)") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.TRUE_FALSE),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("true")))
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return true of both definitions are equivalent excepting order of an interaction component list") {
+        val left: ActivityDefinition = sample.copy(
+          interactionType = Some(InteractionType.CHOICE),
+          correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+          choices = Some(
+            List(
+              InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert")))),
+              InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+              InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica"))))
+            )
+          )
+        )
+        val right: ActivityDefinition = left.copy()
+        assert(left.isEquivalentTo(right))
+      }
+
+      it("should return false of the definitions are not equivalent") {
+        val left: ActivityDefinition = sample.copy()
+        val right: ActivityDefinition = sample.copy(
+          name = Some(LanguageMap(Map("en" -> "Sample Activity")))
+        )
+        assert(left.isEquivalentTo(right) === false)
+      }
+    }
+
     describe("isCompatibleWith") {
       val baseDefinition: ActivityDefinition = ActivityDefinition(
         name = None,
