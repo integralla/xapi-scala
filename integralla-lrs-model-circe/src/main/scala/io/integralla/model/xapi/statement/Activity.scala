@@ -14,6 +14,22 @@ import io.integralla.model.xapi.statement.identifiers.IRI
 case class Activity(objectType: Option[StatementObjectType], id: IRI, definition: Option[ActivityDefinition])
     extends Equivalence {
 
+  /** Similar to `isEquivalentTo` but includes the activity definition in addition to the activity identifier
+    *
+    * @param instance The instance to test logical equivalence against
+    * @return True if both instances are logically equivalent, else false
+    */
+  def isEquivalentToFull(instance: Activity): Boolean = {
+    List(
+      this.signature() == instance.signature(),
+      if (List(this.definition, instance.definition).forall(_.isDefined)) {
+        this.definition.get.isEquivalentTo(instance.definition.get)
+      } else if (List(this.definition, instance.definition).forall(_.isEmpty)) {
+        true
+      } else false
+    ).forall(_ == true)
+  }
+
   /** Generates a signature that can be used to test logical equivalence between objects
     *
     * The signature of an activity is based solely on it's identifier

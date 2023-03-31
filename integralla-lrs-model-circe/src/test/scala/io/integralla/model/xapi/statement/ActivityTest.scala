@@ -89,26 +89,80 @@ class ActivityTest extends UnitSpec {
     }
 
     describe("[equivalence]") {
+
+      val activityDefinition: ActivityDefinition = ActivityDefinition(
+        name = Some(LanguageMap(Map("en" -> "Sample"))),
+        description = Some(LanguageMap(Map("en" -> "Sample Activity"))),
+        `type` = Some(IRI("https://lrs.integralla.io/xapi/activity-types/homework")),
+        moreInfo = Some(IRI("http://adlnet.gov/expapi/activities/cmi.interaction")),
+        interactionType = Some(InteractionType.CHOICE),
+        correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+        choices = Some(
+          List(
+            InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+            InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+            InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+          )
+        ),
+        scale = None,
+        source = None,
+        steps = None,
+        target = None,
+        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
+      )
+
       val activity: Activity = Activity(
         Some(StatementObjectType.Activity),
         IRI("https://example.com/xapi/activity/simplestatement"),
-        Some(sampleActivityDefinition)
+        Some(activityDefinition)
       )
 
-      it("should return true if the identifiers of both activities match") {
-        val left = activity.copy()
-        val right = activity.copy()
-        assert(left.isEquivalentTo(right))
+      describe("isEquivalentTo") {
+        it("should return true if the identifiers of both activities match") {
+          val left = activity.copy()
+          val right = activity.copy()
+          assert(left.isEquivalentTo(right))
+        }
+        it("should return true if the identifiers of both activities match (other properties do not)") {
+          val left = activity.copy()
+          val right = activity.copy(objectType = None, definition = None)
+          assert(left.isEquivalentTo(right))
+        }
+        it("should return false if the identifiers of the activities don't match") {
+          val left = activity.copy()
+          val right = activity.copy(id = IRI("https://example.com/xapi/activity/other"))
+          assert(left.isEquivalentTo(right) === false)
+        }
       }
-      it("should return true if the identifiers of both activities match (other properties do not)") {
-        val left = activity.copy()
-        val right = activity.copy(objectType = None, definition = None)
-        assert(left.isEquivalentTo(right))
-      }
-      it("should return false if the identifiers of the activities don't match") {
-        val left = activity.copy()
-        val right = activity.copy(id = IRI("https://example.com/xapi/activity/other"))
-        assert(left.isEquivalentTo(right) === false)
+
+      describe("isEquivalentToFull") {
+        it("should return true if the identifiers and definitions match") {
+          val left = activity.copy()
+          val right = activity.copy()
+          assert(left.isEquivalentToFull(right))
+        }
+        it("should return true if the definitions are both undefined") {
+          val left = activity.copy(definition = None)
+          val right = activity.copy(definition = None)
+          assert(left.isEquivalentToFull(right))
+        }
+        it("should return false if definitions don't match (change)") {
+          val left = activity.copy()
+          val right = activity.copy(
+            definition = Some(activityDefinition.copy(moreInfo = None))
+          )
+          assert(left.isEquivalentToFull(right) === false)
+        }
+        it("should return false if definitions don't match (current is undefined)") {
+          val left = activity.copy(definition = None)
+          val right = activity.copy()
+          assert(left.isEquivalentToFull(right) === false)
+        }
+        it("should return false if definitions don't match (compared is undefined)") {
+          val left = activity.copy()
+          val right = activity.copy(definition = None)
+          assert(left.isEquivalentToFull(right) === false)
+        }
       }
     }
   }
