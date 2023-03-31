@@ -1130,11 +1130,11 @@ class ActivityDefinitionTest extends UnitSpec {
     }
 
     describe("isCompatibleWith") {
-      val baseDefinition: ActivityDefinition = ActivityDefinition(
-        name = None,
-        description = None,
-        `type` = None,
-        moreInfo = None,
+      val sample: ActivityDefinition = ActivityDefinition(
+        name = Some(LanguageMap(Map("en" -> "Sample"))),
+        description = Some(LanguageMap(Map("en" -> "Sample Activity"))),
+        `type` = Some(IRI("https://lrs.integralla.io/xapi/activity-types/homework")),
+        moreInfo = Some(IRI("http://adlnet.gov/expapi/activities/cmi.interaction")),
         interactionType = None,
         correctResponsesPattern = None,
         choices = None,
@@ -1142,43 +1142,43 @@ class ActivityDefinitionTest extends UnitSpec {
         source = None,
         steps = None,
         target = None,
-        extensions = None
+        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
       )
 
       describe("[interaction type only]") {
         it("should return true if the interaction types are the same") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE)
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE)
           )
           assert(left.isCompatibleWith(right))
         }
         it("should return true if the interaction type is not defined on the compared instance") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE)
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = None
           )
           assert(left.isCompatibleWith(right))
         }
         it("should return false if the interaction types are different") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE)
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.MATCHING)
           )
           assert(left.isCompatibleWith(right) === false)
         }
 
         it("should return false if the interaction type has been unset on the new") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = None
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.MATCHING)
           )
           assert(left.isCompatibleWith(right) === false)
@@ -1187,11 +1187,11 @@ class ActivityDefinitionTest extends UnitSpec {
 
       describe("[with correct response pattern]") {
         it("should return true if the interaction type and correct response patterns are compatible") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
           )
@@ -1199,22 +1199,22 @@ class ActivityDefinitionTest extends UnitSpec {
         }
 
         it("should return true if the correct response patterns is not defined on the compared instance") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE)
           )
           assert(left.isCompatibleWith(right))
         }
 
         it("should return false if correct response patterns are not logically equivalent") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("crystal")))
           )
@@ -1222,13 +1222,322 @@ class ActivityDefinitionTest extends UnitSpec {
         }
 
         it("should return false if the correct response patterns is unset on this instance") {
-          val left: ActivityDefinition = baseDefinition.copy(
+          val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = None
           )
-          val right: ActivityDefinition = baseDefinition.copy(
+          val right: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+      }
+
+      describe("[with interaction component lists]") {
+        it("should return true if all the interaction properties are compatible (choice)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (fill-in)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.FILL_IN),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (likert)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.LIKERT),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("likert_1"))),
+            scale = Some(
+              List(
+                InteractionComponent(id = "likert_1", definition = Some(LanguageMap(Map("en" -> "Never")))),
+                InteractionComponent(id = "likert_2", definition = Some(LanguageMap(Map("en" -> "Rarely")))),
+                InteractionComponent(id = "likert_3", definition = Some(LanguageMap(Map("en" -> "Sometimes")))),
+                InteractionComponent(id = "likert_4", definition = Some(LanguageMap(Map("en" -> "Often")))),
+                InteractionComponent(id = "likert_5", definition = Some(LanguageMap(Map("en" -> "Always"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (long-fill-in)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.LONG_FILL_IN),
+            correctResponsesPattern = Some(
+              CorrectResponsePattern(
+                List("{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2).")
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (matching)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.MATCHING),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("abies.concolor[.]1"))),
+            source = Some(
+              List(
+                InteractionComponent(
+                  id = "abies.concolor",
+                  definition = Some(LanguageMap(Map("en" -> "Abies Concolor")))
+                ),
+                InteractionComponent(
+                  id = "abies.lasiocarpa",
+                  definition = Some(LanguageMap(Map("en" -> "Abies Lasiocarpa")))
+                )
+              )
+            ),
+            target = Some(
+              List(
+                InteractionComponent(id = "1", definition = Some(LanguageMap(Map("en" -> "White Fir")))),
+                InteractionComponent(id = "2", definition = Some(LanguageMap(Map("en" -> "Subalpine Fir"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (numeric)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.NUMERIC),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("4[:]")))
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (other)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.OTHER),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("(35.937432,-86.868896)")))
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (performance)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.PERFORMANCE),
+            correctResponsesPattern = Some(
+              CorrectResponsePattern(List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:"))
+            ),
+            steps = Some(
+              List(
+                InteractionComponent(id = "git-commits", definition = Some(LanguageMap(Map("en" -> "Git Commits")))),
+                InteractionComponent(
+                  id = "git-mr-comments-own",
+                  definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself")))
+                ),
+                InteractionComponent(
+                  id = "git-mr-comments-other",
+                  definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by another")))
+                )
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (sequencing)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.SEQUENCING),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "commit", definition = Some(LanguageMap(Map("en" -> "Commit work")))),
+                InteractionComponent(
+                  id = "pull-request",
+                  definition = Some(LanguageMap(Map("en" -> "Create pull request")))
+                ),
+                InteractionComponent(
+                  id = "approve",
+                  definition = Some(LanguageMap(Map("en" -> "Get approval for pull request")))
+                ),
+                InteractionComponent(id = "merge", definition = Some(LanguageMap(Map("en" -> "Merge pull request"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all the interaction properties are compatible (true-false)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.TRUE_FALSE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("true")))
+          )
+          val right: ActivityDefinition = left.copy()
+          assert(left.isCompatibleWith(right))
+        }
+
+        it(
+          "should return true if all the interaction properties are compatible excepting the order of interaction components"
+        ) {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          assert(left.isCompatibleWith(right))
+        }
+
+        it(
+          "should return true if all the interaction properties are compatible excepting the definition language map"
+        ) {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "silica", definition = None),
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz Crystal")))),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en-US" -> "Chert", "en-GB" -> "Chert")))
+                )
+              )
+            )
+          )
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return true if all interaction component lists where undefined on the compared instance") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = None
+          )
+          assert(left.isCompatibleWith(right))
+        }
+
+        it("should return false if an interaction component lists is unset on this instance") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = None
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+
+        it("should return false if an interaction component lists are incompatible (changed identifier)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "obsidian", definition = Some(LanguageMap(Map("en" -> "Obsidian"))))
+              )
+            )
+          )
+          assert(left.isCompatibleWith(right) === false)
+        }
+
+        it("should return false if an interaction component lists are incompatible (removed component)") {
+          val left: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              )
+            )
+          )
+          val right: ActivityDefinition = sample.copy(
+            interactionType = Some(InteractionType.CHOICE),
+            correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
+            choices = Some(
+              List(
+                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
+                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica"))))
+              )
+            )
           )
           assert(left.isCompatibleWith(right) === false)
         }

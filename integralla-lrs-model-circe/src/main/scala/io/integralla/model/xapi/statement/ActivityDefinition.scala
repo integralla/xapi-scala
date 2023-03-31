@@ -52,6 +52,15 @@ case class ActivityDefinition(
 
   /** Computes whether this activity definition is compatible with another instance
     *
+    * Compatibility is based solely on interaction properties which include the interaction type, the correct response
+    * pattern and set of possible interaction component lists (choices, scale, source, steps, target)
+    *
+    * Definitions are considered as compatible if the interaction properties are logically equivalent. For example, an
+    * activity definition for a multiple choice activity would be considered compatible so long as the choices remained
+    * the same, regardless of the order in which they are defined. The definitions of interaction components are not
+    * included in the comparison. For example, if the text for a given choice in the multiple choice activity changes,
+    * or if a new language map is added, it would still be considered compatible
+    *
     * @param instance The instance to compare this activity definition with
     * @return True if this instance is compatible with the provided instance
     */
@@ -83,10 +92,47 @@ case class ActivityDefinition(
       } else true
     }
 
+    /** Computes compatibility based on the interaction components
+      *
+      * The set of possible interaction components are treated as compatible if none are defined on the compared
+      * instance, or if the set of interaction components identifiers (`id`) are same
+      *
+      * The set of interaction component identifiers are compared by adding them to a list, sorting them, and
+      * concatenating them with a standard separator.
+      *
+      * The interaction component definitions are not considered because they can be changed without breaking
+      * backwards compatibility (for example, a spelling error can be fixed in the text of a multiple choice option,
+      * or a new language map can be added)
+      *
+      * @return True of the set of possible interaction components are equivalent
+      */
+    def interactionComponentsAreCompatible(): Boolean = {
+
+      def compareInteractionComponents(
+        left: Option[List[InteractionComponent]],
+        right: Option[List[InteractionComponent]]
+      ): Boolean = {
+        left.map(_.map(_.id).sorted.mkString("#")) == right.map(_.map(_.id).sorted.mkString("#"))
+      }
+
+      if (
+        List(instance.choices, instance.scale, instance.source, instance.target, instance.steps).exists(_.isDefined)
+      ) {
+        List(
+          compareInteractionComponents(this.choices, instance.choices),
+          compareInteractionComponents(this.scale, instance.scale),
+          compareInteractionComponents(this.source, instance.source),
+          compareInteractionComponents(this.target, instance.target),
+          compareInteractionComponents(this.steps, instance.steps)
+        ).forall(_ == true)
+      } else true
+    }
+
     List(
       interactionTypeIsCompatible(),
-      correctResponsePatternIsCompatible()
-    ).find(!_).getOrElse(true)
+      correctResponsePatternIsCompatible(),
+      interactionComponentsAreCompatible()
+    ).forall(_ == true)
   }
 
   override def validate: Seq[Either[String, Boolean]] = {
