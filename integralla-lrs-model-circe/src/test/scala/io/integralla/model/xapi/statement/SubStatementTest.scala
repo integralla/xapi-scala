@@ -16,14 +16,14 @@ class SubStatementTest extends UnitSpec {
   val sampleActivitySubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
     StatementObject(
       Activity(
         Some(StatementObjectType.Activity),
         IRI("http://example.com/website"),
         Some(
           ActivityDefinition(
-            Some(Map("en-US" -> "Some Awesome Website")),
+            Some(LanguageMap(Map("en-US" -> "Some Awesome Website"))),
             None,
             None,
             None,
@@ -52,7 +52,7 @@ class SubStatementTest extends UnitSpec {
   val sampleAgentSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
     StatementObject(
       Agent(
         Some(StatementObjectType.Agent),
@@ -75,7 +75,7 @@ class SubStatementTest extends UnitSpec {
   val sampleGroupSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
     StatementObject(
       Group(
         StatementObjectType.Group,
@@ -118,7 +118,7 @@ class SubStatementTest extends UnitSpec {
   val sampleStatementRefSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
     StatementObject(
       StatementRef(StatementObjectType.StatementRef, UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f"))
     ),
@@ -259,7 +259,7 @@ class SubStatementTest extends UnitSpec {
       it("should return false if both sub-statements are not equivalent") {
         val left: SubStatement = sampleActivitySubStatement.copy()
         val right: SubStatement = sampleActivitySubStatement.copy(
-          verb = StatementVerb(IRI("http://example.com/observed"), Some(Map("en-US" -> "observed")))
+          verb = StatementVerb(IRI("http://example.com/observed"), Some(LanguageMap(Map("en-US" -> "observed"))))
         )
         assert(left.isEquivalentTo(right) === false)
       }
@@ -353,7 +353,7 @@ class SubStatementTest extends UnitSpec {
           None,
           None
         ),
-        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(Map("en-US" -> "met"))),
+        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
         `object` = StatementObject(
           Agent(
             Some(StatementObjectType.Agent),

@@ -33,8 +33,8 @@ class StatementContextTest extends UnitSpec {
       IRI("http://www.example.com/meetings/categories/teammeeting"),
       Some(
         ActivityDefinition(
-          Some(Map("en" -> "team meeting")),
-          Some(Map("en" -> "A category of meeting used for regular team meetings.")),
+          Some(LanguageMap(Map("en" -> "team meeting"))),
+          Some(LanguageMap(Map("en" -> "A category of meeting used for regular team meetings."))),
           Some(IRI("http://example.com/expapi/activities/meetingcategory")),
           None,
           None,

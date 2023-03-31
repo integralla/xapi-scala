@@ -18,7 +18,7 @@ class StatementTest extends UnitSpec with StrictLogging {
   val basicStatement: Statement = Statement(
     Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-    StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(Map("en-US" -> "created"))),
+    StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
     StatementObject(
       Activity(None, IRI("http://example.adlnet.gov/xapi/example/activity"), None)
     ),
@@ -69,7 +69,10 @@ class StatementTest extends UnitSpec with StrictLogging {
   )
 
   val sampleVerb: StatementVerb =
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit", "it-IT" -> "visiterò")))
+    StatementVerb(
+      IRI("http://example.com/visited"),
+      Some(LanguageMap(Map("en-US" -> "will visit", "it-IT" -> "visiterò")))
+    )
 
   val sampleActivityObject: StatementObject = StatementObject(
     Activity(
@@ -77,8 +80,8 @@ class StatementTest extends UnitSpec with StrictLogging {
       IRI("http://example.com/xapi/activity/simplestatement"),
       Some(
         ActivityDefinition(
-          Some(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")),
-          Some(Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")),
+          Some(LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))),
+          Some(LanguageMap(Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI"))),
           None,
           None,
           None,
@@ -100,18 +103,18 @@ class StatementTest extends UnitSpec with StrictLogging {
       IRI("http://example.adlnet.gov/xapi/example/activity"),
       Some(
         ActivityDefinition(
-          Some(Map("en-US" -> "Example Activity")),
-          Some(Map("en-US" -> "An xAPI example activity")),
+          Some(LanguageMap(Map("en-US" -> "Example Activity"))),
+          Some(LanguageMap(Map("en-US" -> "An xAPI example activity"))),
           Some(IRI("http://adlnet.gov/expapi/activities/cmi.interaction")),
           Some(IRI("https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#Appendix2C")),
           Some(InteractionType.CHOICE),
           Some(CorrectResponsePattern(List("golf[,]tetris"))),
           Some(
             List(
-              InteractionComponent("golf", Some(Map("en-US" -> "Golf Example"))),
-              InteractionComponent("facebook", Some(Map("en-US" -> "Facebook App"))),
-              InteractionComponent("tetris", Some(Map("en-US" -> "Tetris Example"))),
-              InteractionComponent("scrabble", Some(Map("en-US" -> "Scrabble Example")))
+              InteractionComponent("golf", Some(LanguageMap(Map("en-US" -> "Golf Example")))),
+              InteractionComponent("facebook", Some(LanguageMap(Map("en-US" -> "Facebook App")))),
+              InteractionComponent("tetris", Some(LanguageMap(Map("en-US" -> "Tetris Example")))),
+              InteractionComponent("scrabble", Some(LanguageMap(Map("en-US" -> "Scrabble Example"))))
             )
           ),
           None,
@@ -174,14 +177,14 @@ class StatementTest extends UnitSpec with StrictLogging {
     SubStatement(
       StatementObjectType.SubStatement,
       Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-      StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+      StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
       StatementObject(
         Activity(
           Some(StatementObjectType.Activity),
           IRI("http://example.com/website"),
           Some(
             ActivityDefinition(
-              Some(Map("en-US" -> "Some Awesome Website")),
+              Some(LanguageMap(Map("en-US" -> "Some Awesome Website"))),
               None,
               None,
               None,
@@ -238,8 +241,8 @@ class StatementTest extends UnitSpec with StrictLogging {
 
   val sampleAttachment: Attachment = Attachment(
     IRI("http://adlnet.gov/expapi/attachments/signature"),
-    Map("en-US" -> "Signature"),
-    Some(Map("en-US" -> "A test signature")),
+    LanguageMap(Map("en-US" -> "Signature")),
+    Some(LanguageMap(Map("en-US" -> "A test signature"))),
     "application/octet-stream",
     4235,
     "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634",
@@ -806,7 +809,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           Statement(
             Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
             Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(Map("en-US" -> "created"))),
+            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
             StatementObject(
               StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
             ),
@@ -833,7 +836,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           Statement(
             Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
             Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(Map("en-US" -> "created"))),
+            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
             StatementObject(
               StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
             ),
@@ -1030,7 +1033,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None,
           None
         ),
-        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(Map("en-US" -> "met"))),
+        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
         `object` = StatementObject(
           Agent(
             Some(StatementObjectType.Agent),

@@ -9,8 +9,8 @@ class AttachmentTest extends UnitSpec {
 
   val sampleAttachment: Attachment = Attachment(
     IRI("http://adlnet.gov/expapi/attachments/signature"),
-    Map("en-US" -> "Signature"),
-    Some(Map("en-US" -> "A test signature")),
+    LanguageMap(Map("en-US" -> "Signature")),
+    Some(LanguageMap(Map("en-US" -> "A test signature"))),
     "application/octet-stream",
     4235,
     "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634",

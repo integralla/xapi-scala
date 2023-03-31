@@ -7,8 +7,10 @@ import io.integralla.testing.spec.UnitSpec
 
 class ActivityTest extends UnitSpec {
 
-  val nameLanguageMap: LanguageMap = Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
-  val descriptionLanguageMap: LanguageMap = Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  val nameLanguageMap: LanguageMap = LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))
+  val descriptionLanguageMap: LanguageMap = LanguageMap(
+    Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  )
 
   val sampleActivityDefinition: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),

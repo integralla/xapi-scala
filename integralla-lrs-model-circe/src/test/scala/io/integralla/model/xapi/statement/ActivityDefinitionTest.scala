@@ -10,8 +10,10 @@ import io.integralla.testing.spec.UnitSpec
 class ActivityDefinitionTest extends UnitSpec {
 
   /* Shared */
-  val nameLanguageMap: LanguageMap = Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
-  val descriptionLanguageMap: LanguageMap = Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  val nameLanguageMap: LanguageMap = LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))
+  val descriptionLanguageMap: LanguageMap = LanguageMap(
+    Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  )
   val interactionActivityType: IRI = IRI("http://adlnet.gov/expapi/activities/cmi.interaction")
   val moreInfo: IRI = IRI("https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Data.md#Appendix2C")
   val extensions: ExtensionMap = ExtensionMap(
@@ -62,10 +64,10 @@ class ActivityDefinitionTest extends UnitSpec {
   /* Choice Interaction Activity */
   val choiceCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("golf[,]tetris"))
   val choiceInteractionComponents: List[InteractionComponent] = List(
-    InteractionComponent("golf", Some(Map("en-US" -> "Golf Example"))),
-    InteractionComponent("facebook", Some(Map("en-US" -> "Facebook App"))),
-    InteractionComponent("tetris", Some(Map("en-US" -> "Tetris Example"))),
-    InteractionComponent("scrabble", Some(Map("en-US" -> "Scrabble Example")))
+    InteractionComponent("golf", Some(LanguageMap(Map("en-US" -> "Golf Example")))),
+    InteractionComponent("facebook", Some(LanguageMap(Map("en-US" -> "Facebook App")))),
+    InteractionComponent("tetris", Some(LanguageMap(Map("en-US" -> "Tetris Example")))),
+    InteractionComponent("scrabble", Some(LanguageMap(Map("en-US" -> "Scrabble Example"))))
   )
   val choiceInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -121,10 +123,10 @@ class ActivityDefinitionTest extends UnitSpec {
   /* Likert Interaction Activity */
   val likertCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("likert_3"))
   val likertInteractionComponents: List[InteractionComponent] = List(
-    InteractionComponent("likert_0", Some(Map("en-US" -> "It's OK"))),
-    InteractionComponent("likert_1", Some(Map("en-US" -> "It's Pretty Cool"))),
-    InteractionComponent("likert_2", Some(Map("en-US" -> "It's Damn Cool"))),
-    InteractionComponent("likert_3", Some(Map("en-US" -> "It's Gonna Change the World")))
+    InteractionComponent("likert_0", Some(LanguageMap(Map("en-US" -> "It's OK")))),
+    InteractionComponent("likert_1", Some(LanguageMap(Map("en-US" -> "It's Pretty Cool")))),
+    InteractionComponent("likert_2", Some(LanguageMap(Map("en-US" -> "It's Damn Cool")))),
+    InteractionComponent("likert_3", Some(LanguageMap(Map("en-US" -> "It's Gonna Change the World"))))
   )
   val likertInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -186,16 +188,16 @@ class ActivityDefinitionTest extends UnitSpec {
     List("ben[.]3[,]chris[.]2[,]troy[.]4[,]freddie[.]1")
   )
   val matchingInteractionComponentsSource: List[InteractionComponent] = List(
-    InteractionComponent("ben", Some(Map("en-US" -> "Ben"))),
-    InteractionComponent("chris", Some(Map("en-US" -> "Chris"))),
-    InteractionComponent("troy", Some(Map("en-US" -> "Troy"))),
-    InteractionComponent("freddie", Some(Map("en-US" -> "Freddie")))
+    InteractionComponent("ben", Some(LanguageMap(Map("en-US" -> "Ben")))),
+    InteractionComponent("chris", Some(LanguageMap(Map("en-US" -> "Chris")))),
+    InteractionComponent("troy", Some(LanguageMap(Map("en-US" -> "Troy")))),
+    InteractionComponent("freddie", Some(LanguageMap(Map("en-US" -> "Freddie"))))
   )
   val matchingInteractionComponentsTarget: List[InteractionComponent] = List(
-    InteractionComponent("1", Some(Map("en-US" -> "Swift Kick in the Grass"))),
-    InteractionComponent("2", Some(Map("en-US" -> "We got Runs"))),
-    InteractionComponent("3", Some(Map("en-US" -> "Duck"))),
-    InteractionComponent("4", Some(Map("en-US" -> "Van Delay Industries")))
+    InteractionComponent("1", Some(LanguageMap(Map("en-US" -> "Swift Kick in the Grass")))),
+    InteractionComponent("2", Some(LanguageMap(Map("en-US" -> "We got Runs")))),
+    InteractionComponent("3", Some(LanguageMap(Map("en-US" -> "Duck")))),
+    InteractionComponent("4", Some(LanguageMap(Map("en-US" -> "Van Delay Industries"))))
   )
   val matchingInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -280,9 +282,9 @@ class ActivityDefinitionTest extends UnitSpec {
     List("pong[.]1:[,]dg[.]:10[,]lunch[.]")
   )
   val performanceInteractionComponents: List[InteractionComponent] = List(
-    InteractionComponent("pong", Some(Map("en-US" -> "Net pong matches won"))),
-    InteractionComponent("dg", Some(Map("en-US" -> "Strokes over par in disc golf at Liberty"))),
-    InteractionComponent("lunch", Some(Map("en-US" -> "Lunch having been eaten")))
+    InteractionComponent("pong", Some(LanguageMap(Map("en-US" -> "Net pong matches won")))),
+    InteractionComponent("dg", Some(LanguageMap(Map("en-US" -> "Strokes over par in disc golf at Liberty")))),
+    InteractionComponent("lunch", Some(LanguageMap(Map("en-US" -> "Lunch having been eaten"))))
   )
   val performanceInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -312,10 +314,10 @@ class ActivityDefinitionTest extends UnitSpec {
   /* Sequencing Interaction Activity */
   val sequencingCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("tim[,]mike[,]ells[,]ben"))
   val sequencingInteractionComponents: List[InteractionComponent] = List(
-    InteractionComponent("tim", Some(Map("en-US" -> "Tim"))),
-    InteractionComponent("ben", Some(Map("en-US" -> "Ben"))),
-    InteractionComponent("ells", Some(Map("en-US" -> "Ells"))),
-    InteractionComponent("mike", Some(Map("en-US" -> "Mike")))
+    InteractionComponent("tim", Some(LanguageMap(Map("en-US" -> "Tim")))),
+    InteractionComponent("ben", Some(LanguageMap(Map("en-US" -> "Ben")))),
+    InteractionComponent("ells", Some(LanguageMap(Map("en-US" -> "Ells")))),
+    InteractionComponent("mike", Some(LanguageMap(Map("en-US" -> "Mike"))))
   )
   val sequencingInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),

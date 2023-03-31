@@ -18,7 +18,7 @@ class StatementVerbTest extends UnitSpec {
       }
 
       it("should successfully encode a verb that includes a display language map") {
-        val languageMap: LanguageMap = Map("en-US" -> "will visit", "it-IT" -> "visiterò")
+        val languageMap: LanguageMap = LanguageMap(Map("en-US" -> "will visit", "it-IT" -> "visiterò"))
         val verb: StatementVerb = StatementVerb(IRI("http://example.com/visited"), Some(languageMap))
         val encoded: String = verb.asJson.noSpaces
         val expected: String =
@@ -41,7 +41,7 @@ class StatementVerbTest extends UnitSpec {
       it("should successfully decode a verb that includes a display language map") {
         val data: String = """{"id":"http://example.com/visited","display":{"en-US":"will visit","it-IT":"visiterò"}}"""
         val decoded: Either[io.circe.Error, StatementVerb] = decode[StatementVerb](data)
-        val languageMap: LanguageMap = Map("en-US" -> "will visit", "it-IT" -> "visiterò")
+        val languageMap: LanguageMap = LanguageMap(Map("en-US" -> "will visit", "it-IT" -> "visiterò"))
         val expected: StatementVerb = StatementVerb(IRI("http://example.com/visited"), Some(languageMap))
         decoded match {
           case Right(actual) => assert(actual === expected)
@@ -70,7 +70,7 @@ class StatementVerbTest extends UnitSpec {
     describe("[equivalence]") {
       val verb: StatementVerb = StatementVerb(
         IRI("http://example.com/visited"),
-        Some(Map("en-US" -> "will visit", "it-IT" -> "visiterò"))
+        Some(LanguageMap(Map("en-US" -> "will visit", "it-IT" -> "visiterò")))
       )
 
       it("should return true if the identifiers of two verbs match") {

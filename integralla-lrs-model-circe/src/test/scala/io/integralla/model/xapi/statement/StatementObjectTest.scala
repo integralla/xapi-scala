@@ -12,8 +12,10 @@ import scala.util.Using
 
 class StatementObjectTest extends UnitSpec {
 
-  val nameLanguageMap: LanguageMap = Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
-  val descriptionLanguageMap: LanguageMap = Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  val nameLanguageMap: LanguageMap = LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))
+  val descriptionLanguageMap: LanguageMap = LanguageMap(
+    Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
+  )
 
   val sampleActivityDefinition: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -59,14 +61,14 @@ class StatementObjectTest extends UnitSpec {
   val sampleSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
     Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(Map("en-US" -> "will visit"))),
+    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
     StatementObject(
       Activity(
         Some(StatementObjectType.Activity),
         IRI("http://example.com/website"),
         Some(
           ActivityDefinition(
-            Some(Map("en-US" -> "Some Awesome Website")),
+            Some(LanguageMap(Map("en-US" -> "Some Awesome Website"))),
             None,
             None,
             None,
