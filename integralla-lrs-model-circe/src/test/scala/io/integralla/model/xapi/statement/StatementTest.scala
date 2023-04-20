@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, ObjectRef}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -982,43 +983,28 @@ class StatementTest extends UnitSpec with StrictLogging {
     describe("getActivityReferences") {
       it("should return a list with an activity if the statement object is an activity") {
         val statement: Statement = basicStatement.copy()
-        val activities: List[Activity] = statement.getActivityReferences
-        assert(activities.length === 1)
+        val references: List[ActivityReference] = statement.getActivityReferences
+        assert(references.length === 1)
+        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.inSubStatement === false)
       }
+
       it("should return a list that includes context activities if context activities are defined") {
         val statement: Statement = basicStatement.copy(
           context = Some(sampleContext)
         )
-        val activities: List[Activity] = statement.getActivityReferences
-        assert(activities.length === 2)
+        val references: List[ActivityReference] = statement.getActivityReferences
+        assert(references.length === 2)
+        assert(references.map(_.inSubStatement).forall(_ === false))
       }
-      it("should return a distinct list of activities") {
-        val activity: Activity = Activity(None, IRI("https://lrs.integralla.io/activity/1"), None)
-        val statement: Statement = basicStatement.copy(
-          `object` = StatementObject(activity),
-          context = Some(
-            sampleContext.copy(contextActivities =
-              Some(
-                ContextActivities(
-                  parent = Some(List(activity)),
-                  grouping = None,
-                  category = None,
-                  other = None
-                )
-              )
-            )
-          )
-        )
-        val activities: List[Activity] = statement.getActivityReferences
-        assert(activities.length === 1)
-      }
+
       it(
         "should return an empty list if the statement object is not an activity, and no context activities are defined"
       ) {
         val statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
-        val activities: List[Activity] = statement.getActivityReferences
-        assert(activities.isEmpty)
+        val references: List[ActivityReference] = statement.getActivityReferences
+        assert(references.isEmpty)
       }
     }
 

@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe._
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, ObjectRef}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -20,11 +21,11 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     * Activities can be referenced via the statement object, or in a sub-statement
     * @return A list of activities
     */
-  def getActivityReferences: List[Activity] = {
+  def getActivityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
     value match {
-      case activity: Activity         => List(activity)
+      case activity: Activity         => List(ActivityReference(activity, ObjectRef, inSubStatement))
       case subStatement: SubStatement => subStatement.getActivityReferences
-      case _                          => List.empty[Activity]
+      case _                          => List.empty[ActivityReference]
     }
   }
 

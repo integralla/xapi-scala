@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, ObjectRef}
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -224,7 +225,7 @@ class StatementObjectTest extends UnitSpec {
     }
 
     describe("[equivalence]") {
-      it("should return true if both objects are equivalent activities") {
+      it("should return true if both objects are equivalent references") {
         val left: StatementObject = StatementObject(sampleActivity.copy())
         val right: StatementObject = StatementObject(sampleActivity.copy())
         assert(left.isEquivalentTo(right))
@@ -270,19 +271,23 @@ class StatementObjectTest extends UnitSpec {
     describe("getActivityReferences") {
       it("should return a list with a single activity if the statement object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
-        val activities: List[Activity] = statementObject.getActivityReferences
-        assert(activities.length === 1)
+        val references: List[ActivityReference] = statementObject.getActivityReferences(false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.inSubStatement === false)
       }
 
       it("should return a non-empty list of the statement object is a sub-statement where the object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
-        val activities: List[Activity] = statementObject.getActivityReferences
-        assert(activities.length === 1)
+        val references: List[ActivityReference] = statementObject.getActivityReferences(true)
+        assert(references.length === 1)
+        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.inSubStatement === true)
       }
       it("should return an empty list if the statement object is not an activity nor a sub-statement") {
         val statementObject: StatementObject = StatementObject(sampleAgent.copy())
-        val activities: List[Activity] = statementObject.getActivityReferences
-        assert(activities.isEmpty)
+        val references: List[ActivityReference] = statementObject.getActivityReferences()
+        assert(references.isEmpty)
       }
     }
 

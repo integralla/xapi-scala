@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, ObjectRef}
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -272,10 +273,12 @@ class SubStatementTest extends UnitSpec {
     }
 
     describe("getActivityReferences") {
-      it("should return an activity if the statement object is an activity") {
+      it("should return an activity reference if the statement object is an activity") {
         val subStatement: SubStatement = sampleActivitySubStatement.copy()
-        val activities: List[Activity] = subStatement.getActivityReferences
-        assert(activities.length === 1)
+        val references: List[ActivityReference] = subStatement.getActivityReferences
+        assert(references.length === 1)
+        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.inSubStatement === true)
       }
 
       it("should return a list that includes context activities if context activities are defined") {
@@ -301,44 +304,17 @@ class SubStatementTest extends UnitSpec {
             )
           )
         )
-        val activities: List[Activity] = subStatement.getActivityReferences
-        assert(activities.length === 5)
-      }
-
-      it("should return a distinct list") {
-        val subStatement: SubStatement = sampleActivitySubStatement.copy(
-          `object` = StatementObject(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None)),
-          context = Some(
-            StatementContext(
-              registration = None,
-              instructor = None,
-              team = None,
-              contextActivities = Some(
-                ContextActivities(
-                  parent = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))),
-                  grouping = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
-                  category = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))),
-                  other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None)))
-                )
-              ),
-              revision = None,
-              platform = None,
-              language = None,
-              statement = None,
-              extensions = None
-            )
-          )
-        )
-        val activities: List[Activity] = subStatement.getActivityReferences
-        assert(activities.length === 4)
+        val references: List[ActivityReference] = subStatement.getActivityReferences
+        assert(references.length === 5)
+        assert(references.map(_.inSubStatement).forall(_ === true))
       }
 
       it(
         "should return an empty list if the statement object is not an activity, and if no context activities are defined"
       ) {
         val subStatement: SubStatement = sampleAgentSubStatement.copy()
-        val activities: List[Activity] = subStatement.getActivityReferences
-        assert(activities.isEmpty)
+        val references: List[ActivityReference] = subStatement.getActivityReferences
+        assert(references.isEmpty)
       }
     }
 

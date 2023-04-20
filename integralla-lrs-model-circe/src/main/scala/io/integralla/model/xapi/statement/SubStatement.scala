@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.references.ActivityReference
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 
 import java.time.OffsetDateTime
@@ -29,10 +30,12 @@ case class SubStatement(
 ) extends StatementValidation with Equivalence {
 
   /** @return A distinct list of all activities referenced in the sub-statement */
-  def getActivityReferences: List[Activity] = {
+  def getActivityReferences: List[ActivityReference] = {
     List(
-      `object`.getActivityReferences,
-      context.flatMap(_.contextActivities.map(_.getActivityReferences)).getOrElse(List.empty[Activity])
+      `object`.getActivityReferences(true),
+      context
+        .flatMap(_.contextActivities.map(_.getActivityReferences(true)))
+        .getOrElse(List.empty[ActivityReference])
     ).flatten.distinct
   }
 

@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
 import io.integralla.model.xapi.statement.identifiers.IRI
 import io.integralla.testing.spec.UnitSpec
 
@@ -27,12 +28,12 @@ class ContextActivitiesTest extends UnitSpec {
 
   describe("Context Activities") {
     describe("[encoding]") {
-      it("should successfully encode a context activities object") {
+      it("should successfully encode a context references object") {
         val actual = sampleContextActivities.asJson.noSpaces
         assert(actual === sampleContextActivitiesEncoded)
       }
 
-      it("should successfully encode a context activities object in which not all properties are defined") {
+      it("should successfully encode a context references object in which not all properties are defined") {
         val contextActivities: ContextActivities = ContextActivities(Some(List(sampleParent)), None, None, None)
         val actual = contextActivities.asJson.noSpaces
         val expected: String =
@@ -42,7 +43,7 @@ class ContextActivitiesTest extends UnitSpec {
     }
 
     describe("[decoding]") {
-      it("should successfully decode a context activities object") {
+      it("should successfully decode a context references object") {
         val decoded: Either[io.circe.Error, ContextActivities] =
           decode[ContextActivities](sampleContextActivitiesEncoded)
         decoded match {
@@ -51,7 +52,7 @@ class ContextActivitiesTest extends UnitSpec {
         }
       }
 
-      it("should successfully decode a context activities object in which not all properties are defined") {
+      it("should successfully decode a context references object in which not all properties are defined") {
         val data: String =
           """{"parent":[{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/test"}]}"""
         val decoded: Either[io.circe.Error, ContextActivities] = decode[ContextActivities](data)
@@ -63,7 +64,7 @@ class ContextActivitiesTest extends UnitSpec {
       }
 
       it(
-        "should successfully decode a context activities object in which properties are set to a single activity object"
+        "should successfully decode a context references object in which properties are set to a single activity object"
       ) {
         val data: String =
           """{"parent": {"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/test"},"grouping":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/class"},"category":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/category"},"other":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/other"}}"""
@@ -125,35 +126,40 @@ class ContextActivitiesTest extends UnitSpec {
         other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None)))
       )
 
-      it("should return a distinct list of all activities referenced as context activities") {
+      it("should return a list of all activity references within the context activities object") {
         val contextActivities: ContextActivities = baseContextActivities.copy()
-        val activities: List[Activity] = contextActivities.getActivityReferences
-        val iris: List[String] = activities.map(activity => activity.id.value)
+        val references: List[ActivityReference] = contextActivities.getActivityReferences()
+        val iris: List[String] = references.map(_.activity.id.value)
 
-        assert(activities.length === 4)
+        assert(references.length === 4)
         assert(iris.contains("https://lrs.integralla.io/activity/parent"))
         assert(iris.contains("https://lrs.integralla.io/activity/grouping"))
         assert(iris.contains("https://lrs.integralla.io/activity/category"))
         assert(iris.contains("https://lrs.integralla.io/activity/other"))
+
+        assert(references.find(_.activity.id.value.endsWith("parent")).get.referenceType === ParentRef)
+        assert(references.find(_.activity.id.value.endsWith("grouping")).get.referenceType === GroupingRef)
+        assert(references.find(_.activity.id.value.endsWith("category")).get.referenceType === CategoryRef)
+        assert(references.find(_.activity.id.value.endsWith("other")).get.referenceType === OtherRef)
+
+        assert(references.map(_.inSubStatement).forall(_ === false))
       }
 
-      it("should return a distinct list") {
-        val contextActivities: ContextActivities = baseContextActivities.copy(
-          other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None)))
-        )
-        val activities: List[Activity] = contextActivities.getActivityReferences
-        assert(activities.length === 3)
+      it("should set the inSubStatement property to true, if the inSubStatement parameter is true") {
+        val contextActivities: ContextActivities = baseContextActivities.copy()
+        val references: List[ActivityReference] = contextActivities.getActivityReferences(true)
+        assert(references.map(_.inSubStatement).forall(_ === true))
       }
 
-      it("should return an empty list if none or defined") {
+      it("should return an empty list if there are no activity references") {
         val contextActivities: ContextActivities = baseContextActivities.copy(
           parent = None,
           grouping = None,
           category = None,
           other = None
         )
-        val activities: List[Activity] = contextActivities.getActivityReferences
-        assert(activities.isEmpty)
+        val references: List[ActivityReference] = contextActivities.getActivityReferences()
+        assert(references.isEmpty)
       }
 
     }

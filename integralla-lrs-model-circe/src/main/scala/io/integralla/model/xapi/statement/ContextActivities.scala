@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
 
 /** A map of the types of learning activity context that the statement is related to
   *
@@ -19,9 +20,13 @@ case class ContextActivities(
 ) extends Equivalence {
 
   /** @return A distinct list of all activities referenced in the context */
-  def getActivityReferences: List[Activity] = {
-    List(parent, grouping, category, other)
-      .filter(_.isDefined).flatMap(_.get).distinct
+  def getActivityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
+    List(
+      parent.map(_.map(activity => ActivityReference(activity, ParentRef, inSubStatement))),
+      grouping.map(_.map(activity => ActivityReference(activity, GroupingRef, inSubStatement))),
+      category.map(_.map(activity => ActivityReference(activity, CategoryRef, inSubStatement))),
+      other.map(_.map(activity => ActivityReference(activity, OtherRef, inSubStatement)))
+    ).flatMap(_.getOrElse(List.empty[ActivityReference])).distinct
   }
 
   /** Generates a signature that can be used to test logical equivalence between objects
