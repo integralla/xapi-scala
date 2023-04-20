@@ -2,7 +2,7 @@ package io.integralla.model.references
 
 import io.integralla.model.xapi.statement.Activity
 
-/** Model for a activity references within a statement
+/** Model for an activity reference within a statement
   *
   * @param activity An Activity
   * @param referenceType The type of reference (object, parent, grouping, category, other)

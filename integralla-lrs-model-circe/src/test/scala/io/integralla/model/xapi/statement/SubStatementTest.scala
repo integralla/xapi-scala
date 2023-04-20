@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityReference, ObjectRef}
+import io.integralla.model.references.{ActivityReference, ActivityObjectRef}
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -277,7 +277,7 @@ class SubStatementTest extends UnitSpec {
         val subStatement: SubStatement = sampleActivitySubStatement.copy()
         val references: List[ActivityReference] = subStatement.getActivityReferences
         assert(references.length === 1)
-        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === true)
       }
 

@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityReference, ObjectRef}
+import io.integralla.model.references.{ActivityReference, ActivityObjectRef}
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -273,7 +273,7 @@ class StatementObjectTest extends UnitSpec {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
         val references: List[ActivityReference] = statementObject.getActivityReferences()
         assert(references.length === 1)
-        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === false)
       }
 
@@ -281,7 +281,7 @@ class StatementObjectTest extends UnitSpec {
         val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
         val references: List[ActivityReference] = statementObject.getActivityReferences(true)
         assert(references.length === 1)
-        assert(references.head.referenceType === ObjectRef)
+        assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === true)
       }
       it("should return an empty list if the statement object is not an activity nor a sub-statement") {

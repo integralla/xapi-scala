@@ -4,7 +4,7 @@ package io.integralla.model.references
 sealed trait ActivityReferenceType
 
 /** When the activity is the object of the statement */
-case object ObjectRef extends ActivityReferenceType
+case object ActivityObjectRef extends ActivityReferenceType
 
 /** When the activity is a parent activity within the statement context */
 case object ParentRef extends ActivityReferenceType
