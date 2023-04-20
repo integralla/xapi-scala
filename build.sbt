@@ -51,6 +51,9 @@ lazy val circe = (project in file("integralla-lrs-model-circe"))
     }
   )
 
+// Disable compilation of doc sources to work around https://github.com/lampepfl/dotty/issues/15288
+circe / Compile / doc / sources := Nil
+
 /**
  * DEPENDENCIES
  */
