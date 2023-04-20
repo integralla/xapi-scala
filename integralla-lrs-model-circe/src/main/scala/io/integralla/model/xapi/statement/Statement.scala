@@ -40,7 +40,7 @@ case class Statement(
     */
   def getActivityReferences: List[ActivityReference] = {
     List(
-      `object`.getActivityReferences(false),
+      `object`.getActivityReferences(),
       context.flatMap(_.contextActivities.map(_.getActivityReferences())).getOrElse(List.empty[ActivityReference])
     ).flatten.distinct
   }

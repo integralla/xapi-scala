@@ -271,7 +271,7 @@ class StatementObjectTest extends UnitSpec {
     describe("getActivityReferences") {
       it("should return a list with a single activity if the statement object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
-        val references: List[ActivityReference] = statementObject.getActivityReferences(false)
+        val references: List[ActivityReference] = statementObject.getActivityReferences()
         assert(references.length === 1)
         assert(references.head.referenceType === ObjectRef)
         assert(references.head.inSubStatement === false)
