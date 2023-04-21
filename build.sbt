@@ -12,15 +12,14 @@ ThisBuild / scalaVersion := scala3
 lazy val root = (project in file("."))
   .aggregate(circe)
   .settings(
-    name := "Integralla LRS Model",
+    name := "integralla-lrs-models",
     crossScalaVersions := Nil,
     publish / skip := true
   )
 
 lazy val circe = (project in file("integralla-lrs-model-circe"))
   .settings(
-    name := "LRS Model",
-    normalizedName := "integralla-lrs-model-circe",
+    name := "integralla-lrs-model-circe",
     libraryDependencies ++= loggingDependencies ++ testDependencies ++ Seq(
       dependencies.circeCore,
       dependencies.circeGeneric,
