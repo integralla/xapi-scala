@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
 
 import java.util.UUID
 
@@ -51,14 +52,30 @@ case class StatementContext(
     }
   }
 
-  /** A list of actors composed of the those identified by the instructor and team properties
-    * @return A list of identified actors
+  /** A list of agent references  composed of the those identified by the instructor and team properties
+    *
+    * @param inSubStatement Whether the reference occurs in a sub-statement
+    * @return A list of agent references
     */
-  def getActorReferences: List[StatementActor] = {
+  def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
     List(
-      instructor.map(instructor => instructor.asList()).getOrElse(List.empty[StatementActor]),
-      team.map(team => team.asList()).getOrElse(List.empty[StatementActor])
-    ).flatten.distinct
+      instructor.map(_.asList().map(agent => {
+        AgentReference(
+          agent = agent._1,
+          referenceType = InstructorRef,
+          inSubStatement = inSubStatement,
+          asGroupMember = agent._2
+        )
+      })),
+      team.map(_.asList().map(agent => {
+        AgentReference(
+          agent = agent._1,
+          referenceType = TeamRef,
+          inSubStatement = inSubStatement,
+          asGroupMember = agent._2
+        )
+      }))
+    ).flatMap(_.getOrElse(List.empty[AgentReference])).distinct
   }
 }
 

@@ -64,12 +64,16 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
     }
   }
 
-  /** @return A list of identified actors
-    *         - If actor is an agent, the list will only contain the agent itself
-    *         - If actor is a group, the list will include the group itself if it's
-    *         not anonymous, plus all members (if defined)
+  /** Returns a list of identified actors (an agent or identified group) from the actor object
+    *
+    * If the actor is an agent, the list will only include the actor itself.
+    * If the actor is an identified group, the list will include the group itself.
+    * If the group has members, the list will include each member of the group.
+    *
+    * @return For each identified actor in the group, a tuple is returned where the first value is the actor itself,
+    *         and the second value is a boolean indicating if the actor is a group member
     */
-  def asList(): List[StatementActor]
+  def asList(): List[(StatementActor, Boolean)]
 
   /** @return The actor type (Agent, Group) */
   def actorType(): StatementObjectType
@@ -144,7 +148,7 @@ case class Agent(
 
   override def actorType(): StatementObjectType = StatementObjectType.Agent
 
-  override def asList(): List[StatementActor] = List(this)
+  override def asList(): List[(StatementActor, Boolean)] = List((this, false))
 
   override def validate: Seq[Either[String, Boolean]] = {
     super.validate ++ Seq(
@@ -236,10 +240,10 @@ case class Group(
     if (ifiType().isDefined) false else true
   }
 
-  override def asList(): List[StatementActor] = {
+  override def asList(): List[(StatementActor, Boolean)] = {
     List(
-      if (!isAnonymous) List(this) else List.empty[StatementActor],
-      member.map(members => members).getOrElse(List.empty[StatementActor])
+      if (!isAnonymous) List((this, false)) else List.empty[(StatementActor, Boolean)],
+      member.map(members => members.map(member => (member, true))).getOrElse(List.empty[(StatementActor, Boolean)])
     ).flatten
   }
 

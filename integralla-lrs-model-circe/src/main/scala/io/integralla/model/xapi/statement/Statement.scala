@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.references.ActivityReference
+import io.integralla.model.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
 
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -45,15 +45,33 @@ case class Statement(
     ).flatten.distinct
   }
 
-  /** Extracts and returns all identified actors (agents or identified groups) referenced by the statement
-    * @return A list of identified actors
+  /** A list of agent references across all parts of the statement
+    *
+    * @return A list of agent references
     */
-  def getActorReferences: List[StatementActor] = {
+  def getAgentReferences: List[AgentReference] = {
     List(
-      actor.asList(),
-      `object`.getActorReferences,
-      context.map(context => context.getActorReferences).getOrElse(List.empty[StatementActor]),
-      authority.map(authority => authority.asList()).getOrElse(List.empty[StatementActor])
+      actor
+        .asList().map(agent => {
+          AgentReference(
+            agent = agent._1,
+            referenceType = ActorRef,
+            inSubStatement = false,
+            asGroupMember = agent._2
+          )
+        }),
+      `object`.getAgentReferences(inSubStatement = false),
+      context.map(context => context.getAgentReferences(inSubStatement = false)).getOrElse(List.empty[AgentReference]),
+      authority
+        .map(_.asList().map(agent => {
+          AgentReference(
+            agent = agent._1,
+            referenceType = AuthorityRef,
+            inSubStatement = false,
+            asGroupMember = agent._2
+          )
+        }))
+        .getOrElse(List.empty[AgentReference])
     ).flatten.distinct
   }
 

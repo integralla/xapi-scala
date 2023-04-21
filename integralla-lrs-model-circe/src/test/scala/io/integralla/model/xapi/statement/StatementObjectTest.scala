@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityReference, ActivityObjectRef}
+import io.integralla.model.references.{ActivityObjectRef, ActivityReference, ActorRef, AgentObjectRef, AgentReference}
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -291,30 +291,42 @@ class StatementObjectTest extends UnitSpec {
       }
     }
 
-    describe("getActorReferences") {
-      it("should return a list composed of a single actor when the statement object is an agent") {
+    describe("getAgentReferences") {
+      it("should return a list composed of a single agent reference when the statement object is an agent") {
         val statementObject: StatementObject = StatementObject(sampleAgent.copy())
-        assert(statementObject.getActorReferences.length === 1)
+        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === AgentObjectRef)
+        assert(references.head.inSubStatement === false)
+        assert(references.head.asGroupMember === false)
       }
 
-      it("should return a list of actors when the statement object is a group") {
+      it("should return a list of agent references when the statement object is a group") {
         val statementObject: StatementObject = StatementObject(sampleGroup.copy())
-        assert(statementObject.getActorReferences.length === 1)
+        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === AgentObjectRef)
+        assert(references.head.inSubStatement === false)
+        assert(references.head.asGroupMember === false)
       }
 
-      it("should return a list of actors when the statement object is a sub-statement") {
+      it("should return a list of agent reference when the statement object is a sub-statement") {
         val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
-        assert(statementObject.getActorReferences.length === 1)
+        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === ActorRef)
+        assert(references.head.inSubStatement === true)
+        assert(references.head.asGroupMember === false)
       }
 
       it("should return an empty list when the statement object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
-        assert(statementObject.getActorReferences.isEmpty)
+        assert(statementObject.getAgentReferences(inSubStatement = false).isEmpty)
       }
 
       it("should return an empty list when the statement object is a statement-ref") {
         val statementObject: StatementObject = StatementObject(sampleStatementRef.copy())
-        assert(statementObject.getActorReferences.isEmpty)
+        assert(statementObject.getAgentReferences(inSubStatement = false).isEmpty)
       }
     }
   }

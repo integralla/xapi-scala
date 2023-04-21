@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.references.ActivityReference
+import io.integralla.model.references.{ActivityReference, ActorRef, AgentReference}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 
 import java.time.OffsetDateTime
@@ -39,12 +39,23 @@ case class SubStatement(
     ).flatten.distinct
   }
 
-  /** @return A distinct list of all actors referenced by a sub-statement */
-  def getActorReferences: List[StatementActor] = {
+  /** A list of agent references  composed of the those identified within a sub-statement
+    *
+    * @return A list of agent references
+    */
+  def getAgentReferences: List[AgentReference] = {
     List(
-      actor.asList(),
-      `object`.getActorReferences,
-      context.map(context => context.getActorReferences).getOrElse(List.empty[StatementActor])
+      actor
+        .asList().map(agent => {
+          AgentReference(
+            agent = agent._1,
+            referenceType = ActorRef,
+            inSubStatement = true,
+            asGroupMember = agent._2
+          )
+        }),
+      `object`.getAgentReferences(inSubStatement = true),
+      context.map(context => context.getAgentReferences(inSubStatement = true)).getOrElse(List.empty[AgentReference])
     ).flatten.distinct
   }
 

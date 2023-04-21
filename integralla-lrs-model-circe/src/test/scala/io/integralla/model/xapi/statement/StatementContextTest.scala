@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.Json
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
@@ -117,7 +118,7 @@ class StatementContextTest extends UnitSpec {
       }
     }
 
-    describe("getActorReferences") {
+    describe("getAgentReferences") {
       val group: Group = Group(
         objectType = StatementObjectType.Group,
         name = None,
@@ -133,13 +134,19 @@ class StatementContextTest extends UnitSpec {
         )
       )
 
-      it("should return a list with a single actor if the instructor is an agent, and a team is not defined") {
-        val context: StatementContext = sampleContext.copy(team = None)
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 1)
-      }
       it(
-        "should return a list with a single actor if the instructor is an identified group without members, and a team is not defined"
+        "should return a list with a single agent reference if the instructor is an agent, and a team is not defined"
+      ) {
+        val context: StatementContext = sampleContext.copy(team = None)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === InstructorRef)
+        assert(references.head.inSubStatement === false)
+        assert(references.head.asGroupMember === false)
+      }
+
+      it(
+        "should return a list with a single agent reference if the instructor is an identified group without members, and a team is not defined"
       ) {
         val context: StatementContext = sampleContext.copy(
           instructor = Some(
@@ -150,9 +157,13 @@ class StatementContextTest extends UnitSpec {
           ),
           team = None
         )
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 1)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 1)
+        assert(references.head.referenceType === InstructorRef)
+        assert(references.head.inSubStatement === false)
+        assert(references.head.asGroupMember === false)
       }
+
       it(
         "should return a list with a multiple actors if the instructor is an identified group with members, and a team is not defined"
       ) {
@@ -164,8 +175,18 @@ class StatementContextTest extends UnitSpec {
           ),
           team = None
         )
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 3)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 3)
+
+        val instructors = references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
+        assert(instructors.referenceType === InstructorRef)
+        assert(instructors.asGroupMember === false)
+
+        val members = references.filter(_.agent.mbox.get.value !== "mailto:instructors@integralla.io")
+        assert(members.forall(_.asGroupMember === true))
+
+        assert(references.forall(_.inSubStatement === false))
+
       }
       it(
         "should return a list with multiple actors if the instructor is an anonymous group with members, and a team is not defined"
@@ -174,56 +195,47 @@ class StatementContextTest extends UnitSpec {
           instructor = Some(group),
           team = None
         )
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 2)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 2)
+        assert(references.forall(_.referenceType === InstructorRef))
+        assert(references.forall(_.inSubStatement === false))
+        assert(references.forall(_.asGroupMember === true))
       }
+
       it("should return a list with multiple actors if the instructor and team are defined (identified group)") {
         val context: StatementContext = sampleContext.copy()
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 2)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 2)
+        assert(references.forall(_.inSubStatement === false))
 
+        assert(references.count(_.referenceType === InstructorRef) === 1)
+        assert(references.count(_.referenceType === TeamRef) === 1)
+
+        assert(references.filter(_.referenceType === InstructorRef).forall(_.asGroupMember === false))
+        assert(references.filter(_.referenceType === TeamRef).forall(_.asGroupMember === false))
       }
+
       it("should return a list with multiple actors if the instructor and team are defined (anonymous group)") {
         val context: StatementContext = sampleContext.copy(
           team = Some(group)
         )
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 3)
+        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        assert(references.length === 3)
+        assert(references.forall(_.inSubStatement === false))
+
+        assert(references.count(_.referenceType === InstructorRef) === 1)
+        assert(references.count(_.referenceType === TeamRef) === 2)
+
+        assert(references.filter(_.referenceType === InstructorRef).forall(_.asGroupMember === false))
+        assert(references.filter(_.referenceType === TeamRef).forall(_.asGroupMember === true))
       }
+
       it("should return an empty list if neither the instructor or team are defined") {
         val context: StatementContext = sampleContext.copy(
           instructor = None,
           team = None
         )
-        assert(context.getActorReferences.isEmpty)
-      }
-      it("should return a distinct list of actors") {
-        val instructor = Agent(
-          objectType = Some(StatementObjectType.Agent),
-          name = None,
-          mbox = Some(MBox("mailto:instructor@integralla.io")),
-          mbox_sha1sum = None,
-          openid = None,
-          account = None
-        )
-        val context: StatementContext = sampleContext.copy(
-          instructor = Some(instructor),
-          team = Some(
-            Group(
-              objectType = StatementObjectType.Group,
-              name = None,
-              mbox = None,
-              mbox_sha1sum = None,
-              openid = None,
-              account = None,
-              member = Some(
-                List(instructor)
-              )
-            )
-          )
-        )
-        val actors: List[StatementActor] = context.getActorReferences
-        assert(actors.length === 1)
+        assert(context.getAgentReferences(inSubStatement = false).isEmpty)
       }
     }
   }

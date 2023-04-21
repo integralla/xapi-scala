@@ -1004,15 +1004,20 @@ class StatementActorTest extends UnitSpec {
           val identities = actor.asList()
           assert(identities.nonEmpty)
           assert(identities.length === 2)
-          assert(identities.map(_.mbox.get.value).contains("mailto:populus.tremuloides@integralla.io"))
-          assert(identities.map(_.mbox.get.value).contains("mailto:team-a@integralla.io"))
+          val team = identities.find(_._1.mbox.get.value === "mailto:team-a@integralla.io").get
+          assert(team._2 === false)
+
+          val member = identities.find(_._1.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
+          assert(member._2 === true)
         }
         it("should return a list with all members if the actor is an anonymous group") {
           val actor: StatementActor = group.copy(mbox = None)
           val identities = actor.asList()
           assert(identities.nonEmpty)
           assert(identities.length === 1)
-          assert(identities.head.mbox.get.value === "mailto:populus.tremuloides@integralla.io")
+
+          assert(identities.head._1.mbox.get.value === "mailto:populus.tremuloides@integralla.io")
+          assert(identities.head._2 === true)
         }
       }
     }

@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe._
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityObjectRef, ActivityReference}
+import io.integralla.model.references.{ActivityObjectRef, ActivityReference, AgentObjectRef, AgentReference}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -29,16 +29,35 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     }
   }
 
-  /** A list of actors referenced by the statement object
-    * Actors can be referenced when the statement object is one of: agent, group, sub-statement
-    * @return A list of identified actors
+  /** A list of agent references  composed of the those identified by the statement object
+    *
+    * @param inSubStatement Whether the reference occurs in a sub-statement
+    * @return A list of agent references
     */
-  def getActorReferences: List[StatementActor] = {
+  def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
     value match {
-      case agent: Agent               => agent.asList()
-      case group: Group               => group.asList()
-      case subStatement: SubStatement => subStatement.getActorReferences
-      case _                          => List.empty[StatementActor]
+      case agent: Agent =>
+        agent
+          .asList().map(agent => {
+            AgentReference(
+              agent = agent._1,
+              referenceType = AgentObjectRef,
+              inSubStatement = inSubStatement,
+              asGroupMember = agent._2
+            )
+          })
+      case group: Group =>
+        group
+          .asList().map(agent => {
+            AgentReference(
+              agent = agent._1,
+              referenceType = AgentObjectRef,
+              inSubStatement = inSubStatement,
+              asGroupMember = agent._2
+            )
+          })
+      case subStatement: SubStatement => subStatement.getAgentReferences
+      case _                          => List.empty[AgentReference]
     }
   }
 

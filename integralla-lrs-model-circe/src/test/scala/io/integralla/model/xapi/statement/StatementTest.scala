@@ -3,7 +3,16 @@ package io.integralla.model.xapi.statement
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityReference, ActivityObjectRef}
+import io.integralla.model.references.{
+  ActivityObjectRef,
+  ActivityReference,
+  ActorRef,
+  AgentObjectRef,
+  AgentReference,
+  AuthorityRef,
+  InstructorRef,
+  TeamRef
+}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -1008,7 +1017,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
     }
 
-    describe("getActorReferences") {
+    describe("getAgentReferences") {
       val testStatement: Statement = Statement(
         id = Some(UUID.randomUUID()),
         actor = Agent(
@@ -1065,37 +1074,30 @@ class StatementTest extends UnitSpec with StrictLogging {
 
       it("should return all actors referenced by the statement") {
         val statement: Statement = testStatement.copy()
-        val actors: List[StatementActor] = statement.getActorReferences
-        assert(actors.length === 5)
+        val references: List[AgentReference] = statement.getAgentReferences
+        assert(references.length === 5)
 
-        val expected: List[String] = List(
-          "mailto:populus.tremuloides@integralla.io",
-          "mailto:prunus.persica@integralla.io",
-          "mailto:instructors@integralla.io",
-          "mailto:team@integralla.io",
-          "mailto:lrp@integralla.io"
-        )
-        actors
-          .map(actor => actor.mbox).filter(_.isDefined).map(_.get.value)
-          .foreach(mbox => assert(expected.contains(mbox)))
-      }
+        assert(references.map(_.inSubStatement).forall(_ === false))
 
-      it("should return a distinct list of actors referenced by the statement") {
-        val statement: Statement = testStatement.copy(
-          authority = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None))
-        )
-        val actors: List[StatementActor] = statement.getActorReferences
-        assert(actors.length === 4)
+        val statementActor = references.find(_.agent.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
+        assert(statementActor.referenceType === ActorRef)
+        assert(statementActor.asGroupMember === false)
 
-        val expected: List[String] = List(
-          "mailto:populus.tremuloides@integralla.io",
-          "mailto:prunus.persica@integralla.io",
-          "mailto:instructors@integralla.io",
-          "mailto:team@integralla.io"
-        )
-        actors
-          .map(actor => actor.mbox).filter(_.isDefined).map(_.get.value)
-          .foreach(mbox => assert(expected.contains(mbox)))
+        val statementObject = references.find(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io").get
+        assert(statementObject.referenceType === AgentObjectRef)
+        assert(statementObject.asGroupMember === false)
+
+        val instructor = references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
+        assert(instructor.referenceType === InstructorRef)
+        assert(instructor.asGroupMember === false)
+
+        val team = references.find(_.agent.mbox.get.value === "mailto:team@integralla.io").get
+        assert(team.referenceType === TeamRef)
+        assert(team.asGroupMember === false)
+
+        val authority = references.find(_.agent.mbox.get.value === "mailto:lrp@integralla.io").get
+        assert(authority.referenceType === AuthorityRef)
+        assert(authority.asGroupMember === false)
       }
     }
   }
