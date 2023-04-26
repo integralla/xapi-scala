@@ -75,6 +75,18 @@ case class Statement(
     ).flatten.distinct
   }
 
+  /** Tests whether the statement is a voiding statement
+    *
+    * @return True if the statement is a voiding statement, else false
+    */
+  def isVoidingStatement: Boolean = {
+    `object`.value match {
+      case ref: StatementRef =>
+        if (verb.id.value == "http://adlnet.gov/expapi/verbs/voided") true else false
+      case _ => false
+    }
+  }
+
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateContextPropertiesRevision,

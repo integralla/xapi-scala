@@ -1100,5 +1100,40 @@ class StatementTest extends UnitSpec with StrictLogging {
         assert(authority.asGroupMember === false)
       }
     }
+
+    describe("isVoidingStatement") {
+      val base: Statement = Statement(
+        id = Some(UUID.randomUUID()),
+        actor = Agent(
+          Some(StatementObjectType.Agent),
+          Some("Populus Tremuloides"),
+          Some(MBox("mailto:populus.tremuloides@integralla.io")),
+          None,
+          None,
+          None
+        ),
+        verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/voided"), None),
+        `object` = StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
+        result = None,
+        context = None,
+        timestamp = None,
+        stored = None,
+        authority = None,
+        version = None,
+        attachments = None
+      )
+
+      it("should return true for a voiding statement") {
+        val statement = base.copy()
+        assert(statement.isVoidingStatement === true)
+      }
+
+      it("should return true for a non-voiding statement") {
+        val statement = base.copy(
+          verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/attempted"), None)
+        )
+        assert(statement.isVoidingStatement === false)
+      }
+    }
   }
 }
