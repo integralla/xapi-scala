@@ -1,4 +1,4 @@
-package io.integralla.model.xapi.statement
+package io.integralla.model.xapi.common
 
 import java.security.MessageDigest
 import java.util.Locale
@@ -52,7 +52,7 @@ trait Equivalence {
   /** Generates a signature that can be used to test logical equivalence between objects
     * @return A string identifier
     */
-  protected[statement] def signature(): String
+  protected[xapi] def signature(): String
 
   /** Compares this instance to another for logical equivalency
     * @param instance The instance to which this will be compared

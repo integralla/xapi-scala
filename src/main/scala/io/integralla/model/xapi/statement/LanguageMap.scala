@@ -1,6 +1,7 @@
 package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.common.Equivalence
 
 /** A language map is a dictionary where the key is a RFC 5646 Language Tag, and the value is a string in the language
   * specified in the tag.
@@ -17,7 +18,7 @@ case class LanguageMap(value: Map[String, String]) extends Equivalence {
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         value

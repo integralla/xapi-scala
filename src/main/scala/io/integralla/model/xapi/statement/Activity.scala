@@ -1,7 +1,8 @@
 package io.integralla.model.xapi.statement
 
-import io.circe._
+import io.circe.*
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.identifiers.IRI
 
@@ -39,7 +40,7 @@ case class Activity(objectType: Option[StatementObjectType], id: IRI, definition
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     id.signature()
   }
 }

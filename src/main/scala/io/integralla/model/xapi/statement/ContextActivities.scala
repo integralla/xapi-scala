@@ -4,6 +4,7 @@ import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax.EncoderOps
 import io.integralla.model.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
+import io.integralla.model.xapi.common.Equivalence
 
 /** A map of the types of learning activity context that the statement is related to
   *
@@ -37,7 +38,7 @@ case class ContextActivities(
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(

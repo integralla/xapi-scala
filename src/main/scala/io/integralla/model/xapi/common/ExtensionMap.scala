@@ -1,4 +1,4 @@
-package io.integralla.model.xapi.statement
+package io.integralla.model.xapi.common
 
 import io.circe.{Decoder, Encoder, Json}
 import io.integralla.model.xapi.statement.identifiers.IRI
@@ -17,7 +17,7 @@ case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         value

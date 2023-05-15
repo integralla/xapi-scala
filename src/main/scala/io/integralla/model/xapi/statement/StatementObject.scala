@@ -1,8 +1,9 @@
 package io.integralla.model.xapi.statement
 
-import io.circe._
+import io.circe.*
 import io.circe.syntax.EncoderOps
 import io.integralla.model.references.{ActivityObjectRef, ActivityReference, AgentObjectRef, AgentReference}
+import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -64,7 +65,7 @@ case class StatementObject(value: AnyRef) extends Equivalence {
   /** Generates a signature that can be used to test logical equivalence between objects
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     value match {
       case activity: Activity         => activity.signature()
       case agent: Agent               => agent.signature()

@@ -1,7 +1,8 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
+import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.{UrlPath, UrlWithoutAuthority}
 
 import java.security.MessageDigest
@@ -49,7 +50,7 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       UrlWithoutAuthority
         .parseOption(value).map(url => {

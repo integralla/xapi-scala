@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.xapi.common.{Equivalence, ExtensionMap}
 import net.time4j.{ClockUnit, Duration, IsoUnit}
 
 import java.text.ParseException
@@ -55,7 +56,7 @@ case class StatementResult(
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
 
     def truncateDuration(duration: String): String = {
       val d: Duration[IsoUnit] = Duration.parsePeriod(duration)

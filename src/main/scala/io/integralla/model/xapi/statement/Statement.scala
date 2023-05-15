@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.integralla.model.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
+import io.integralla.model.xapi.common.Equivalence
 
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -132,7 +133,7 @@ case class Statement(
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(

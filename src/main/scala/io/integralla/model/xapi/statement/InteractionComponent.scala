@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.xapi.common.Equivalence
 
 /** Interaction Component
   *
@@ -17,7 +18,7 @@ case class InteractionComponent(id: String, definition: Option[LanguageMap]) ext
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(id, definition.map(_.signature()).getOrElse(placeholder))

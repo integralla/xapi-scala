@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 
 import java.util.UUID
@@ -17,7 +18,7 @@ case class StatementRef(objectType: StatementObjectType, id: UUID) extends Equiv
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(objectType.toString, id.toString)

@@ -4,6 +4,7 @@ import io.circe.Json
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
+import io.integralla.model.xapi.common.ExtensionMap
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 

@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.identifiers.IRI
 
 /** A Verb defines the action between an Actor and an Activity
@@ -15,7 +16,7 @@ case class StatementVerb(id: IRI, display: Option[LanguageMap]) extends Equivale
     * For a statement verb, only the verb identifier is used
     *  @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     id.signature()
   }
 }

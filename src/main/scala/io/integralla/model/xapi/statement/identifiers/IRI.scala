@@ -1,7 +1,8 @@
 package io.integralla.model.xapi.statement.identifiers
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
-import io.integralla.model.xapi.statement.{Equivalence, StatementValidation}
+import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.statement.StatementValidation
 import io.lemonlabs.uri.{QueryString, Uri, Url}
 
 import scala.util.{Failure, Success, Try}
@@ -47,7 +48,7 @@ case class IRI(value: String) extends StatementValidation with Equivalence {
     *
     *  @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       Url
         .parseOption(value).map(url => {

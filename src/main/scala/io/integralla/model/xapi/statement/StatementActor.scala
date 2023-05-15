@@ -1,8 +1,9 @@
 package io.integralla.model.xapi.statement
 
-import io.circe._
+import io.circe.*
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
+import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -84,7 +85,7 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
     )
   }
 
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     this match {
       case agent: Agent => agent.signature()
       case group: Group => group.signature()
@@ -168,7 +169,7 @@ case class Agent(
     *  - If `account` is defined, use signature
     *  @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(
@@ -267,7 +268,7 @@ case class Group(
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine {
         List(

@@ -1,6 +1,7 @@
 package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
+import io.integralla.model.xapi.common.Equivalence
 
 /** The Correct Responses Pattern, if used, is intended to be an exhaustive list of possible correct responses, each represented by a string
   *
@@ -15,7 +16,7 @@ case class CorrectResponsePattern(responses: List[String]) extends Equivalence {
     *
     * @return A string identifier
     */
-  override protected[statement] def signature(): String = {
+  override protected[xapi] def signature(): String = {
     hash {
       combine(responses.sorted)
     }
