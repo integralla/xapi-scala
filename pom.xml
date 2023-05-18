@@ -17,9 +17,7 @@
     <inceptionYear>2022</inceptionYear>
 
     <properties>
-        <scala.version>3.2.2</scala.version>
-        <scala.compat.version>3</scala.compat.version>
-        <circe.version>0.14.5</circe.version>
+        <versions.scala.compat>3</versions.scala.compat>
     </properties>
 
     <build>
@@ -101,25 +99,21 @@
         <!-- SCALA-LANG -->
         <dependency>
             <groupId>org.scala-lang</groupId>
-            <artifactId>scala3-library_${scala.compat.version}</artifactId>
-            <version>${scala.version}</version>
+            <artifactId>scala3-library_${versions.scala.compat}</artifactId>
         </dependency>
 
         <!-- CIRCE -->
         <dependency>
             <groupId>io.circe</groupId>
             <artifactId>circe-core_3</artifactId>
-            <version>${circe.version}</version>
         </dependency>
         <dependency>
             <groupId>io.circe</groupId>
             <artifactId>circe-parser_3</artifactId>
-            <version>${circe.version}</version>
         </dependency>
         <dependency>
             <groupId>io.circe</groupId>
             <artifactId>circe-generic_3</artifactId>
-            <version>${circe.version}</version>
         </dependency>
 
         <!-- OTHER -->
@@ -137,13 +131,15 @@
         <!-- LOGGING -->
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
-            <artifactId>scala-logging_${scala.compat.version}</artifactId>
-            <version>3.9.5</version>
+            <artifactId>scala-logging_${versions.scala.compat}</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <!-- TESTING -->
