@@ -3,7 +3,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %X{AWSRequestId} %-5level %logger - %msg%n</pattern>
+                <pattern>%highlight{%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %X{AWSRequestId} %-5level}{STYLE=Logback} %logger - %msg%n</pattern>
             </PatternLayout>
         </Console>
     </Appenders>
