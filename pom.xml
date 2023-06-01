@@ -25,6 +25,14 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
+                <configuration>
+                    <args>
+                        <arg>-unchecked</arg>
+                        <arg>-deprecation</arg>
+                        <arg>-explaintypes</arg>
+                        <arg>-Wunused:all</arg>
+                    </args>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.scalatest</groupId>
