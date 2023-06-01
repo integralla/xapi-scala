@@ -4,7 +4,6 @@ import com.typesafe.scalalogging.StrictLogging
 import io.circe.ParsingFailure
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import io.integralla.model.xapi.common.ExtensionMap
 import io.integralla.model.xapi.statement.identifiers.IRI
 import io.integralla.testing.spec.UnitSpec
 
