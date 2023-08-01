@@ -31,11 +31,34 @@ class AttachmentTest extends UnitSpec {
       |  "sha2" : "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
       |}""".stripMargin
 
+  val attachmentWithFileUrl: Attachment = sampleAttachment.copy(
+    fileUrl = Some(IRI("https://www.example.com/statement-attachments/signature.jpg"))
+  )
+
+  val attachmentWithFileUrlEncoded: String =
+    """{
+      |  "usageType" : "http://adlnet.gov/expapi/attachments/signature",
+      |  "display" : {
+      |    "en-US" : "Signature"
+      |  },
+      |  "description" : {
+      |    "en-US" : "A test signature"
+      |  },
+      |  "contentType" : "application/octet-stream",
+      |  "length" : 4235,
+      |  "sha2" : "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634",
+      |  "fileUrl" : "https://www.example.com/statement-attachments/signature.jpg"
+      |}""".stripMargin
+
   describe("Attachment") {
     describe("[encoding]") {
       it("should successfully encode an attachment") {
         val actual = sampleAttachment.asJson.spaces2
         assert(actual === sampleAttachmentEncoded)
+      }
+      it("should successfully encode an attachment with a fileUrl") {
+        val actual = attachmentWithFileUrl.asJson.spaces2
+        assert(actual === attachmentWithFileUrlEncoded)
       }
     }
 
@@ -44,6 +67,13 @@ class AttachmentTest extends UnitSpec {
         val decoded: Either[io.circe.Error, Attachment] = decode[Attachment](sampleAttachmentEncoded)
         decoded match {
           case Right(actual) => assert(actual === sampleAttachment)
+          case Left(err)     => throw new Error(s"Decoding failed: $err")
+        }
+      }
+      it("should successfully decode an attachment with a fileUrl") {
+        val decoded: Either[io.circe.Error, Attachment] = decode[Attachment](attachmentWithFileUrlEncoded)
+        decoded match {
+          case Right(actual) => assert(actual === attachmentWithFileUrl)
           case Left(err)     => throw new Error(s"Decoding failed: $err")
         }
       }
