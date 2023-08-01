@@ -82,7 +82,7 @@ case class Statement(
     */
   def isVoidingStatement: Boolean = {
     `object`.value match {
-      case ref: StatementRef =>
+      case _: StatementRef =>
         if (verb.id.value == "http://adlnet.gov/expapi/verbs/voided") true else false
       case _ => false
     }
