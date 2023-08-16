@@ -3,16 +3,7 @@ package io.integralla.model.xapi.statement
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{
-  ActivityObjectRef,
-  ActivityReference,
-  ActorRef,
-  AgentObjectRef,
-  AgentReference,
-  AuthorityRef,
-  InstructorRef,
-  TeamRef
-}
+import io.integralla.model.references.*
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
@@ -1098,6 +1089,105 @@ class StatementTest extends UnitSpec with StrictLogging {
         val authority = references.find(_.agent.mbox.get.value === "mailto:lrp@integralla.io").get
         assert(authority.referenceType === AuthorityRef)
         assert(authority.asGroupMember === false)
+      }
+    }
+
+    describe("getAttachments") {
+      it("should return all attachments defined by the statement and/or its sub-statement") {
+        val statement: Statement = Statement(
+          id = Some(UUID.randomUUID()),
+          actor = Agent(
+            objectType = Some(StatementObjectType.Agent),
+            name = Some("Lorum Ipsum"),
+            mbox = Some(MBox("mailto:lorum.ipsum@integralla.io")),
+            mbox_sha1sum = None,
+            openid = None,
+            account = None
+          ),
+          verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
+          `object` = StatementObject(
+            SubStatement(
+              objectType = StatementObjectType.SubStatement,
+              actor = Agent(
+                objectType = Some(StatementObjectType.Agent),
+                name = Some("Lorum Ipsum"),
+                mbox = Some(MBox("mailto:lorum.ipsum@integralla.io")),
+                mbox_sha1sum = None,
+                openid = None,
+                account = None
+              ),
+              verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
+              `object` = StatementObject(
+                Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+              ),
+              result = None,
+              context = None,
+              timestamp = None,
+              attachments = Some(
+                List(
+                  Attachment(
+                    IRI("https://example.com/attachment-usage/test"),
+                    LanguageMap(Map("en-US" -> "Test Attachment", "it" -> "Allegato al test")),
+                    Some(LanguageMap(Map("en-US" -> "A test attachment", "it" -> "Un allegato al test"))),
+                    "text/plain; charset=ascii",
+                    27,
+                    "495395e777cd98da653df9615d09c0fd6bb2f8d4788394cd53c56a3bfdcd848a",
+                    None
+                  )
+                )
+              )
+            )
+          ),
+          result = None,
+          context = None,
+          timestamp = None,
+          stored = None,
+          authority = None,
+          version = None,
+          attachments = Some(
+            List(
+              Attachment(
+                IRI("http://adlnet.gov/expapi/attachments/signature"),
+                LanguageMap(Map("en-US" -> "Signature", "it" -> "Firma")),
+                Some(LanguageMap(Map("en-US" -> "A test signature", "it" -> "Una firma di prova"))),
+                "application/octet-stream",
+                4235,
+                "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634",
+                None
+              )
+            )
+          )
+        )
+        val attachments: List[Attachment] = statement.getAttachments
+        assert(attachments.length === 2)
+        assert(attachments.map(_.sha2).contains("495395e777cd98da653df9615d09c0fd6bb2f8d4788394cd53c56a3bfdcd848a"))
+        assert(attachments.map(_.sha2).contains("672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"))
+      }
+      it("should return an empty list if neither the statement, nor a sub-object, defines any attachments") {
+        val statement: Statement = Statement(
+          id = Some(UUID.randomUUID()),
+          actor = Agent(
+            objectType = Some(StatementObjectType.Agent),
+            name = Some("Lorum Ipsum"),
+            mbox = Some(MBox("mailto:lorum.ipsum@integralla.io")),
+            mbox_sha1sum = None,
+            openid = None,
+            account = None
+          ),
+          verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
+          `object` = StatementObject(
+            Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+          ),
+          result = None,
+          context = None,
+          timestamp = None,
+          stored = None,
+          authority = None,
+          version = None,
+          attachments = None
+        )
+        val attachments: List[Attachment] = statement.getAttachments
+        assert(attachments.isEmpty)
       }
     }
 
