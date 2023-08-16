@@ -76,6 +76,18 @@ case class Statement(
     ).flatten.distinct
   }
 
+  /** Extracts and returns all attachment objects from a statement and/or its sub-statement
+    *
+    * @return List of attachment objects
+    */
+  def getAttachments: List[Attachment] =
+    List(
+      attachments,
+      `object`.value match
+        case subStatement: SubStatement => subStatement.attachments
+        case _                          => None
+    ).flatMap(_.getOrElse(List.empty[Attachment]))
+
   /** Tests whether the statement is a voiding statement
     *
     * @return True if the statement is a voiding statement, else false
