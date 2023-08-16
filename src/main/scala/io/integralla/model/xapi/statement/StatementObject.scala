@@ -127,9 +127,9 @@ object StatementObject {
         case Some(StatementObjectType.SubStatement) =>
           val statementObject: StatementObject =
             c.downField("object").downField("objectType").as[StatementObjectType].toOption match {
-              case Some(StatementObjectType.Activity)     => StatementObject(c.get[Activity]("object").toOption.get)
-              case Some(StatementObjectType.Agent)        => StatementObject(c.get[Agent]("object").toOption.get)
-              case Some(StatementObjectType.Group)        => StatementObject(c.get[Group]("object").toOption.get)
+              case None | Some(StatementObjectType.Activity) => StatementObject(c.get[Activity]("object").toOption.get)
+              case Some(StatementObjectType.Agent)           => StatementObject(c.get[Agent]("object").toOption.get)
+              case Some(StatementObjectType.Group)           => StatementObject(c.get[Group]("object").toOption.get)
               case Some(StatementObjectType.StatementRef) => StatementObject(c.get[StatementRef]("object").toOption.get)
               case Some(StatementObjectType.SubStatement) =>
                 throw new StatementValidationException("A sub-statement cannot contain a sub-statement of it's own")

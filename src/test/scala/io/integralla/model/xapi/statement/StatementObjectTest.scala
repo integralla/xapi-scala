@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityObjectRef, ActivityReference, ActorRef, AgentObjectRef, AgentReference}
+import io.integralla.model.references.*
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -220,6 +220,39 @@ class StatementObjectTest extends UnitSpec {
         decoded match {
           case Right(actual) => assert(actual === expected)
           case Left(err)     => throw new Error(s"Decoding failed: $err")
+        }
+      }
+
+      it("should successfully decode a statement object that is a sub-statement where the object type is not defined") {
+        val encoded: String = """
+            |{
+            |  "objectType" : "SubStatement",
+            |  "actor" : {
+            |    "objectType" : "Agent",
+            |    "mbox" : "mailto:test@example.com"
+            |  },
+            |  "verb" : {
+            |    "id" : "http://example.com/visited",
+            |    "display" : {
+            |      "en-US" : "will visit"
+            |    }
+            |  },
+            |  "object" : {
+            |    "id" : "http://example.com/website",
+            |    "definition" : {
+            |      "name" : {
+            |        "en-US" : "Some Awesome Website"
+            |      }
+            |    }
+            |  }
+            |}
+            |""".stripMargin
+        val decoded: Either[io.circe.Error, StatementObject] = decode[StatementObject](encoded)
+        decoded match {
+          case Right(statementObject) =>
+            assert(statementObject.value.isInstanceOf[SubStatement])
+            assert(statementObject.value.asInstanceOf[SubStatement].`object`.value.isInstanceOf[Activity])
+          case Left(err) => throw new Error(s"Decoding failed: $err")
         }
       }
     }
