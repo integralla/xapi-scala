@@ -1225,5 +1225,31 @@ class StatementTest extends UnitSpec with StrictLogging {
         assert(statement.isVoidingStatement === false)
       }
     }
+
+    describe("size") {
+      it("should return the size of the encoded statement in bytes") {
+        val statement: Statement = Statement(
+          id = Some(UUID.randomUUID()),
+          actor = Agent(
+            Some(StatementObjectType.Agent),
+            Some("Populus Tremuloides"),
+            Some(MBox("mailto:populus.tremuloides@integralla.io")),
+            None,
+            None,
+            None
+          ),
+          verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/voided"), None),
+          `object` = StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
+          result = None,
+          context = None,
+          timestamp = None,
+          stored = None,
+          authority = None,
+          version = None,
+          attachments = None
+        )
+        assert(statement.size === 292)
+      }
+    }
   }
 }

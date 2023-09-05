@@ -3,8 +3,10 @@ package io.integralla.model.xapi.statement
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.integralla.model.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
+import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.common.Equivalence
 
+import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -99,6 +101,14 @@ case class Statement(
       case _ => false
     }
   }
+
+  /** @return The size of the statement in bytes based on the JSON representation of
+    *         the statement, when printed with no spaces
+    */
+  def size: Int =
+    LRSModelUtils
+      .toJSON[Statement](this)
+      .getBytes(StandardCharsets.UTF_8).length
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
