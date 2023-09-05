@@ -153,9 +153,25 @@ class LanguageMapTest extends UnitSpec {
         assert(result.get.value.size === 1)
         assert(result.get.value("en") === "Hello, World!")
       }
-
       it("should return a single, preferred entry from the language map (multiple ranges)") {
         val priorityList: List[Locale.LanguageRange] = Locale.LanguageRange.parse("zh-Hant-TW, en-US").asScala.toList
+        val languageMap: LanguageMap = LanguageMap(
+          Map(
+            "hi" -> "हैलो वर्ल्ड!",
+            "en" -> "Hello, World!",
+            "it" -> "Ciao mondo!",
+            "es" -> "¡Hola Mundo!"
+          )
+        )
+
+        val result: Option[LanguageMap] = languageMap.preferred(priorityList)
+        assert(result.isDefined)
+        assert(result.get.value.size === 1)
+        assert(result.get.value("en") === "Hello, World!")
+      }
+      it("should return a single, preferred entry from the language map (multiple ranges, weighted)") {
+        val priorityList: List[Locale.LanguageRange] =
+          Locale.LanguageRange.parse("fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5").asScala.toList
         val languageMap: LanguageMap = LanguageMap(
           Map(
             "hi" -> "हैलो वर्ल्ड!",
