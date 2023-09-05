@@ -4,7 +4,8 @@ import io.circe.{Decoder, Encoder}
 
 /** Represents a list of statements
   *
-  * @param statements List of statements
+  * @param statements
+  *   List of statements
   */
 case class StatementList(statements: List[Statement])
 

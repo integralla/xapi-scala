@@ -23,18 +23,38 @@ import scala.util.{Failure, Success}
 
 /** The definition of an activity object
   *
-  * @param name                    A Language Map that provides the human readable/visual name of the activity
-  * @param description             A Language Map that provides a description of the activity
-  * @param `type`                  An IRI that uniquely identifies the type of activity
-  * @param moreInfo                An IRI that resolves to a document with human-readable information about the Activity, which could include a way to launch the activity
-  * @param interactionType         The type of interaction for a traditional e-learning activity (for example, choice, true-false, matching)
-  * @param correctResponsesPattern A pattern representing the correct response to the interaction
-  * @param choices                 An interaction component that defines a list of the options available in the interaction for selection or ordering
-  * @param scale                   An interaction component that defines a list of the options on the likert scale
-  * @param source                  An interaction component that defines a list of sources to be matched against targets
-  * @param steps                   An interaction component that defines a list of the elements making up the performance interaction
-  * @param target                  An interaction component that defines a list of targets against which sources can be matched
-  * @param extensions              A map of other properties as needed
+  * @param name
+  *   A Language Map that provides the human readable/visual name of the
+  *   activity
+  * @param description
+  *   A Language Map that provides a description of the activity
+  * @param `type`
+  *   An IRI that uniquely identifies the type of activity
+  * @param moreInfo
+  *   An IRI that resolves to a document with human-readable information about
+  *   the Activity, which could include a way to launch the activity
+  * @param interactionType
+  *   The type of interaction for a traditional e-learning activity (for
+  *   example, choice, true-false, matching)
+  * @param correctResponsesPattern
+  *   A pattern representing the correct response to the interaction
+  * @param choices
+  *   An interaction component that defines a list of the options available in
+  *   the interaction for selection or ordering
+  * @param scale
+  *   An interaction component that defines a list of the options on the likert
+  *   scale
+  * @param source
+  *   An interaction component that defines a list of sources to be matched
+  *   against targets
+  * @param steps
+  *   An interaction component that defines a list of the elements making up the
+  *   performance interaction
+  * @param target
+  *   An interaction component that defines a list of targets against which
+  *   sources can be matched
+  * @param extensions
+  *   A map of other properties as needed
   */
 case class ActivityDefinition(
   name: Option[LanguageMap],
@@ -51,28 +71,37 @@ case class ActivityDefinition(
   extensions: Option[ExtensionMap]
 ) extends StatementValidation with Equivalence {
 
-  /** Computes whether this activity definition is compatible with another instance
+  /** Computes whether this activity definition is compatible with another
+    * instance
     *
-    * Compatibility is based solely on interaction properties which include the interaction type, the correct response
-    * pattern and set of possible interaction component lists (choices, scale, source, steps, target)
+    * Compatibility is based solely on interaction properties which include the
+    * interaction type, the correct response pattern and set of possible
+    * interaction component lists (choices, scale, source, steps, target)
     *
-    * Definitions are considered as compatible if the interaction properties are logically equivalent. For example, an
-    * activity definition for a multiple choice activity would be considered compatible so long as the choices remained
-    * the same, regardless of the order in which they are defined. The definitions of interaction components are not
-    * included in the comparison. For example, if the text for a given choice in the multiple choice activity changes,
-    * or if a new language map is added, it would still be considered compatible
+    * Definitions are considered as compatible if the interaction properties are
+    * logically equivalent. For example, an activity definition for a multiple
+    * choice activity would be considered compatible so long as the choices
+    * remained the same, regardless of the order in which they are defined. The
+    * definitions of interaction components are not included in the comparison.
+    * For example, if the text for a given choice in the multiple choice
+    * activity changes, or if a new language map is added, it would still be
+    * considered compatible
     *
-    * @param instance The instance to compare this activity definition with
-    * @return True if this instance is compatible with the provided instance
+    * @param instance
+    *   The instance to compare this activity definition with
+    * @return
+    *   True if this instance is compatible with the provided instance
     */
   def isCompatibleWith(instance: ActivityDefinition): Boolean = {
 
     /** Computes compatibility based on the interaction type
       *
-      * The interaction type is treated as compatible if it is undefined on the compared instance or if the
-      * interaction type for both instances is the same
+      * The interaction type is treated as compatible if it is undefined on the
+      * compared instance or if the interaction type for both instances is the
+      * same
       *
-      * @return True if the interaction type is compatible, else false
+      * @return
+      *   True if the interaction type is compatible, else false
       */
     def interactionTypeIsCompatible(): Boolean = {
       if (instance.interactionType.isDefined) {
@@ -82,10 +111,12 @@ case class ActivityDefinition(
 
     /** Computes compatibility based on the correct response pattern
       *
-      * The correct response pattern is treated as compatible if it is undefined on the compared instance or if the
-      * correct response patterns for both are logically equivalent
+      * The correct response pattern is treated as compatible if it is undefined
+      * on the compared instance or if the correct response patterns for both
+      * are logically equivalent
       *
-      * @return True if the correct response pattern is compatible, else false
+      * @return
+      *   True if the correct response pattern is compatible, else false
       */
     def correctResponsePatternIsCompatible(): Boolean = {
       if (instance.correctResponsesPattern.isDefined) {
@@ -95,17 +126,21 @@ case class ActivityDefinition(
 
     /** Computes compatibility based on the interaction components
       *
-      * The set of possible interaction components are treated as compatible if none are defined on the compared
-      * instance, or if the set of interaction components identifiers (`id`) are same
+      * The set of possible interaction components are treated as compatible if
+      * none are defined on the compared instance, or if the set of interaction
+      * components identifiers (`id`) are same
       *
-      * The set of interaction component identifiers are compared by adding them to a list, sorting them, and
-      * concatenating them with a standard separator.
+      * The set of interaction component identifiers are compared by adding them
+      * to a list, sorting them, and concatenating them with a standard
+      * separator.
       *
-      * The interaction component definitions are not considered because they can be changed without breaking
-      * backwards compatibility (for example, a spelling error can be fixed in the text of a multiple choice option,
-      * or a new language map can be added)
+      * The interaction component definitions are not considered because they
+      * can be changed without breaking backwards compatibility (for example, a
+      * spelling error can be fixed in the text of a multiple choice option, or
+      * a new language map can be added)
       *
-      * @return True of the set of possible interaction components are equivalent
+      * @return
+      *   True of the set of possible interaction components are equivalent
       */
     def interactionComponentsAreCompatible(): Boolean = {
 
@@ -230,15 +265,18 @@ case class ActivityDefinition(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature for the activity definition is computed by extracting a signature from each property, or a
-    * placeholder value, and then concatenating with a standard separator and hashing as usual
+    * The signature for the activity definition is computed by extracting a
+    * signature from each property, or a placeholder value, and then
+    * concatenating with a standard separator and hashing as usual
     *
-    * For list of interaction components, a signature is extracted from each component, and then those are sorted,
-    * combined, and hashed as usual
+    * For list of interaction components, a signature is extracted from each
+    * component, and then those are sorted, combined, and hashed as usual
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     hash {

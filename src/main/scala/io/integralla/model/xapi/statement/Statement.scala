@@ -10,19 +10,36 @@ import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
 import java.util.UUID
 
-/** Statements are the evidence for any sort of experience or event which is to be tracked in xAPI
+/** Statements are the evidence for any sort of experience or event which is to
+  * be tracked in xAPI
   *
-  * @param id          A UUID used to uniquely identify the statement
-  * @param actor       An agent or group that identifies whom the statement is about
-  * @param verb        The action taken by the actor
-  * @param `object`    An agent, activity, or another statement that is the object of the statement
-  * @param result      A result object that provides further details representing a measured outcome
-  * @param context     A context object that provides additional meaning for the statement
-  * @param timestamp   The time at which the experience occurred
-  * @param stored      The time at which this statement was persisted by the LRS
-  * @param authority   An agent or group object indicating who is asserting the validity of the statement
-  * @param version     The statement’s associated xAPI version, formatted according to Semantic Versioning 1.0.0
-  * @param attachments An array of attachment objects which provide headers for any attachments associated with the statement
+  * @param id
+  *   A UUID used to uniquely identify the statement
+  * @param actor
+  *   An agent or group that identifies whom the statement is about
+  * @param verb
+  *   The action taken by the actor
+  * @param `object`
+  *   An agent, activity, or another statement that is the object of the
+  *   statement
+  * @param result
+  *   A result object that provides further details representing a measured
+  *   outcome
+  * @param context
+  *   A context object that provides additional meaning for the statement
+  * @param timestamp
+  *   The time at which the experience occurred
+  * @param stored
+  *   The time at which this statement was persisted by the LRS
+  * @param authority
+  *   An agent or group object indicating who is asserting the validity of the
+  *   statement
+  * @param version
+  *   The statement’s associated xAPI version, formatted according to Semantic
+  *   Versioning 1.0.0
+  * @param attachments
+  *   An array of attachment objects which provide headers for any attachments
+  *   associated with the statement
   */
 case class Statement(
   id: Option[UUID],
@@ -39,7 +56,8 @@ case class Statement(
 ) extends StatementValidation with Equivalence {
 
   /** Extracts and returns all activities (if any) referenced by the statement
-    *  @return A distinct list of all activities referenced in the statement
+    * @return
+    *   A distinct list of all activities referenced in the statement
     */
   def getActivityReferences: List[ActivityReference] = {
     List(
@@ -50,7 +68,8 @@ case class Statement(
 
   /** A list of agent references across all parts of the statement
     *
-    * @return A list of agent references
+    * @return
+    *   A list of agent references
     */
   def getAgentReferences: List[AgentReference] = {
     List(
@@ -78,9 +97,11 @@ case class Statement(
     ).flatten.distinct
   }
 
-  /** Extracts and returns all attachment objects from a statement and/or its sub-statement
+  /** Extracts and returns all attachment objects from a statement and/or its
+    * sub-statement
     *
-    * @return List of attachment objects
+    * @return
+    *   List of attachment objects
     */
   def getAttachments: List[Attachment] =
     List(
@@ -92,7 +113,8 @@ case class Statement(
 
   /** Tests whether the statement is a voiding statement
     *
-    * @return True if the statement is a voiding statement, else false
+    * @return
+    *   True if the statement is a voiding statement, else false
     */
   def isVoidingStatement: Boolean = {
     `object`.value match {
@@ -102,8 +124,9 @@ case class Statement(
     }
   }
 
-  /** @return The size of the statement in bytes based on the JSON representation of
-    *         the statement, when printed with no spaces
+  /** @return
+    *   The size of the statement in bytes based on the JSON representation of
+    *   the statement, when printed with no spaces
     */
   def size: Int =
     LRSModelUtils
@@ -151,9 +174,11 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     hash {

@@ -9,15 +9,30 @@ import java.util.UUID
 
 /** Provides a place to add contextual information to a statement
   *
-  * @param registration      The registration that the statement is associated with
-  * @param instructor        The instructor that the statement relates to, if not included as the actor of the statement
-  * @param team              The team (group) that this statement relates to, if not included as the actor of the statement
-  * @param contextActivities A map of the types of learning activity context that this statement is related to
-  * @param revision          The revision of the learning activity associated with this statement
-  * @param platform          The platform used in the experience of this learning activity
-  * @param language          An RFC 5646 language tag representing the language in which the experience being recorded in this statement (mainly) occurred in, if applicable and known
-  * @param statement         A reference to another statement to be considered as context for this statement
-  * @param extensions        A map of any other domain-specific context relevant to this statement
+  * @param registration
+  *   The registration that the statement is associated with
+  * @param instructor
+  *   The instructor that the statement relates to, if not included as the actor
+  *   of the statement
+  * @param team
+  *   The team (group) that this statement relates to, if not included as the
+  *   actor of the statement
+  * @param contextActivities
+  *   A map of the types of learning activity context that this statement is
+  *   related to
+  * @param revision
+  *   The revision of the learning activity associated with this statement
+  * @param platform
+  *   The platform used in the experience of this learning activity
+  * @param language
+  *   An RFC 5646 language tag representing the language in which the experience
+  *   being recorded in this statement (mainly) occurred in, if applicable and
+  *   known
+  * @param statement
+  *   A reference to another statement to be considered as context for this
+  *   statement
+  * @param extensions
+  *   A map of any other domain-specific context relevant to this statement
   */
 case class StatementContext(
   registration: Option[UUID],
@@ -31,9 +46,11 @@ case class StatementContext(
   extensions: Option[ExtensionMap]
 ) extends Equivalence {
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     hash {
@@ -53,10 +70,13 @@ case class StatementContext(
     }
   }
 
-  /** A list of agent references  composed of the those identified by the instructor and team properties
+  /** A list of agent references composed of the those identified by the
+    * instructor and team properties
     *
-    * @param inSubStatement Whether the reference occurs in a sub-statement
-    * @return A list of agent references
+    * @param inSubStatement
+    *   Whether the reference occurs in a sub-statement
+    * @return
+    *   A list of agent references
     */
   def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
     List(

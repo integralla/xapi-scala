@@ -11,16 +11,20 @@ import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import java.time.OffsetDateTime
 import java.util.UUID
 
-/** This class provides a wrapper around the five statement object types that the `object` property can be set to
-  * It is used for encoding / decoding purposes only
+/** This class provides a wrapper around the five statement object types that
+  * the `object` property can be set to It is used for encoding / decoding
+  * purposes only
   *
-  * @param value – An object of one of the five supported statement object types
+  * @param value
+  *   – An object of one of the five supported statement object types
   */
 case class StatementObject(value: AnyRef) extends Equivalence {
 
   /** A list of activities (if any) referenced by the statement object
-    * Activities can be referenced via the statement object, or in a sub-statement
-    * @return A list of activities
+    * Activities can be referenced via the statement object, or in a
+    * sub-statement
+    * @return
+    *   A list of activities
     */
   def getActivityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
     value match {
@@ -30,10 +34,13 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     }
   }
 
-  /** A list of agent references  composed of the those identified by the statement object
+  /** A list of agent references composed of the those identified by the
+    * statement object
     *
-    * @param inSubStatement Whether the reference occurs in a sub-statement
-    * @return A list of agent references
+    * @param inSubStatement
+    *   Whether the reference occurs in a sub-statement
+    * @return
+    *   A list of agent references
     */
   def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
     value match {
@@ -62,8 +69,10 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
-    * @return A string identifier
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     value match {

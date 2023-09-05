@@ -1,6 +1,8 @@
 package io.integralla.model.references
 
-/** An ADT to represent the ways in which an activity can be referenced within a statement */
+/** An ADT to represent the ways in which an activity can be referenced within a
+  * statement
+  */
 sealed trait ActivityReferenceType
 
 /** When the activity is the object of the statement */

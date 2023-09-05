@@ -8,17 +8,23 @@ import io.integralla.model.xapi.statement.identifiers.IRI
 
 /** A statement activity
   *
-  * @param objectType Activity statement object type
-  * @param id         An identifier for a single unique activity
-  * @param definition An activity definition
+  * @param objectType
+  *   Activity statement object type
+  * @param id
+  *   An identifier for a single unique activity
+  * @param definition
+  *   An activity definition
   */
 case class Activity(objectType: Option[StatementObjectType], id: IRI, definition: Option[ActivityDefinition])
     extends Equivalence {
 
-  /** Similar to `isEquivalentTo` but includes the activity definition in addition to the activity identifier
+  /** Similar to `isEquivalentTo` but includes the activity definition in
+    * addition to the activity identifier
     *
-    * @param instance The instance to test logical equivalence against
-    * @return True if both instances are logically equivalent, else false
+    * @param instance
+    *   The instance to test logical equivalence against
+    * @return
+    *   True if both instances are logically equivalent, else false
     */
   def isEquivalentToFull(instance: Activity): Boolean = {
     List(
@@ -31,14 +37,15 @@ case class Activity(objectType: Option[StatementObjectType], id: IRI, definition
     ).forall(_ == true)
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature of an activity is based solely on it's identifier
-    * which is handled as a IRI. As per the specification, the activity
-    * definition is not considered as part of the immutable statement
-    * definition
+    * The signature of an activity is based solely on it's identifier which is
+    * handled as a IRI. As per the specification, the activity definition is not
+    * considered as part of the immutable statement definition
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     id.signature()

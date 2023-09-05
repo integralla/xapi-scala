@@ -11,8 +11,10 @@ import scala.util.{Failure, Success, Try}
 
 /** An account object
   *
-  * @param homePage The canonical home page for the system the account is on
-  * @param name     The unique id or name used to log in to this account
+  * @param homePage
+  *   The canonical home page for the system the account is on
+  * @param name
+  *   The unique id or name used to log in to this account
   */
 case class Account(
   homePage: String,
@@ -33,12 +35,14 @@ case class Account(
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * To generate the signature, the account name is appended to the
-    * homepage as a URL fragment and the combined value handled as an IRI
+    * To generate the signature, the account name is appended to the homepage as
+    * a URL fragment and the combined value handled as an IRI
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     IRI(s"$homePage#$name").signature()

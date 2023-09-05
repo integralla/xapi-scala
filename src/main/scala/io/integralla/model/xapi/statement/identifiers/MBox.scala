@@ -10,7 +10,8 @@ import scala.util.{Failure, Success, Try}
 
 /** An MBOX identifier
   *
-  * @param value A mailto IRI
+  * @param value
+  *   A mailto IRI
   */
 case class MBox(value: String) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
@@ -21,7 +22,8 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
 
   /** Returns a SHA1 checksum of the mailto IRI
     *
-    * @return SHA1 checksum
+    * @return
+    *   SHA1 checksum
     */
   def shaChecksum: String = {
     MessageDigest
@@ -43,12 +45,14 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * For the purposes of generating the signature, we generate a version of
-    * the MBox IRI with the schema and path parts all lower cased
+    * For the purposes of generating the signature, we generate a version of the
+    * MBox IRI with the schema and path parts all lower cased
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     hash {

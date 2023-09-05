@@ -9,14 +9,18 @@ import java.util.UUID
 
 /** A pointer to another pre-existing statement
   *
-  * @param objectType A statement object type
-  * @param id         The UUID of the referenced statement
+  * @param objectType
+  *   A statement object type
+  * @param id
+  *   The UUID of the referenced statement
   */
 case class StatementRef(objectType: StatementObjectType, id: UUID) extends Equivalence {
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * @return A string identifier
+    * @return
+    *   A string identifier
     */
   override protected[xapi] def signature(): String = {
     hash {
