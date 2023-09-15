@@ -118,7 +118,7 @@ class ContextActivitiesTest extends UnitSpec {
       }
     }
 
-    describe("getActivityReferences") {
+    describe("activityReferences") {
       val baseContextActivities: ContextActivities = ContextActivities(
         parent = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))),
         grouping = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
@@ -128,7 +128,7 @@ class ContextActivitiesTest extends UnitSpec {
 
       it("should return a list of all activity references within the context activities object") {
         val contextActivities: ContextActivities = baseContextActivities.copy()
-        val references: List[ActivityReference] = contextActivities.getActivityReferences()
+        val references: List[ActivityReference] = contextActivities.activityReferences()
         val iris: List[String] = references.map(_.activity.id.value)
 
         assert(references.length === 4)
@@ -147,7 +147,7 @@ class ContextActivitiesTest extends UnitSpec {
 
       it("should set the inSubStatement property to true, if the inSubStatement parameter is true") {
         val contextActivities: ContextActivities = baseContextActivities.copy()
-        val references: List[ActivityReference] = contextActivities.getActivityReferences(true)
+        val references: List[ActivityReference] = contextActivities.activityReferences(true)
         assert(references.map(_.inSubStatement).forall(_ === true))
       }
 
@@ -158,7 +158,7 @@ class ContextActivitiesTest extends UnitSpec {
           category = None,
           other = None
         )
-        val references: List[ActivityReference] = contextActivities.getActivityReferences()
+        val references: List[ActivityReference] = contextActivities.activityReferences()
         assert(references.isEmpty)
       }
 

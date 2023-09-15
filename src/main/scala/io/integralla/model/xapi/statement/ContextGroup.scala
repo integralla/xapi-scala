@@ -2,6 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.references.{AgentReference, ContextGroupRef}
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.statement.identifiers.IRI
 import io.integralla.model.xapi.statement.ContextGroup.contextType
@@ -20,6 +21,26 @@ case class ContextGroup(
   group: Group,
   relevantTypes: Option[List[IRI]] = None
 ) extends Equivalence with StatementValidation {
+
+  /** A list of agent references composed of the those identified by group (if
+    * identified) and all member agents (if any)
+    *
+    * @param inSubStatement
+    *   Whether the reference occurs in a sub-statement
+    * @return
+    *   A list of agent references
+    */
+  def agentReferences(inSubStatement: Boolean): List[AgentReference] = {
+    group
+      .asList().map(agent =>
+        AgentReference(
+          agent = agent._1,
+          referenceType = ContextGroupRef,
+          inSubStatement = inSubStatement,
+          asGroupMember = agent._2
+        )
+      )
+  }
 
   override protected[xapi] def signature(): String = {
     hash {

@@ -980,10 +980,10 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
     }
 
-    describe("getActivityReferences") {
+    describe("activityReferences") {
       it("should return a list with an activity if the statement object is an activity") {
         val statement: Statement = basicStatement.copy()
-        val references: List[ActivityReference] = statement.getActivityReferences
+        val references: List[ActivityReference] = statement.activityReferences
         assert(references.length === 1)
         assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === false)
@@ -993,7 +993,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         val statement: Statement = basicStatement.copy(
           context = Some(sampleContext)
         )
-        val references: List[ActivityReference] = statement.getActivityReferences
+        val references: List[ActivityReference] = statement.activityReferences
         assert(references.length === 2)
         assert(references.map(_.inSubStatement).forall(_ === false))
       }
@@ -1003,69 +1003,49 @@ class StatementTest extends UnitSpec with StrictLogging {
       ) {
         val statement =
           Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
-        val references: List[ActivityReference] = statement.getActivityReferences
+        val references: List[ActivityReference] = statement.activityReferences
         assert(references.isEmpty)
       }
     }
 
-    describe("getAgentReferences") {
-      val testStatement: Statement = Statement(
-        id = Some(UUID.randomUUID()),
-        actor = Agent(
-          Some(StatementObjectType.Agent),
-          Some("Populus Tremuloides"),
-          Some(MBox("mailto:populus.tremuloides@integralla.io")),
-          None,
-          None,
-          None
-        ),
-        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
-        `object` = StatementObject(
-          Agent(
-            Some(StatementObjectType.Agent),
-            Some("Prunus Persica"),
-            Some(MBox("mailto:prunus.persica@integralla.io")),
-            None,
-            None,
-            None
-          )
-        ),
-        result = None,
-        context = Some(
-          StatementContext(
-            registration = None,
-            instructor = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None)),
-            team = Some(
-              Group(
-                StatementObjectType.Group,
-                None,
-                Some(MBox("mailto:team@integralla.io")),
-                None,
-                None,
-                None,
-                None
-              )
-            ),
-            contextActivities = None,
-            revision = None,
-            platform = None,
-            language = None,
-            statement = None,
-            extensions = None
-          )
-        ),
-        timestamp = None,
-        stored = None,
-        authority = Some(
-          Agent(None, None, Some(MBox("mailto:lrp@integralla.io")), None, None, None)
-        ),
-        version = None,
-        attachments = None
-      )
+    describe("agentReferences") {
 
       it("should return all actors referenced by the statement") {
-        val statement: Statement = testStatement.copy()
-        val references: List[AgentReference] = statement.getAgentReferences
+        val statement: Statement = Statement(
+          id = Some(UUID.randomUUID()),
+          actor = Agent(
+            Some(StatementObjectType.Agent),
+            Some("Populus Tremuloides"),
+            Some(MBox("mailto:populus.tremuloides@integralla.io"))
+          ),
+          verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
+          `object` = StatementObject(
+            Agent(
+              Some(StatementObjectType.Agent),
+              Some("Prunus Persica"),
+              Some(MBox("mailto:prunus.persica@integralla.io"))
+            )
+          ),
+          context = Some(
+            StatementContext(
+              registration = None,
+              instructor = Some(Agent(mbox = Some(MBox("mailto:instructors@integralla.io")))),
+              team = Some(
+                Group(
+                  objectType = StatementObjectType.Group,
+                  mbox = Some(MBox("mailto:team@integralla.io"))
+                )
+              )
+            )
+          ),
+          authority = Some(
+            Agent(mbox = Some(MBox("mailto:lrp@integralla.io")))
+          ),
+          version = None,
+          attachments = None
+        )
+
+        val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 5)
 
         assert(references.map(_.inSubStatement).forall(_ === false))

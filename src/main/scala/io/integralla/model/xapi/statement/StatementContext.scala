@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
 import io.integralla.model.xapi.common.{Equivalence, ExtensionMap}
 
@@ -90,7 +90,7 @@ case class StatementContext(
     * @return
     *   A list of agent references
     */
-  def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
+  def agentReferences(inSubStatement: Boolean): List[AgentReference] = {
     List(
       instructor.map(_.asList().map(agent => {
         AgentReference(
@@ -107,7 +107,9 @@ case class StatementContext(
           inSubStatement = inSubStatement,
           asGroupMember = agent._2
         )
-      }))
+      })),
+      contextAgents.map(_.map(_.agentReference(inSubStatement))),
+      contextGroups.map(_.flatMap(_.agentReferences(inSubStatement)))
     ).flatMap(_.getOrElse(List.empty[AgentReference])).distinct
   }
 }

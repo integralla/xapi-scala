@@ -45,11 +45,11 @@ case class SubStatement(
   /** @return
     *   A distinct list of all activities referenced in the sub-statement
     */
-  def getActivityReferences: List[ActivityReference] = {
+  def activityReferences: List[ActivityReference] = {
     List(
-      `object`.getActivityReferences(true),
+      `object`.activityReferences(true),
       context
-        .flatMap(_.contextActivities.map(_.getActivityReferences(true)))
+        .flatMap(_.contextActivities.map(_.activityReferences(true)))
         .getOrElse(List.empty[ActivityReference])
     ).flatten.distinct
   }
@@ -60,7 +60,7 @@ case class SubStatement(
     * @return
     *   A list of agent references
     */
-  def getAgentReferences: List[AgentReference] = {
+  def agentReferences: List[AgentReference] = {
     List(
       actor
         .asList().map(agent => {
@@ -71,8 +71,8 @@ case class SubStatement(
             asGroupMember = agent._2
           )
         }),
-      `object`.getAgentReferences(inSubStatement = true),
-      context.map(context => context.getAgentReferences(inSubStatement = true)).getOrElse(List.empty[AgentReference])
+      `object`.agentReferences(inSubStatement = true),
+      context.map(context => context.agentReferences(inSubStatement = true)).getOrElse(List.empty[AgentReference])
     ).flatten.distinct
   }
 

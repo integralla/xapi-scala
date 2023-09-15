@@ -59,10 +59,10 @@ case class Statement(
     * @return
     *   A distinct list of all activities referenced in the statement
     */
-  def getActivityReferences: List[ActivityReference] = {
+  def activityReferences: List[ActivityReference] = {
     List(
-      `object`.getActivityReferences(),
-      context.flatMap(_.contextActivities.map(_.getActivityReferences())).getOrElse(List.empty[ActivityReference])
+      `object`.activityReferences(),
+      context.flatMap(_.contextActivities.map(_.activityReferences())).getOrElse(List.empty[ActivityReference])
     ).flatten.distinct
   }
 
@@ -71,7 +71,7 @@ case class Statement(
     * @return
     *   A list of agent references
     */
-  def getAgentReferences: List[AgentReference] = {
+  def agentReferences: List[AgentReference] = {
     List(
       actor
         .asList().map(agent => {
@@ -82,8 +82,8 @@ case class Statement(
             asGroupMember = agent._2
           )
         }),
-      `object`.getAgentReferences(inSubStatement = false),
-      context.map(context => context.getAgentReferences(inSubStatement = false)).getOrElse(List.empty[AgentReference]),
+      `object`.agentReferences(inSubStatement = false),
+      context.map(context => context.agentReferences(inSubStatement = false)).getOrElse(List.empty[AgentReference]),
       authority
         .map(_.asList().map(agent => {
           AgentReference(

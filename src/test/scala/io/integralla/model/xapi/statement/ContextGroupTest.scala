@@ -1,5 +1,6 @@
 package io.integralla.model.xapi.statement
 
+import io.integralla.model.references.{AgentReference, ContextGroupRef}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
@@ -227,6 +228,62 @@ class ContextGroupTest extends UnitSpec {
             relevantTypes = None
           )
         }
+      }
+    }
+
+    describe("agentReferences") {
+      it("should return a reference for an identified group") {
+        val context: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
+          group = Group(
+            objectType = StatementObjectType.Group,
+            name = Some("Identified Group"),
+            mbox = Some(MBox("mailto:identified.group@integralla.io"))
+          )
+        )
+        val references: List[AgentReference] = context.agentReferences(false)
+        assert(references.length === 1)
+        assert(references.head.agent === context.group)
+        assert(references.head.referenceType === ContextGroupRef)
+        assert(references.head.inSubStatement === false)
+        assert(references.head.asGroupMember === false)
+      }
+      it("should return a reference for each group member") {
+        val context: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
+          group = Group(
+            objectType = StatementObjectType.Group,
+            name = Some("Anonymous Group"),
+            member = Some(
+              List(
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+              )
+            )
+          ),
+          relevantTypes = None
+        )
+        val references: List[AgentReference] = context.agentReferences(false)
+        assert(references.length === 2)
+        assert(references.forall(_.referenceType === ContextGroupRef))
+        assert(references.forall(_.inSubStatement === false))
+        assert(references.forall(_.asGroupMember === true))
+      }
+      it("should return references that reflect if the context is in a sub-statement") {
+        val context: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
+          group = Group(
+            objectType = StatementObjectType.Group,
+            name = Some("Identified Group"),
+            mbox = Some(MBox("mailto:identified.group@integralla.io"))
+          )
+        )
+        val references: List[AgentReference] = context.agentReferences(true)
+        assert(references.length === 1)
+        assert(references.head.agent === context.group)
+        assert(references.head.referenceType === ContextGroupRef)
+        assert(references.head.inSubStatement === true)
+        assert(references.head.asGroupMember === false)
       }
     }
   }

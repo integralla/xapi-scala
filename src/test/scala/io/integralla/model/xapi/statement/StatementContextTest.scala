@@ -3,7 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.Json
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
+import io.integralla.model.references.{AgentReference, ContextAgentRef, ContextGroupRef, InstructorRef, TeamRef}
 import io.integralla.model.xapi.common.ExtensionMap
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
@@ -427,111 +427,122 @@ class StatementContextTest extends UnitSpec {
       }
     }
 
-    describe("getAgentReferences") {
-
-      val group: Group = Group(
-        objectType = StatementObjectType.Group,
-        mbox_sha1sum = None,
-        member = Some(
-          List(
-            Agent(None, None, Some(MBox("mailto:picea.engelmannii@integralla.io")), None, None, None),
-            Agent(None, None, Some(MBox("mailto:platanus.acerifolia@integralla.io")), None, None, None)
+    describe("agentReferences") {
+      it("should return a list of agent references for an instructor") {
+        val context: StatementContext = StatementContext(
+          instructor = Some(
+            Agent(objectType = Some(StatementObjectType.Agent), mbox = Some(MBox("mailto:instructor@integralla.io")))
           )
         )
-      )
-
-      it("should return a list of agent references (instructor as agent, no team)") {
-        val context: StatementContext = sampleContext.copy(team = None)
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
         assert(references.length === 1)
         assert(references.head.referenceType === InstructorRef)
         assert(references.head.inSubStatement === false)
         assert(references.head.asGroupMember === false)
       }
-
-      it("should return a list of agent references (instructor as identified group w/o members, no team)") {
-        val context: StatementContext = sampleContext.copy(
-          instructor = Some(
-            group.copy(mbox = Some(MBox("mailto:instructors@integralla.io")), member = None)
-          ),
-          team = None
-        )
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
-        assert(references.length === 1)
-        assert(references.head.referenceType === InstructorRef)
-        assert(references.head.inSubStatement === false)
-        assert(references.head.asGroupMember === false)
-      }
-
-      it("should return a list of agent references (instructor as identified group w/ members, no team)") {
-        val context: StatementContext = sampleContext.copy(
-          instructor = Some(
-            group.copy(
-              mbox = Some(MBox("mailto:instructors@integralla.io"))
+      it("should return a list of agent references for an team") {
+        val context: StatementContext = StatementContext(
+          team = Some(
+            Group(
+              objectType = StatementObjectType.Group,
+              name = Some("Team A"),
+              mbox = Some(MBox("mailto:team.a@integralla.io")),
+              member = Some(
+                List(
+                  Agent(mbox = Some(MBox("mailto:a@integralla.io"))),
+                  Agent(mbox = Some(MBox("mailto:b@integralla.io")))
+                )
+              )
             )
-          ),
-          team = None
+          )
         )
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
         assert(references.length === 3)
-
-        val instructors = references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
-        assert(instructors.referenceType === InstructorRef)
-        assert(instructors.asGroupMember === false)
-
-        val members = references.filter(_.agent.mbox.get.value !== "mailto:instructors@integralla.io")
-        assert(members.forall(_.asGroupMember === true))
-
         assert(references.forall(_.inSubStatement === false))
-
+        assert(references.forall(_.referenceType === TeamRef))
+        assert(references.count(!_.asGroupMember) === 1)
+        assert(references.count(_.asGroupMember) === 2)
       }
-      it("should return a list of agent references (instructor as anonymous group w/ members)") {
-        val context: StatementContext = sampleContext.copy(
-          instructor = Some(group),
-          team = None
+      it("should return a list of references for context agents [xAPI 2.0]") {
+        val context: StatementContext = StatementContext(
+          contextAgents = Some(
+            List(
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent.a@example.com")))
+              ),
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent.b@example.com")))
+              )
+            )
+          )
         )
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
         assert(references.length === 2)
-        assert(references.forall(_.referenceType === InstructorRef))
+        assert(references.forall(_.referenceType === ContextAgentRef))
         assert(references.forall(_.inSubStatement === false))
-        assert(references.forall(_.asGroupMember === true))
+        assert(references.forall(_.asGroupMember === false))
       }
-
-      it("should return a list of agent references (instructor as agent, team as identified group)") {
-        val context: StatementContext = sampleContext.copy()
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+      it("should return a list of references for context groups [xAPI 2.0]") {
+        val context: StatementContext = StatementContext(
+          contextGroups = Some(
+            List(
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  name = Some("Identified Group"),
+                  mbox = Some(MBox("mailto:identified.group@integralla.io")),
+                  member = Some(
+                    List(
+                      Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                      Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+                    )
+                  )
+                )
+              ),
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group =
+                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+              )
+            )
+          )
+        )
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
         assert(references.length === 4)
         assert(references.forall(_.inSubStatement === false))
-
-        assert(references.count(_.referenceType === InstructorRef) === 1)
-        assert(references.count(_.referenceType === TeamRef) === 3)
-
-        assert(references.filter(_.referenceType === InstructorRef).forall(_.asGroupMember === false))
-        assert(references.count(ref => ref.referenceType == TeamRef && !ref.asGroupMember) === 1)
-        assert(references.count(ref => ref.referenceType == TeamRef && ref.asGroupMember) === 2)
+        assert(references.forall(_.referenceType === ContextGroupRef))
+        assert(references.count(_.asGroupMember) === 2)
+        assert(references.count(_.asGroupMember) === 2)
       }
-
-      it("should return a list of agent references (instructor as agent, team as anonymous group)") {
-        val context: StatementContext = sampleContext.copy(
-          team = Some(group)
+      it("should return references that reflect if the context is in a sub-statement") {
+        val context: StatementContext = StatementContext(
+          team = Some(
+            Group(
+              objectType = StatementObjectType.Group,
+              name = Some("Team A"),
+              mbox = Some(MBox("mailto:team.a@integralla.io")),
+              member = Some(
+                List(
+                  Agent(mbox = Some(MBox("mailto:a@integralla.io"))),
+                  Agent(mbox = Some(MBox("mailto:b@integralla.io")))
+                )
+              )
+            )
+          )
         )
-        val references: List[AgentReference] = context.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = true)
         assert(references.length === 3)
-        assert(references.forall(_.inSubStatement === false))
-
-        assert(references.count(_.referenceType === InstructorRef) === 1)
-        assert(references.count(_.referenceType === TeamRef) === 2)
-
-        assert(references.filter(_.referenceType === InstructorRef).forall(_.asGroupMember === false))
-        assert(references.filter(_.referenceType === TeamRef).forall(_.asGroupMember === true))
+        assert(references.forall(_.inSubStatement === true))
       }
-
-      it("should return an empty list if neither the instructor or team are defined") {
-        val context: StatementContext = sampleContext.copy(
-          instructor = None,
-          team = None
+      it("should return an empty list if the context does not contain any agent references") {
+        val context: StatementContext = StatementContext(
+          registration = Some(UUID.randomUUID())
         )
-        assert(context.getAgentReferences(inSubStatement = false).isEmpty)
+        val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
+        assert(references.isEmpty)
       }
     }
   }

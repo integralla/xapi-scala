@@ -28,7 +28,7 @@ case class ContextActivities(
 ) extends Equivalence {
 
   /** @return A distinct list of all activities referenced in the context */
-  def getActivityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
+  def activityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
     List(
       parent.map(_.map(activity => ActivityReference(activity, ParentRef, inSubStatement))),
       grouping.map(_.map(activity => ActivityReference(activity, GroupingRef, inSubStatement))),

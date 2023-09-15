@@ -1,5 +1,6 @@
 package io.integralla.model.xapi.statement
 
+import io.integralla.model.references.{AgentReference, ContextAgentRef}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.statement.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
@@ -125,6 +126,43 @@ class ContextAgentTest extends UnitSpec {
             relevantTypes = None
           )
         }
+      }
+    }
+
+    describe("agentReference") {
+      it("should return an agent reference for the agent") {
+        val contextAgent: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+          relevantTypes = Some(
+            List(
+              IRI("https://lrs.integralla.io/types/instructor"),
+              IRI("https://lrs.integralla.io/types/subject-matter-expert")
+            )
+          )
+        )
+        val reference: AgentReference = contextAgent.agentReference(false)
+        assert(reference.agent === contextAgent.agent)
+        assert(reference.referenceType === ContextAgentRef)
+        assert(reference.inSubStatement === false)
+        assert(reference.asGroupMember === false)
+      }
+      it("should return a reference that reflect if the context is in a sub-statement") {
+        val contextAgent: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+          relevantTypes = Some(
+            List(
+              IRI("https://lrs.integralla.io/types/instructor"),
+              IRI("https://lrs.integralla.io/types/subject-matter-expert")
+            )
+          )
+        )
+        val reference: AgentReference = contextAgent.agentReference(true)
+        assert(reference.agent === contextAgent.agent)
+        assert(reference.referenceType === ContextAgentRef)
+        assert(reference.inSubStatement === true)
+        assert(reference.asGroupMember === false)
       }
     }
   }

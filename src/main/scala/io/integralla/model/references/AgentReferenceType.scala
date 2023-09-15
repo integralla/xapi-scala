@@ -17,6 +17,12 @@ case object AgentObjectRef extends AgentReferenceType
 /** When the agent is the statement authority */
 case object AuthorityRef extends AgentReferenceType
 
+/** When the agent is a context agent */
+case object ContextAgentRef extends AgentReferenceType
+
+/** When the agent is a context group */
+case object ContextGroupRef extends AgentReferenceType
+
 /** When the agent is the statement instructor */
 case object InstructorRef extends AgentReferenceType
 

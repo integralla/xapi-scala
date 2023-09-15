@@ -272,10 +272,10 @@ class SubStatementTest extends UnitSpec {
       }
     }
 
-    describe("getActivityReferences") {
+    describe("activityReferences") {
       it("should return an activity reference if the statement object is an activity") {
         val subStatement: SubStatement = sampleActivitySubStatement.copy()
-        val references: List[ActivityReference] = subStatement.getActivityReferences
+        val references: List[ActivityReference] = subStatement.activityReferences
         assert(references.length === 1)
         assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === true)
@@ -304,7 +304,7 @@ class SubStatementTest extends UnitSpec {
             )
           )
         )
-        val references: List[ActivityReference] = subStatement.getActivityReferences
+        val references: List[ActivityReference] = subStatement.activityReferences
         assert(references.length === 5)
         assert(references.map(_.inSubStatement).forall(_ === true))
       }
@@ -313,12 +313,12 @@ class SubStatementTest extends UnitSpec {
         "should return an empty list if the statement object is not an activity, and if no context activities are defined"
       ) {
         val subStatement: SubStatement = sampleAgentSubStatement.copy()
-        val references: List[ActivityReference] = subStatement.getActivityReferences
+        val references: List[ActivityReference] = subStatement.activityReferences
         assert(references.isEmpty)
       }
     }
 
-    describe("getAgentReferences") {
+    describe("agentReferences") {
       val subStatement: SubStatement = SubStatement(
         objectType = StatementObjectType.SubStatement,
         actor = Agent(
@@ -369,7 +369,7 @@ class SubStatementTest extends UnitSpec {
       )
       it("should return a list of actors referenced in the actor, object, and context properties") {
         val statement: SubStatement = subStatement.copy()
-        val references: List[AgentReference] = statement.getAgentReferences
+        val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 4)
         assert(references.map(_.inSubStatement).forall(_ === true))
 
@@ -392,7 +392,7 @@ class SubStatementTest extends UnitSpec {
 
       it("should return a list of actors referenced in the actor, object, and context properties (context undefined)") {
         val statement: SubStatement = subStatement.copy(context = None)
-        val references: List[AgentReference] = statement.getAgentReferences
+        val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 2)
       }
 
@@ -402,7 +402,7 @@ class SubStatementTest extends UnitSpec {
         val statement: SubStatement = subStatement.copy(`object` =
           StatementObject(StatementRef(objectType = StatementObjectType.StatementRef, id = UUID.randomUUID()))
         )
-        val references: List[AgentReference] = statement.getAgentReferences
+        val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 3)
         assert(!references.exists(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io"))
       }

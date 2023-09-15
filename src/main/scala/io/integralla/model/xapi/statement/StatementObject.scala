@@ -26,10 +26,10 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     * @return
     *   A list of activities
     */
-  def getActivityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
+  def activityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
     value match {
       case activity: Activity         => List(ActivityReference(activity, ActivityObjectRef, inSubStatement))
-      case subStatement: SubStatement => subStatement.getActivityReferences
+      case subStatement: SubStatement => subStatement.activityReferences
       case _                          => List.empty[ActivityReference]
     }
   }
@@ -42,7 +42,7 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     * @return
     *   A list of agent references
     */
-  def getAgentReferences(inSubStatement: Boolean): List[AgentReference] = {
+  def agentReferences(inSubStatement: Boolean): List[AgentReference] = {
     value match {
       case agent: Agent =>
         agent
@@ -64,7 +64,7 @@ case class StatementObject(value: AnyRef) extends Equivalence {
               asGroupMember = agent._2
             )
           })
-      case subStatement: SubStatement => subStatement.getAgentReferences
+      case subStatement: SubStatement => subStatement.agentReferences
       case _                          => List.empty[AgentReference]
     }
   }

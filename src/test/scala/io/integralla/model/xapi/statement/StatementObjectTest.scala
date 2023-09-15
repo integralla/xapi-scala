@@ -301,10 +301,10 @@ class StatementObjectTest extends UnitSpec {
       }
     }
 
-    describe("getActivityReferences") {
+    describe("activityReferences") {
       it("should return a list with a single activity if the statement object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
-        val references: List[ActivityReference] = statementObject.getActivityReferences()
+        val references: List[ActivityReference] = statementObject.activityReferences()
         assert(references.length === 1)
         assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === false)
@@ -312,22 +312,22 @@ class StatementObjectTest extends UnitSpec {
 
       it("should return a non-empty list of the statement object is a sub-statement where the object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
-        val references: List[ActivityReference] = statementObject.getActivityReferences(true)
+        val references: List[ActivityReference] = statementObject.activityReferences(true)
         assert(references.length === 1)
         assert(references.head.referenceType === ActivityObjectRef)
         assert(references.head.inSubStatement === true)
       }
       it("should return an empty list if the statement object is not an activity nor a sub-statement") {
         val statementObject: StatementObject = StatementObject(sampleAgent.copy())
-        val references: List[ActivityReference] = statementObject.getActivityReferences()
+        val references: List[ActivityReference] = statementObject.activityReferences()
         assert(references.isEmpty)
       }
     }
 
-    describe("getAgentReferences") {
+    describe("agentReferences") {
       it("should return a list composed of a single agent reference when the statement object is an agent") {
         val statementObject: StatementObject = StatementObject(sampleAgent.copy())
-        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = statementObject.agentReferences(inSubStatement = false)
         assert(references.length === 1)
         assert(references.head.referenceType === AgentObjectRef)
         assert(references.head.inSubStatement === false)
@@ -336,7 +336,7 @@ class StatementObjectTest extends UnitSpec {
 
       it("should return a list of agent references when the statement object is a group") {
         val statementObject: StatementObject = StatementObject(sampleGroup.copy())
-        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = statementObject.agentReferences(inSubStatement = false)
         assert(references.length === 1)
         assert(references.head.referenceType === AgentObjectRef)
         assert(references.head.inSubStatement === false)
@@ -345,7 +345,7 @@ class StatementObjectTest extends UnitSpec {
 
       it("should return a list of agent reference when the statement object is a sub-statement") {
         val statementObject: StatementObject = StatementObject(sampleSubStatement.copy())
-        val references: List[AgentReference] = statementObject.getAgentReferences(inSubStatement = false)
+        val references: List[AgentReference] = statementObject.agentReferences(inSubStatement = false)
         assert(references.length === 1)
         assert(references.head.referenceType === ActorRef)
         assert(references.head.inSubStatement === true)
@@ -354,12 +354,12 @@ class StatementObjectTest extends UnitSpec {
 
       it("should return an empty list when the statement object is an activity") {
         val statementObject: StatementObject = StatementObject(sampleActivity.copy())
-        assert(statementObject.getAgentReferences(inSubStatement = false).isEmpty)
+        assert(statementObject.agentReferences(inSubStatement = false).isEmpty)
       }
 
       it("should return an empty list when the statement object is a statement-ref") {
         val statementObject: StatementObject = StatementObject(sampleStatementRef.copy())
-        assert(statementObject.getAgentReferences(inSubStatement = false).isEmpty)
+        assert(statementObject.agentReferences(inSubStatement = false).isEmpty)
       }
     }
   }
