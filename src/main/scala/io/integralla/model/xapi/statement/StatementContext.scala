@@ -20,6 +20,14 @@ import java.util.UUID
   * @param contextActivities
   *   A map of the types of learning activity context that this statement is
   *   related to
+  * @param contextAgents
+  *   [xAPI 2.0] Collection of objects each describing a relation between this
+  *   statement and an agent, optionally categorized by a list of "Relevant
+  *   Type" IRIs
+  * @param contextGroups
+  *   [xAPI 2.0] Collection of objects each describing a relation between this
+  *   statement and a group (identified or anonymous), optionally categorized by
+  *   a list of "Relevant Type" IRIs
   * @param revision
   *   The revision of the learning activity associated with this statement
   * @param platform
@@ -39,6 +47,8 @@ case class StatementContext(
   instructor: Option[StatementActor] = None,
   team: Option[Group] = None,
   contextActivities: Option[ContextActivities] = None,
+  contextAgents: Option[List[ContextAgent]] = None,
+  contextGroups: Option[List[ContextGroup]] = None,
   revision: Option[String] = None,
   platform: Option[String] = None,
   language: Option[String] = None,
@@ -60,6 +70,8 @@ case class StatementContext(
           instructor.map(_.signature()).getOrElse(placeholder),
           team.map(_.signature()).getOrElse(placeholder),
           contextActivities.map(_.signature()).getOrElse(placeholder),
+          contextAgents.map(_.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder),
+          contextGroups.map(_.map(_.signature()).sorted.mkString(separator)).getOrElse(placeholder),
           revision.getOrElse(placeholder),
           platform.getOrElse(placeholder),
           language.getOrElse(placeholder),

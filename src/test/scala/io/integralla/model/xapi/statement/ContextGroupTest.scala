@@ -12,18 +12,15 @@ class ContextGroupTest extends UnitSpec {
     describe("[encoding/decoding]") {
       it("should encode/decode a context group object") {
         val contextGroup: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Identified Group"),
             mbox = Some(MBox("mailto:identified.group@integralla.io")),
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
@@ -66,18 +63,14 @@ class ContextGroupTest extends UnitSpec {
       }
       it("should encode/decode a context group object without any relevant types") {
         val contextGroup: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Anonymous Group"),
-            mbox = None,
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
@@ -112,41 +105,34 @@ class ContextGroupTest extends UnitSpec {
 
     describe("[equivalence]") {
       it("should return true if both objects are equivalent (no relevant types)") {
-        val a: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+        val left: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Anonymous Group"),
-            mbox = None,
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
           relevantTypes = None
         )
-        val b: ContextGroup = a.copy()
-        assert(a.isEquivalentTo(b))
+        val right: ContextGroup = left.copy()
+        assert(left.isEquivalentTo(right))
       }
       it("should return true if both objects are equivalent (with relevant types)") {
-        val a: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+        val left: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Identified Group"),
             mbox = Some(MBox("mailto:identified.group@integralla.io")),
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
@@ -157,23 +143,20 @@ class ContextGroupTest extends UnitSpec {
             )
           )
         )
-        val b: ContextGroup = a.copy()
-        assert(a.isEquivalentTo(b))
+        val right: ContextGroup = left.copy()
+        assert(left.isEquivalentTo(right))
       }
       it("should return true if both objects are equivalent excepting relevant types list order") {
-        val a: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+        val left: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Identified Group"),
             mbox = Some(MBox("mailto:identified.group@integralla.io")),
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
@@ -184,7 +167,7 @@ class ContextGroupTest extends UnitSpec {
             )
           )
         )
-        val b: ContextGroup = a.copy(
+        val right: ContextGroup = left.copy(
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/leads"),
@@ -192,22 +175,19 @@ class ContextGroupTest extends UnitSpec {
             )
           )
         )
-        assert(a.isEquivalentTo(b))
+        assert(left.isEquivalentTo(right))
       }
       it("should return false if the objects are not equivalent") {
-        val a: ContextGroup = ContextGroup(
-          objectType = "contextGroup",
+        val left: ContextGroup = ContextGroup(
+          objectType = ContextGroup.contextType,
           group = Group(
             objectType = StatementObjectType.Group,
             name = Some("Identified Group"),
             mbox = Some(MBox("mailto:identified.group@integralla.io")),
-            mbox_sha1sum = None,
-            openid = None,
-            account = None,
             member = Some(
               List(
-                Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                Agent(mbox = Some(MBox("mailto:member.two@example.com")))
               )
             )
           ),
@@ -218,14 +198,14 @@ class ContextGroupTest extends UnitSpec {
             )
           )
         )
-        val b: ContextGroup = a.copy(
+        val right: ContextGroup = left.copy(
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/team")
             )
           )
         )
-        assert(a.isEquivalentTo(b) === false)
+        assert(left.isEquivalentTo(right) === false)
       }
     }
 
@@ -237,14 +217,10 @@ class ContextGroupTest extends UnitSpec {
             group = Group(
               objectType = StatementObjectType.Group,
               name = Some("Anonymous Group"),
-              mbox = None,
-              mbox_sha1sum = None,
-              openid = None,
-              account = None,
               member = Some(
                 List(
-                  Agent(None, None, Some(MBox("mailto:member.one@example.com")), None, None, None),
-                  Agent(None, None, Some(MBox("mailto:member.two@example.com")), None, None, None)
+                  Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                  Agent(mbox = Some(MBox("mailto:member.two@example.com")))
                 )
               )
             ),

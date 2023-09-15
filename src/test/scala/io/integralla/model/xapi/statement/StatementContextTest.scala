@@ -104,12 +104,218 @@ class StatementContextTest extends UnitSpec {
         val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
         assert(decoded.get === sampleContext)
       }
+      it("should successfully encode/decode a context object with context agents [xAPI 2.0]") {
+        val context: StatementContext = StatementContext(
+          contextAgents = Some(
+            List(
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/instructor"),
+                    IRI("https://lrs.integralla.io/types/subject-matter-expert")
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val expected: String =
+          """{
+            |  "contextAgents" : [
+            |    {
+            |      "objectType" : "contextAgent",
+            |      "agent" : {
+            |        "mbox" : "mailto:context.agent@example.com"
+            |      },
+            |      "relevantTypes" : [
+            |        "https://lrs.integralla.io/types/instructor",
+            |        "https://lrs.integralla.io/types/subject-matter-expert"
+            |      ]
+            |    }
+            |  ]
+            |}""".stripMargin
+
+        val encoded: String = context.asJson.spaces2
+        assert(encoded === expected)
+        val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
+        assert(decoded.get === context)
+      }
+      it("should successfully encode/decode a context object with context groups [xAPI 2.0]") {
+        val context: StatementContext = StatementContext(
+          contextGroups = Some(
+            List(
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  name = Some("Identified Group"),
+                  mbox = Some(MBox("mailto:identified.group@integralla.io")),
+                  member = Some(
+                    List(
+                      Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                      Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+                    )
+                  )
+                ),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/team"),
+                    IRI("https://lrs.integralla.io/types/leads")
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val expected: String =
+          """{
+            |  "contextGroups" : [
+            |    {
+            |      "objectType" : "contextGroup",
+            |      "group" : {
+            |        "objectType" : "Group",
+            |        "name" : "Identified Group",
+            |        "mbox" : "mailto:identified.group@integralla.io",
+            |        "member" : [
+            |          {
+            |            "mbox" : "mailto:member.one@example.com"
+            |          },
+            |          {
+            |            "mbox" : "mailto:member.two@example.com"
+            |          }
+            |        ]
+            |      },
+            |      "relevantTypes" : [
+            |        "https://lrs.integralla.io/types/team",
+            |        "https://lrs.integralla.io/types/leads"
+            |      ]
+            |    }
+            |  ]
+            |}""".stripMargin
+
+        val encoded: String = context.asJson.spaces2
+        assert(encoded === expected)
+        val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
+        assert(decoded.get === context)
+      }
     }
 
     describe("[equivalence]") {
       it("should return true if both objects are equivalent") {
         val left: StatementContext = sampleContext.copy()
         val right: StatementContext = sampleContext.copy()
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both objects are equivalent (contextAgents) [xAPI 2.0]") {
+        val left: StatementContext = StatementContext(
+          contextAgents = Some(
+            List(
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/instructor"),
+                    IRI("https://lrs.integralla.io/types/subject-matter-expert")
+                  )
+                )
+              ),
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:other.agent@example.com")))
+              )
+            )
+          )
+        )
+        val right: StatementContext = StatementContext(
+          contextAgents = Some(
+            List(
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:other.agent@example.com")))
+              ),
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/instructor"),
+                    IRI("https://lrs.integralla.io/types/subject-matter-expert")
+                  )
+                )
+              )
+            )
+          )
+        )
+        assert(left.isEquivalentTo(right))
+      }
+      it("should return true if both objects are equivalent (contextGroups) [xAPI 2.0]") {
+        val left: StatementContext = StatementContext(
+          contextGroups = Some(
+            List(
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  name = Some("Identified Group"),
+                  mbox = Some(MBox("mailto:identified.group@integralla.io")),
+                  member = Some(
+                    List(
+                      Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                      Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+                    )
+                  )
+                ),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/team"),
+                    IRI("https://lrs.integralla.io/types/leads")
+                  )
+                )
+              ),
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group =
+                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+              )
+            )
+          )
+        )
+        val right: StatementContext = StatementContext(
+          contextGroups = Some(
+            List(
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group =
+                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+              ),
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  name = Some("Identified Group"),
+                  mbox = Some(MBox("mailto:identified.group@integralla.io")),
+                  member = Some(
+                    List(
+                      Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                      Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+                    )
+                  )
+                ),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/team"),
+                    IRI("https://lrs.integralla.io/types/leads")
+                  )
+                )
+              )
+            )
+          )
+        )
         assert(left.isEquivalentTo(right))
       }
       it("should return false if the objects are not equivalent (registration)") {
@@ -132,6 +338,67 @@ class StatementContextTest extends UnitSpec {
         val right: StatementContext = sampleContext.copy(contextActivities = None)
         assert(left.isEquivalentTo(right) === false)
       }
+      it("should return false if the objects are not equivalent (contextAgents) [xAPI 2.0]") {
+        val left: StatementContext = StatementContext(
+          contextAgents = Some(
+            List(
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/instructor"),
+                    IRI("https://lrs.integralla.io/types/subject-matter-expert")
+                  )
+                )
+              ),
+              ContextAgent(
+                objectType = ContextAgent.contextType,
+                agent = Agent(mbox = Some(MBox("mailto:other.agent@example.com")))
+              )
+            )
+          )
+        )
+        val right: StatementContext = left.copy(
+          contextAgents = Some(
+            left.contextAgents.get.take(1)
+          )
+        )
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (contextGroups) [xAPI 2.0]") {
+        val left: StatementContext = StatementContext(
+          contextGroups = Some(
+            List(
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  name = Some("Identified Group"),
+                  mbox = Some(MBox("mailto:identified.group@integralla.io"))
+                ),
+                relevantTypes = Some(
+                  List(
+                    IRI("https://lrs.integralla.io/types/team"),
+                    IRI("https://lrs.integralla.io/types/leads")
+                  )
+                )
+              ),
+              ContextGroup(
+                objectType = ContextGroup.contextType,
+                group =
+                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+              )
+            )
+          )
+        )
+        val right: StatementContext = left.copy(
+          contextGroups = Some(
+            left.contextGroups.get.take(1)
+          )
+        )
+        assert(left.isEquivalentTo(right) === false)
+      }
       it("should return false if the objects are not equivalent (revision)") {
         val left: StatementContext = sampleContext.copy()
         val right: StatementContext = sampleContext.copy(revision = None)
@@ -149,7 +416,8 @@ class StatementContextTest extends UnitSpec {
       }
       it("should return false if the objects are not equivalent (statement)") {
         val left: StatementContext = sampleContext.copy()
-        val right: StatementContext = sampleContext.copy(statement = Some(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())))
+        val right: StatementContext =
+          sampleContext.copy(statement = Some(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())))
         assert(left.isEquivalentTo(right) === false)
       }
       it("should return false if the objects are not equivalent (extensions)") {

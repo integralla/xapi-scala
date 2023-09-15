@@ -11,9 +11,9 @@ class ContextAgentTest extends UnitSpec {
   describe("ContextAgent") {
     describe("[encoding/decoding]") {
       it("should encode/decode a context agent object") {
-        val contextAgent: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val contextAgent: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/instructor"),
@@ -32,9 +32,9 @@ class ContextAgentTest extends UnitSpec {
         assert(decoded.get === contextAgent)
       }
       it("should encode/decode a context agent object without any relevant types") {
-        val contextAgent: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val contextAgent: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = None
         )
 
@@ -51,18 +51,18 @@ class ContextAgentTest extends UnitSpec {
 
     describe("[equivalence]") {
       it("should return true if both objects are equivalent (no relevant types)") {
-        val a: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val left: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = None
         )
-        val b: ContextAgent = a.copy()
-        assert(a.isEquivalentTo(b))
+        val right: ContextAgent = left.copy()
+        assert(left.isEquivalentTo(right))
       }
       it("should return true if both objects are equivalent (with relevant types)") {
-        val a: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val left: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/instructor"),
@@ -70,13 +70,13 @@ class ContextAgentTest extends UnitSpec {
             )
           )
         )
-        val b: ContextAgent = a.copy()
-        assert(a.isEquivalentTo(b))
+        val right: ContextAgent = left.copy()
+        assert(left.isEquivalentTo(right))
       }
       it("should return true if both objects are equivalent excepting relevant types list order") {
-        val a: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val left: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/instructor"),
@@ -84,7 +84,7 @@ class ContextAgentTest extends UnitSpec {
             )
           )
         )
-        val b: ContextAgent = a.copy(
+        val right: ContextAgent = left.copy(
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/subject-matter-expert"),
@@ -92,12 +92,12 @@ class ContextAgentTest extends UnitSpec {
             )
           )
         )
-        assert(a.isEquivalentTo(b))
+        assert(left.isEquivalentTo(right))
       }
       it("should return false if both objects are not equivalent") {
-        val a: ContextAgent = new ContextAgent(
-          objectType = "contextAgent",
-          agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+        val left: ContextAgent = ContextAgent(
+          objectType = ContextAgent.contextType,
+          agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/instructor"),
@@ -105,23 +105,23 @@ class ContextAgentTest extends UnitSpec {
             )
           )
         )
-        val b: ContextAgent = a.copy(
+        val right: ContextAgent = left.copy(
           relevantTypes = Some(
             List(
               IRI("https://lrs.integralla.io/types/instructor")
             )
           )
         )
-        assert(a.isEquivalentTo(b) === false)
+        assert(left.isEquivalentTo(right) === false)
       }
     }
 
     describe("[validation]") {
       it("should throw a validation error if the object type value is not recognized") {
         assertThrows[StatementValidationException] {
-          new ContextAgent(
+          ContextAgent(
             objectType = "toto",
-            agent = Agent(None, None, Some(MBox("mailto:context.agent@example.com")), None, None, None),
+            agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
             relevantTypes = None
           )
         }
