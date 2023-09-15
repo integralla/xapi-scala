@@ -35,15 +35,15 @@ import java.util.UUID
   *   A map of any other domain-specific context relevant to this statement
   */
 case class StatementContext(
-  registration: Option[UUID],
-  instructor: Option[StatementActor],
-  team: Option[Group],
-  contextActivities: Option[ContextActivities],
-  revision: Option[String],
-  platform: Option[String],
-  language: Option[String],
-  statement: Option[StatementRef],
-  extensions: Option[ExtensionMap]
+  registration: Option[UUID] = None,
+  instructor: Option[StatementActor] = None,
+  team: Option[Group] = None,
+  contextActivities: Option[ContextActivities] = None,
+  revision: Option[String] = None,
+  platform: Option[String] = None,
+  language: Option[String] = None,
+  statement: Option[StatementRef] = None,
+  extensions: Option[ExtensionMap] = None
 ) extends Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between

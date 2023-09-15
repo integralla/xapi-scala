@@ -147,12 +147,12 @@ object StatementActor {
   *   An account identifier object
   */
 case class Agent(
-  objectType: Option[StatementObjectType],
-  name: Option[String],
-  mbox: Option[MBox],
-  mbox_sha1sum: Option[String],
-  openid: Option[String],
-  account: Option[Account]
+  objectType: Option[StatementObjectType] = None,
+  name: Option[String] = None,
+  mbox: Option[MBox] = None,
+  mbox_sha1sum: Option[String] = None,
+  openid: Option[String] = None,
+  account: Option[Account] = None
 ) extends StatementActor with Equivalence {
 
   override def actorType(): StatementObjectType = StatementObjectType.Agent
@@ -243,12 +243,12 @@ object Agent {
   */
 case class Group(
   objectType: StatementObjectType,
-  name: Option[String],
-  mbox: Option[MBox],
-  mbox_sha1sum: Option[String],
-  openid: Option[String],
-  account: Option[Account],
-  member: Option[List[Agent]]
+  name: Option[String] = None,
+  mbox: Option[MBox] = None,
+  mbox_sha1sum: Option[String] = None,
+  openid: Option[String] = None,
+  account: Option[Account] = None,
+  member: Option[List[Agent]] = None
 ) extends StatementActor with Equivalence {
 
   override def actorType(): StatementObjectType = StatementObjectType.Group

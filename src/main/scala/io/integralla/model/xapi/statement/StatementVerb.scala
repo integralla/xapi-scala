@@ -13,7 +13,7 @@ import io.integralla.model.xapi.statement.identifiers.IRI
   *   A language map where the key is a RFC 5646 Language Tag, and the value is
   *   a string in the language specified in the tag
   */
-case class StatementVerb(id: IRI, display: Option[LanguageMap]) extends Equivalence {
+case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects For a statement verb, only the verb identifier is used

@@ -21,10 +21,10 @@ import io.integralla.model.xapi.common.Equivalence
   *   Decimal number greater than min (if present)
   */
 case class Score(
-  scaled: Option[Double],
-  raw: Option[Double],
-  min: Option[Double],
-  max: Option[Double]
+  scaled: Option[Double] = None,
+  raw: Option[Double] = None,
+  min: Option[Double] = None,
+  max: Option[Double] = None
 ) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(

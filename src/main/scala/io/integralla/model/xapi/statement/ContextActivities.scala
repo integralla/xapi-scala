@@ -21,10 +21,10 @@ import io.integralla.model.xapi.common.Equivalence
   *   A context activity that doesn't fit one of the other properties
   */
 case class ContextActivities(
-  parent: Option[List[Activity]],
-  grouping: Option[List[Activity]],
-  category: Option[List[Activity]],
-  other: Option[List[Activity]]
+  parent: Option[List[Activity]] = None,
+  grouping: Option[List[Activity]] = None,
+  category: Option[List[Activity]] = None,
+  other: Option[List[Activity]] = None
 ) extends Equivalence {
 
   /** @return A distinct list of all activities referenced in the context */

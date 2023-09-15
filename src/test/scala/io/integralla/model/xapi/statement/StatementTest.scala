@@ -815,7 +815,7 @@ class StatementTest extends UnitSpec with StrictLogging {
               StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
             ),
             None,
-            Some(StatementContext(None, None, None, None, Some("1.0.0"), None, None, None, None)),
+            Some(StatementContext(revision = Some("1.0.0"))),
             None,
             None,
             None,
@@ -842,7 +842,7 @@ class StatementTest extends UnitSpec with StrictLogging {
               StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
             ),
             None,
-            Some(StatementContext(None, None, None, None, None, Some("lrp"), None, None, None)),
+            Some(StatementContext(platform = Some("lrp"))),
             None,
             None,
             None,

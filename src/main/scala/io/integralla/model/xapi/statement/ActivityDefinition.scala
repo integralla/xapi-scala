@@ -57,18 +57,18 @@ import scala.util.{Failure, Success}
   *   A map of other properties as needed
   */
 case class ActivityDefinition(
-  name: Option[LanguageMap],
-  description: Option[LanguageMap],
-  `type`: Option[IRI],
-  moreInfo: Option[IRI],
-  interactionType: Option[InteractionType],
-  correctResponsesPattern: Option[CorrectResponsePattern],
-  choices: Option[List[InteractionComponent]],
-  scale: Option[List[InteractionComponent]],
-  source: Option[List[InteractionComponent]],
-  steps: Option[List[InteractionComponent]],
-  target: Option[List[InteractionComponent]],
-  extensions: Option[ExtensionMap]
+  name: Option[LanguageMap] = None,
+  description: Option[LanguageMap] = None,
+  `type`: Option[IRI] = None,
+  moreInfo: Option[IRI] = None,
+  interactionType: Option[InteractionType] = None,
+  correctResponsesPattern: Option[CorrectResponsePattern] = None,
+  choices: Option[List[InteractionComponent]] = None,
+  scale: Option[List[InteractionComponent]] = None,
+  source: Option[List[InteractionComponent]] = None,
+  steps: Option[List[InteractionComponent]] = None,
+  target: Option[List[InteractionComponent]] = None,
+  extensions: Option[ExtensionMap] = None
 ) extends StatementValidation with Equivalence {
 
   /** Computes whether this activity definition is compatible with another

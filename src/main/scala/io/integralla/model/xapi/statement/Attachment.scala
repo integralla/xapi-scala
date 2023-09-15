@@ -26,11 +26,11 @@ import io.integralla.model.xapi.statement.identifiers.IRI
 case class Attachment(
   usageType: IRI,
   display: LanguageMap,
-  description: Option[LanguageMap],
+  description: Option[LanguageMap] = None,
   contentType: String,
   length: Int,
   sha2: String,
-  fileUrl: Option[IRI]
+  fileUrl: Option[IRI] = None
 )
 
 object Attachment {

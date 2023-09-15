@@ -15,8 +15,11 @@ import io.integralla.model.xapi.statement.identifiers.IRI
   * @param definition
   *   An activity definition
   */
-case class Activity(objectType: Option[StatementObjectType], id: IRI, definition: Option[ActivityDefinition])
-    extends Equivalence {
+case class Activity(
+  objectType: Option[StatementObjectType] = None,
+  id: IRI,
+  definition: Option[ActivityDefinition] = None
+) extends Equivalence {
 
   /** Similar to `isEquivalentTo` but includes the activity definition in
     * addition to the activity identifier

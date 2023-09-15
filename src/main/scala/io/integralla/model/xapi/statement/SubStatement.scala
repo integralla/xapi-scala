@@ -36,10 +36,10 @@ case class SubStatement(
   actor: StatementActor,
   verb: StatementVerb,
   `object`: StatementObject,
-  result: Option[StatementResult],
-  context: Option[StatementContext],
-  timestamp: Option[OffsetDateTime],
-  attachments: Option[List[Attachment]]
+  result: Option[StatementResult] = None,
+  context: Option[StatementContext] = None,
+  timestamp: Option[OffsetDateTime] = None,
+  attachments: Option[List[Attachment]] = None
 ) extends StatementValidation with Equivalence {
 
   /** @return

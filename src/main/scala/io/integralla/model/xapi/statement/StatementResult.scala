@@ -25,12 +25,12 @@ import java.text.ParseException
   *   A map of other properties as needed
   */
 case class StatementResult(
-  score: Option[Score],
-  success: Option[Boolean],
-  completion: Option[Boolean],
-  response: Option[String],
-  duration: Option[String],
-  extensions: Option[ExtensionMap]
+  score: Option[Score] = None,
+  success: Option[Boolean] = None,
+  completion: Option[Boolean] = None,
+  response: Option[String] = None,
+  duration: Option[String] = None,
+  extensions: Option[ExtensionMap] = None
 ) extends StatementValidation with Equivalence {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(

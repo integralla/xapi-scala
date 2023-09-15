@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.common.Equivalence
@@ -42,17 +42,17 @@ import java.util.UUID
   *   associated with the statement
   */
 case class Statement(
-  id: Option[UUID],
+  id: Option[UUID] = None,
   actor: StatementActor,
   verb: StatementVerb,
   `object`: StatementObject,
-  result: Option[StatementResult],
-  context: Option[StatementContext],
-  timestamp: Option[OffsetDateTime],
-  stored: Option[OffsetDateTime],
-  authority: Option[StatementActor],
-  version: Option[String],
-  attachments: Option[List[Attachment]]
+  result: Option[StatementResult] = None,
+  context: Option[StatementContext] = None,
+  timestamp: Option[OffsetDateTime] = None,
+  stored: Option[OffsetDateTime] = None,
+  authority: Option[StatementActor] = None,
+  version: Option[String] = None,
+  attachments: Option[List[Attachment]] = None
 ) extends StatementValidation with Equivalence {
 
   /** Extracts and returns all activities (if any) referenced by the statement
