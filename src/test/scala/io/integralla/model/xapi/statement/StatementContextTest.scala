@@ -112,9 +112,49 @@ class StatementContextTest extends UnitSpec {
         val right: StatementContext = sampleContext.copy()
         assert(left.isEquivalentTo(right))
       }
-      it("should return false if both objects are not equivalent") {
+      it("should return false if the objects are not equivalent (registration)") {
         val left: StatementContext = sampleContext.copy()
         val right: StatementContext = sampleContext.copy(registration = Some(UUID.randomUUID()))
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (instructor)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(instructor = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (team)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(team = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (contextActivities)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(contextActivities = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (revision)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(revision = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (platform)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(platform = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (language)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(language = None)
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (statement)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(statement = Some(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())))
+        assert(left.isEquivalentTo(right) === false)
+      }
+      it("should return false if the objects are not equivalent (extensions)") {
+        val left: StatementContext = sampleContext.copy()
+        val right: StatementContext = sampleContext.copy(extensions = None)
         assert(left.isEquivalentTo(right) === false)
       }
     }
