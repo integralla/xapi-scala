@@ -804,6 +804,22 @@ class StatementTest extends UnitSpec with StrictLogging {
 
     describe("[validation]") {
       it(
+        "should throw a statement validation error if the reserved verb for statement voiding is used when the statement object is not a statement ref"
+      ) {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("http://adlnet.gov/expapi/verbs/voided")),
+            `object` = StatementObject(Agent(mbox = Some(MBox("mailto:test@integralla.io"))))
+          )
+        }
+        assert(
+          exception.getMessage.contains(
+            """The reserved verb http://adlnet.gov/expapi/verbs/voided can only be used when the statement object is a statement reference"""
+          )
+        )
+      }
+      it(
         "should throw a statement validation error if the context.revision property is set when the statements object is not an activity"
       ) {
         val exception = intercept[StatementValidationException] {

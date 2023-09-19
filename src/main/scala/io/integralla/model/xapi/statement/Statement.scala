@@ -135,9 +135,23 @@ case class Statement(
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
+      validateVoidingStatement,
       validateContextPropertiesRevision,
       validateContextPropertiesPlatform
     )
+  }
+
+  private def validateVoidingStatement: Either[String, Boolean] = {
+    if (verb.id.value == "http://adlnet.gov/expapi/verbs/voided") {
+      `object`.value match
+        case _: StatementRef => Right(true)
+        case _ =>
+          Left(
+            """The reserved verb http://adlnet.gov/expapi/verbs/voided can only be used when the statement object is a statement reference"""
+          )
+    } else {
+      Right(true)
+    }
   }
 
   private def validateContextPropertiesRevision: Either[String, Boolean] = {
