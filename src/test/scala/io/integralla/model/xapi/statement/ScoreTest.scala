@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.exceptions.StatementValidationException
 import io.integralla.testing.spec.UnitSpec
 
 class ScoreTest extends UnitSpec {

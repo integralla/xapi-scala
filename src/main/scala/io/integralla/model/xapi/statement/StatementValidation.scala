@@ -1,6 +1,6 @@
 package io.integralla.model.xapi.statement
 
-import io.integralla.model.xapi.statement.exceptions.StatementValidationException
+import io.integralla.model.exceptions.StatementValidationException
 
 /** Trait to be extended by models that provide property validation
   *
