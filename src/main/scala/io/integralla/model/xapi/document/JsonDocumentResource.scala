@@ -38,7 +38,7 @@ case class JsonDocumentResource(json: Json) {
   }
 
   /** @return JSON encoded representation of the document resource */
-  def toJson: String = json.noSpaces
+  def toJson: String = json.noSpacesSortKeys
 
   /** Validate the JSON value, ensuring that it is a object
     *
