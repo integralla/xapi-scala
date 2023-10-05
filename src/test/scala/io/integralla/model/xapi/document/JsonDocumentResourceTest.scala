@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.document
 
 import io.circe.HCursor
-import io.integralla.model.exceptions.JsonObjectValidationException
+import io.integralla.model.xapi.exceptions.JsonObjectValidationException
 import io.integralla.testing.spec.UnitSpec
 
 import scala.util.Try

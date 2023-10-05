@@ -3,8 +3,8 @@ package io.integralla.model.xapi.statement
 import io.circe.*
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
-import io.integralla.model.exceptions.StatementValidationException
 import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.exceptions.StatementValidationException
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.lemonlabs.uri.AbsoluteUrl

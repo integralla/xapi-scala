@@ -2,8 +2,17 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.exceptions.StatementValidationException
-import io.integralla.model.references._
+import io.integralla.model.xapi.references.*
+import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.references.{
+  ActivityObjectRef,
+  ActivityReference,
+  ActorRef,
+  AgentObjectRef,
+  AgentReference,
+  InstructorRef,
+  TeamRef
+}
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 

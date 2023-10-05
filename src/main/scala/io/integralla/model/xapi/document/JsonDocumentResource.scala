@@ -3,7 +3,7 @@ package io.integralla.model.xapi.document
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.Json
 import io.circe.parser.*
-import io.integralla.model.exceptions.JsonObjectValidationException
+import io.integralla.model.xapi.exceptions.JsonObjectValidationException
 
 import scala.util.{Failure, Success, Try}
 

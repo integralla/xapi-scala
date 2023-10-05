@@ -1,4 +1,4 @@
-package io.integralla.model.exceptions
+package io.integralla.model.xapi.exceptions
 
 /** This exception is used to indicate that that a statement does not validate
   * against the xAPI specification

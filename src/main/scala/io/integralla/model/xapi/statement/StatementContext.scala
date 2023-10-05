@@ -2,8 +2,8 @@ package io.integralla.model.xapi.statement
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.model.references.{AgentReference, InstructorRef, TeamRef}
 import io.integralla.model.xapi.common.{Equivalence, ExtensionMap}
+import io.integralla.model.xapi.references.{AgentReference, InstructorRef, TeamRef}
 
 import java.util.UUID
 

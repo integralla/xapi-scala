@@ -3,8 +3,8 @@ package io.integralla.model.xapi.statement
 import io.circe.Json
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{AgentReference, ContextAgentRef, ContextGroupRef, InstructorRef, TeamRef}
 import io.integralla.model.xapi.common.ExtensionMap
+import io.integralla.model.xapi.references.{AgentReference, ContextAgentRef, ContextGroupRef, InstructorRef, TeamRef}
 import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 

@@ -1,8 +1,8 @@
 package io.integralla.model.xapi.statement
 
-import io.integralla.model.exceptions.StatementValidationException
-import io.integralla.model.references.{AgentReference, ContextAgentRef}
 import io.integralla.model.utils.LRSModelUtils
+import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.references.{AgentReference, ContextAgentRef}
 import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 

@@ -3,8 +3,8 @@ package io.integralla.model.xapi.statement
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax.EncoderOps
-import io.integralla.model.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
 import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
 
 /** A map of the types of learning activity context that the statement is
   * related to

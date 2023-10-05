@@ -1,4 +1,4 @@
-package io.integralla.model.exceptions
+package io.integralla.model.xapi.exceptions
 
 /** This exception is used to indicate that an error has occurred parsing a JSON
   * object, including the scenarios where the JSON is not valid or is not a JSON

@@ -5,7 +5,7 @@ import io.integralla.testing.spec.UnitSpec
 import io.circe.generic.auto._
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.exceptions.StatementValidationException
+import io.integralla.model.xapi.exceptions.StatementValidationException
 
 class IRITest extends UnitSpec {
 

@@ -1,4 +1,4 @@
-package io.integralla.model.references
+package io.integralla.model.xapi.references
 
 import io.integralla.model.xapi.statement.StatementActor
 

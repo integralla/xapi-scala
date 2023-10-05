@@ -1,4 +1,4 @@
-package io.integralla.model.references
+package io.integralla.model.xapi.references
 
 /** An ADT to represent the ways in which an activity can be referenced within a
   * statement
