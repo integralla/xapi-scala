@@ -1,4 +1,4 @@
-package io.integralla.model.xapi.statement.identifiers
+package io.integralla.model.xapi.identifiers
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
 import io.integralla.model.xapi.common.Equivalence

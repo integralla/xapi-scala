@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.common
 
 import io.circe.{Decoder, Encoder, Json}
-import io.integralla.model.xapi.statement.identifiers.IRI
+import io.integralla.model.xapi.identifiers.IRI
 
 /** Extensions are defined by a map and logically relate to the part of the
   * Statement where they are present.

@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.integralla.model.xapi.common.{Equivalence, ExtensionMap}
+import io.integralla.model.xapi.identifiers.IRI
 import io.integralla.model.xapi.statement.InteractionType.{
   CHOICE,
   FILL_IN,
@@ -16,7 +17,6 @@ import io.integralla.model.xapi.statement.InteractionType.{
   SEQUENCING,
   TRUE_FALSE
 }
-import io.integralla.model.xapi.statement.identifiers.IRI
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success}

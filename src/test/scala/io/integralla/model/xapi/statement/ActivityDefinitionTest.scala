@@ -5,7 +5,7 @@ import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.ExtensionMap
 import io.integralla.model.xapi.exceptions.StatementValidationException
-import io.integralla.model.xapi.statement.identifiers.IRI
+import io.integralla.model.xapi.identifiers.IRI
 import io.integralla.testing.spec.UnitSpec
 
 class ActivityDefinitionTest extends UnitSpec {

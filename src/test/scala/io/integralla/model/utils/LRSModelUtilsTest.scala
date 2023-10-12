@@ -1,8 +1,8 @@
 package io.integralla.model.utils
 
 import com.typesafe.scalalogging.LazyLogging
+import io.integralla.model.xapi.identifiers.{IRI, MBox}
 import io.integralla.model.xapi.statement._
-import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
 import scala.io.Source

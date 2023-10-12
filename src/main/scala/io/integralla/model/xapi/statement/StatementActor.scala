@@ -5,8 +5,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
-import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success}

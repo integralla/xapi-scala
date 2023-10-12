@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement.identifiers
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.identifiers.Account
 import io.integralla.testing.spec.UnitSpec
 
 class AccountTest extends UnitSpec {

@@ -1,4 +1,4 @@
-package io.integralla.model.xapi.statement.identifiers
+package io.integralla.model.xapi.identifiers
 
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.{Decoder, Encoder}

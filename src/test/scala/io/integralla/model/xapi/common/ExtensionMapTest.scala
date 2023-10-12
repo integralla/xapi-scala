@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.StrictLogging
 import io.circe.ParsingFailure
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import io.integralla.model.xapi.statement.identifiers.IRI
+import io.integralla.model.xapi.identifiers.IRI
 import io.integralla.testing.spec.UnitSpec
 
 class ExtensionMapTest extends UnitSpec with StrictLogging {

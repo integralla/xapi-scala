@@ -4,6 +4,7 @@ import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.references.*
 import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
 import io.integralla.model.xapi.references.{
   ActivityObjectRef,
   ActivityReference,
@@ -13,7 +14,6 @@ import io.integralla.model.xapi.references.{
   InstructorRef,
   TeamRef
 }
-import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.UUID

@@ -3,7 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.integralla.model.xapi.common.Equivalence
-import io.integralla.model.xapi.statement.identifiers.IRI
+import io.integralla.model.xapi.identifiers.IRI
 
 /** A Verb defines the action between an Actor and an Activity
   *

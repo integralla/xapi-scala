@@ -4,9 +4,9 @@ import io.circe.*
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
 import io.integralla.model.xapi.references.{ActivityObjectRef, ActivityReference, AgentObjectRef, AgentReference}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
-import io.integralla.model.xapi.statement.identifiers.{Account, IRI, MBox}
 
 import java.time.OffsetDateTime
 import java.util.UUID

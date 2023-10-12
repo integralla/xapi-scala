@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.exceptions.StatementValidationException
+import io.integralla.model.xapi.identifiers.{IRI, MBox}
 import io.integralla.model.xapi.references.{
   ActivityObjectRef,
   ActivityReference,
@@ -10,7 +11,6 @@ import io.integralla.model.xapi.references.{
   AgentObjectRef,
   AgentReference
 }
-import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.UUID

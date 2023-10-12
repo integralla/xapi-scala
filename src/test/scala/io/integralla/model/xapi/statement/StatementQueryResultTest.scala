@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.integralla.model.utils.LRSModelUtils
-import io.integralla.model.xapi.statement.identifiers.{IRI, MBox}
+import io.integralla.model.xapi.identifiers.{IRI, MBox}
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.UUID

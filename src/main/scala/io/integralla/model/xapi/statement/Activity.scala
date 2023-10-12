@@ -3,8 +3,8 @@ package io.integralla.model.xapi.statement
 import io.circe.*
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.identifiers.IRI
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
-import io.integralla.model.xapi.statement.identifiers.IRI
 
 /** A statement activity
   *
