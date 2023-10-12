@@ -2,6 +2,7 @@ package io.integralla.model.xapi.person
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.utils.LRSModel
 import io.integralla.model.xapi.identifiers.{Account, MBox}
 
 /** xAPI Person object
@@ -26,7 +27,7 @@ case class Person(
   mbox_sha1sum: Option[List[String]] = None,
   openid: Option[List[String]] = None,
   account: Option[List[Account]] = None
-)
+) extends LRSModel
 
 object Person {
 

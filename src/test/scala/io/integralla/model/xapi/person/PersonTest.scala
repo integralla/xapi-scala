@@ -1,7 +1,6 @@
 package io.integralla.model.xapi.person
 
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
+import io.integralla.model.utils.LRSModel
 import io.integralla.model.xapi.identifiers.{Account, MBox}
 import io.integralla.testing.spec.UnitSpec
 
@@ -41,10 +40,10 @@ class PersonTest extends UnitSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.asJson.spaces2
-
+        val encoded: String = person.toJson[Person](spaces = true)
         assert(encoded === expected)
-        val decoded: Person = decode[Person](encoded).toOption.get
+
+        val decoded: Person = LRSModel[Person](encoded).get
         assert(decoded === person)
       }
       it("should encode/decode a person object, removing null fields") {
@@ -65,10 +64,10 @@ class PersonTest extends UnitSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.asJson.spaces2
-
+        val encoded: String = person.toJson[Person](spaces = true)
         assert(encoded === expected)
-        val decoded: Person = decode[Person](encoded).toOption.get
+
+        val decoded: Person = LRSModel[Person](encoded).get
         assert(decoded === person)
       }
       it("should encode/decode a person object with multiple field values") {
@@ -90,10 +89,10 @@ class PersonTest extends UnitSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.asJson.spaces2
-
+        val encoded: String = person.toJson[Person](spaces = true)
         assert(encoded === expected)
-        val decoded: Person = decode[Person](encoded).toOption.get
+
+        val decoded: Person = LRSModel[Person](encoded).get
         assert(decoded === person)
       }
     }
