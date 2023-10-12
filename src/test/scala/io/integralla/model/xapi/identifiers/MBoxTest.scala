@@ -1,10 +1,9 @@
-package io.integralla.model.xapi.statement.identifiers
+package io.integralla.model.xapi.identifiers
 
 import io.circe.generic.auto.*
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.exceptions.StatementValidationException
-import io.integralla.model.xapi.identifiers.MBox
 import io.integralla.testing.spec.UnitSpec
 
 class MBoxTest extends UnitSpec {
