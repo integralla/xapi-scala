@@ -4,18 +4,10 @@ import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.utils.LRSModelUtils
+import io.integralla.model.xapi.common.XApiVersion
 import io.integralla.model.xapi.exceptions.StatementValidationException
 import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
-import io.integralla.model.xapi.references.{
-  ActivityObjectRef,
-  ActivityReference,
-  ActorRef,
-  AgentObjectRef,
-  AgentReference,
-  AuthorityRef,
-  InstructorRef,
-  TeamRef
-}
+import io.integralla.model.xapi.references.*
 import io.integralla.testing.spec.UnitSpec
 
 import java.time.{OffsetDateTime, ZoneId}
@@ -470,7 +462,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None,
           None,
           None,
-          Some("1.0.0"),
+          Some(XApiVersion(1, 0, Some(0))),
           None
         )
         val actual = statement.asJson.spaces2
@@ -741,7 +733,7 @@ class StatementTest extends UnitSpec with StrictLogging {
           None,
           None,
           None,
-          Some("1.0.0"),
+          Some(XApiVersion(1, 0, Some(0))),
           None
         )
         decoded match {
@@ -923,7 +915,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       it("should return true if both statements are equivalent, excepting version") {
         val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
         val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
-          .copy(version = Some("1.0.3"))
+          .copy(version = Some(XApiVersion(1, 0, Some(0))))
         assert(left.isEquivalentTo(right))
       }
 

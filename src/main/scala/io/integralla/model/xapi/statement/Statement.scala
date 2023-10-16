@@ -3,7 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.utils.LRSModelUtils
-import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.common.{Equivalence, XApiVersion}
 import io.integralla.model.xapi.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
 
 import java.nio.charset.StandardCharsets
@@ -51,7 +51,7 @@ case class Statement(
   timestamp: Option[OffsetDateTime] = None,
   stored: Option[OffsetDateTime] = None,
   authority: Option[StatementActor] = None,
-  version: Option[String] = None,
+  version: Option[XApiVersion] = None,
   attachments: Option[List[Attachment]] = None
 ) extends StatementValidation with Equivalence {
 
