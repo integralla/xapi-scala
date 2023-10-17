@@ -1,7 +1,6 @@
-package io.integralla.model.xapi.statement
+package io.integralla.model.xapi.common
 
 import io.integralla.model.utils.LRSModel
-import io.integralla.model.xapi.common.XApiVersion
 import io.integralla.testing.spec.UnitSpec
 
 import scala.util.Try
@@ -13,6 +12,15 @@ class XApiVersionTest extends UnitSpec {
         val version: XApiVersion = XApiVersion(1, 0, Some(3))
         val encoded: String = version.toJson[XApiVersion]()
         assert(encoded === """"1.0.3"""")
+
+        val decoded: Try[XApiVersion] = LRSModel[XApiVersion](encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === version)
+      }
+      it("should encode/decode a valid version (1.0.9)") {
+        val version: XApiVersion = XApiVersion(1, 0, Some(9))
+        val encoded: String = version.toJson[XApiVersion]()
+        assert(encoded === """"1.0.9"""")
 
         val decoded: Try[XApiVersion] = LRSModel[XApiVersion](encoded)
         assert(decoded.isSuccess)

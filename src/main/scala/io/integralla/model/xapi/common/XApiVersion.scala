@@ -20,7 +20,7 @@ case class XApiVersion(major: Int, minor: Int, patch: Option[Int]) extends LRSMo
           case 1 =>
             minor match
               case 0 =>
-                if (patch.getOrElse(0) <= 3) true else throw new Exception()
+                if (patch.getOrElse(0) <= 9) true else throw new Exception()
               case _ => throw new Exception()
           case 2 =>
             minor match
