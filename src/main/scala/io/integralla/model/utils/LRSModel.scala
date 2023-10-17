@@ -3,6 +3,7 @@ package io.integralla.model.utils
 import io.circe.{Decoder, Encoder, Json}
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
+import io.integralla.model.xapi.exceptions.LRSModelDecodingException
 
 import scala.reflect.{classTag, ClassTag}
 import scala.util.{Failure, Success, Try}
@@ -52,7 +53,7 @@ object LRSModel {
     decode[A](json) match
       case Left(exception) =>
         Failure(
-          new RuntimeException(
+          new LRSModelDecodingException(
             s"Unable to decode json representation into type ${classTag[A].runtimeClass}: $exception"
           )
         )

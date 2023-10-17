@@ -2,6 +2,7 @@ package io.integralla.model.utils
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.model.xapi.exceptions.LRSModelDecodingException
 import io.integralla.testing.spec.UnitSpec
 
 import scala.util.Try
@@ -34,7 +35,16 @@ class LRSModelTest extends UnitSpec {
         val json: String = """{"x":1.0}"""
         val model: Try[SampleModel] = LRSModel[SampleModel](json)
         assert(model.isFailure)
-        val exception = intercept[RuntimeException] { model.get }
+        val exception = intercept[LRSModelDecodingException] { model.get }
+        assert(exception.getMessage.startsWith("Unable to decode json representation into type"))
+      }
+      it("should return an exception if the json cannot be parsed") {
+        val json: String = """toto"""
+        val model: Try[SampleModel] = LRSModel[SampleModel](json)
+        assert(model.isFailure)
+        val exception = intercept[LRSModelDecodingException] {
+          model.get
+        }
         assert(exception.getMessage.startsWith("Unable to decode json representation into type"))
       }
     }

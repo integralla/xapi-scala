@@ -1,8 +1,9 @@
 package io.integralla.model.utils
 
 import com.typesafe.scalalogging.LazyLogging
+import io.integralla.model.xapi.exceptions.LRSModelDecodingException
 import io.integralla.model.xapi.identifiers.{IRI, MBox}
-import io.integralla.model.xapi.statement._
+import io.integralla.model.xapi.statement.*
 import io.integralla.testing.spec.UnitSpec
 
 import scala.io.Source
@@ -61,10 +62,19 @@ class LRSModelUtilsTest extends UnitSpec with LazyLogging {
         val encoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
         val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
         assert(decoded.isFailure)
-        val caught = intercept[RuntimeException] {
+        val caught = intercept[LRSModelDecodingException] {
           decoded.get
         }
-        println(caught)
+        assert(caught.getMessage.contains("DecodingFailure"))
+      }
+      it("should return an exception if the JSON string cannot be parsed") {
+        val encoded: String = """Content-Type: application/json"""
+        val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
+        assert(decoded.isFailure)
+        val caught = intercept[LRSModelDecodingException] {
+          decoded.get
+        }
+        assert(caught.getMessage.contains("ParsingFailure"))
       }
     }
   }
