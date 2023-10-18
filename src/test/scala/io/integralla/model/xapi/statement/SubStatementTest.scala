@@ -2,18 +2,9 @@ package io.integralla.model.xapi.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.xapi.references.*
 import io.integralla.model.xapi.exceptions.StatementValidationException
 import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
-import io.integralla.model.xapi.references.{
-  ActivityObjectRef,
-  ActivityReference,
-  ActorRef,
-  AgentObjectRef,
-  AgentReference,
-  InstructorRef,
-  TeamRef
-}
+import io.integralla.model.xapi.references.*
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.UUID
@@ -33,26 +24,11 @@ class SubStatementTest extends UnitSpec {
         IRI("http://example.com/website"),
         Some(
           ActivityDefinition(
-            Some(LanguageMap(Map("en-US" -> "Some Awesome Website"))),
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None
+            Some(LanguageMap(Map("en-US" -> "Some Awesome Website")))
           )
         )
       )
-    ),
-    None,
-    None,
-    None,
-    None
+    )
   )
 
   val sampleActivitySubStatementEncoded: String =
@@ -67,16 +43,9 @@ class SubStatementTest extends UnitSpec {
       Agent(
         Some(StatementObjectType.Agent),
         Some("Andrew Downes"),
-        Some(MBox("mailto:andrew@example.co.uk")),
-        None,
-        None,
-        None
+        Some(MBox("mailto:andrew@example.co.uk"))
       )
-    ),
-    None,
-    None,
-    None,
-    None
+    )
   )
   val sampleAgentSubStatementEncoded: String =
     Using.resource(Source.fromResource("data/sample-sub-statement-object-is-agent.json"))(_.mkString)
@@ -142,47 +111,75 @@ class SubStatementTest extends UnitSpec {
 
   describe("SubStatement") {
     describe("[validation]") {
-      it("should throw a statement validation exception if the sub-statement includes a nested sub-statement") {
-        val nestedSubStatements: String =
-          """{
-            |  "objectType" : "SubStatement",
-            |  "actor" : {
-            |    "objectType" : "Agent",
-            |    "mbox" : "mailto:test@example.com"
-            |  },
-            |  "verb" : {
-            |    "id" : "http://example.com/visited",
-            |    "display" : {
-            |      "en-US" : "will confirm"
-            |    }
-            |  },
-            |  "object" : {
-            |    "objectType": "SubStatement",
-            |    "actor" : {
-            |      "objectType": "Agent",
-            |      "mbox":"mailto:agent@example.com"
-            |    },
-            |    "verb" : {
-            |      "id":"http://example.com/confirmed",
-            |      "display":{
-            |        "en":"confirmed"
-            |      }
-            |    },
-            |    "object": {
-            |      "objectType":"StatementRef",
-            |      "id" :"9e13cefd-53d3-4eac-b5ed-2cf6693903bb"
-            |    }
-            |  }
-            |}""".stripMargin
-
+      it(
+        "should throw a validation exception if the sub-statement includes a nested sub-statement"
+      ) {
         val exception = intercept[StatementValidationException] {
-          val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](nestedSubStatements)
-          decoded match {
-            case Right(actual) => println(actual)
-            case Left(err)     => throw new Error(s"Decoding failed: $err")
-          }
+          SubStatement(
+            objectType = StatementObjectType.SubStatement,
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verb/test")),
+            `object` = StatementObject(
+              SubStatement(
+                objectType = StatementObjectType.SubStatement,
+                actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+                verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verb/test")),
+                `object` = StatementObject(
+                  Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))
+                )
+              )
+            )
+          )
         }
-        assert(exception.getMessage.contains("A sub-statement cannot contain a sub-statement of it's own"))
+        assert(
+          exception.getMessage.contains(
+            """A sub-statement cannot contain a sub-statement of it's own"""
+          )
+        )
+      }
+      it(
+        "should throw a validation exception if the context includes the revision property and the object is not an activity"
+      ) {
+        val exception = intercept[StatementValidationException] {
+          SubStatement(
+            objectType = StatementObjectType.SubStatement,
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verb/test")),
+            `object` = StatementObject(Agent(mbox = Some(MBox("mailto:test@integralla.io")))),
+            context = Some(
+              StatementContext(
+                revision = Some("1.0.0")
+              )
+            )
+          )
+        }
+        assert(
+          exception.getMessage.contains(
+            """The "revision" property on the context object must only be used if the statement's object is an activity"""
+          )
+        )
+      }
+      it(
+        "should throw a validation exception if the context includes the platform property and the object is not an activity"
+      ) {
+        val exception = intercept[StatementValidationException] {
+          SubStatement(
+            objectType = StatementObjectType.SubStatement,
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verb/test")),
+            `object` = StatementObject(Agent(mbox = Some(MBox("mailto:test@integralla.io")))),
+            context = Some(
+              StatementContext(
+                platform = Some("lrp")
+              )
+            )
+          )
+        }
+        assert(
+          exception.getMessage.contains(
+            """The "platform" property on the context object must only be used if the statement's object is an activity"""
+          )
+        )
       }
     }
 

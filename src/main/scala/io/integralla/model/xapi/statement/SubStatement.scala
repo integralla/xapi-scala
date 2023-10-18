@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.references.{ActivityReference, ActorRef, AgentReference}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
@@ -77,7 +77,11 @@ case class SubStatement(
   }
 
   override def validate: Seq[Either[String, Boolean]] = {
-    Seq(validateObjectIsNotSubStatement)
+    Seq(
+      validateObjectIsNotSubStatement,
+      validateContextPropertiesRevision,
+      validateContextPropertiesPlatform
+    )
   }
 
   private def validateObjectIsNotSubStatement: Either[String, Boolean] = {
@@ -86,6 +90,40 @@ case class SubStatement(
     } else {
       Right(true)
     }
+  }
+
+  private def validateContextPropertiesRevision: Either[String, Boolean] = {
+    context
+      .map((statementContext: StatementContext) => {
+        `object`.value match {
+          case Activity(_, _, _) => Right(true)
+          case _ =>
+            if (statementContext.revision.isDefined) {
+              Left(
+                """The "revision" property on the context object must only be used if the statement's object is an activity"""
+              )
+            } else {
+              Right(true)
+            }
+        }
+      }).getOrElse(Right(true))
+  }
+
+  private def validateContextPropertiesPlatform: Either[String, Boolean] = {
+    context
+      .map((statementContext: StatementContext) => {
+        `object`.value match {
+          case Activity(_, _, _) => Right(true)
+          case _ =>
+            if (statementContext.platform.isDefined) {
+              Left(
+                """The "platform" property on the context object must only be used if the statement's object is an activity"""
+              )
+            } else {
+              Right(true)
+            }
+        }
+      }).getOrElse(Right(true))
   }
 
   /** Generates a signature that can be used to test logical equivalence between
