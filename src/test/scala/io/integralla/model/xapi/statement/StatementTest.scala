@@ -394,42 +394,58 @@ class StatementTest extends UnitSpec with StrictLogging {
         assert(actual === expected)
       }
 
-      it("should successfully encode a statement with a timestamp property") {
-        val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          Some(sampleOffsetDateTime),
-          None,
-          None,
-          None,
-          None
+      it("should successfully encode a statement with a timestamp property, preserving millisecond precision") {
+        val timestamp: String = "2023-08-21T16:55:59.000Z"
+        val statement: Statement = Statement(
+          actor = Agent(mbox = Some(MBox("mailto:lorum.ipsum@integralla.io"))),
+          verb = StatementVerb(IRI("https://lrs.integralla.io/xapi/verbs/test")),
+          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
+          timestamp = Some(OffsetDateTime.parse(timestamp))
         )
-        val actual = statement.asJson.spaces2
-        val expected: String = getStatementResource("data/sample-statement-with-timestamp.json")
-        assert(actual === expected)
+
+        val expected: String =
+          """{
+            |  "actor" : {
+            |    "mbox" : "mailto:lorum.ipsum@integralla.io"
+            |  },
+            |  "verb" : {
+            |    "id" : "https://lrs.integralla.io/xapi/verbs/test"
+            |  },
+            |  "object" : {
+            |    "id" : "https://lrs.integralla.io/xapi/activity/test"
+            |  },
+            |  "timestamp" : "2023-08-21T16:55:59.000000000Z"
+            |}""".stripMargin
+
+        val encoded: String = statement.asJson.spaces2
+        assert(encoded === expected)
       }
 
       it("should successfully encode a statement with a stored property") {
-        val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          Some(sampleOffsetDateTime),
-          Some(sampleOffsetDateTime),
-          None,
-          None,
-          None
+        val timestamp: String = "2023-08-21T16:55:59.000Z"
+        val statement: Statement = Statement(
+          actor = Agent(mbox = Some(MBox("mailto:lorum.ipsum@integralla.io"))),
+          verb = StatementVerb(IRI("https://lrs.integralla.io/xapi/verbs/test")),
+          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
+          stored = Some(OffsetDateTime.parse(timestamp))
         )
-        val actual = statement.asJson.spaces2
-        val expected: String = getStatementResource("data/sample-statement-with-stored.json")
-        assert(actual === expected)
+
+        val expected: String =
+          """{
+            |  "actor" : {
+            |    "mbox" : "mailto:lorum.ipsum@integralla.io"
+            |  },
+            |  "verb" : {
+            |    "id" : "https://lrs.integralla.io/xapi/verbs/test"
+            |  },
+            |  "object" : {
+            |    "id" : "https://lrs.integralla.io/xapi/activity/test"
+            |  },
+            |  "stored" : "2023-08-21T16:55:59.000000000Z"
+            |}""".stripMargin
+
+        val encoded: String = statement.asJson.spaces2
+        assert(encoded === expected)
       }
 
       it("should successfully encode a statement with an authority property") {

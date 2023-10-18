@@ -3,6 +3,7 @@ package io.integralla.model.xapi.statement
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.Equivalence
+import io.integralla.model.xapi.common.CustomEncoders.*
 import io.integralla.model.xapi.references.{ActivityReference, ActorRef, AgentReference}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 
