@@ -136,10 +136,31 @@ case class Statement(
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
+      validateAuthority,
       validateVoidingStatement,
       validateContextPropertiesRevision,
       validateContextPropertiesPlatform
     )
+  }
+
+  private def validateAuthority: Either[String, Boolean] = {
+    authority.fold(Right(true)) {
+      case _: Agent => Right(true)
+      case group: Group =>
+        if (group.isAnonymous) {
+          if (group.member.fold(0)(_.length) == 2) {
+            if (group.member.get.exists(_.account.isDefined)) {
+              Right(true)
+            } else {
+              Left("An OAuth consumer represented by an authority group member must be identified by account")
+            }
+          } else {
+            Left("An authority represented as a group must have exactly two members")
+          }
+        } else {
+          Left("An authority cannot be an identified group")
+        }
+    }
   }
 
   private def validateVoidingStatement: Either[String, Boolean] = {

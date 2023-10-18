@@ -820,6 +820,89 @@ class StatementTest extends UnitSpec with StrictLogging {
     }
 
     describe("[validation]") {
+      it("should throw a validation error if the authority is an identified group") {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            authority = Some(
+              Group(
+                objectType = StatementObjectType.Group,
+                mbox = Some(MBox("mailto:team.a@integralla.io"))
+              )
+            )
+          )
+        }
+        assert(exception.getMessage.contains("An authority cannot be an identified group"))
+      }
+      it("should throw a validation error if the authority is a group with less then two members") {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            authority = Some(
+              Group(
+                objectType = StatementObjectType.Group,
+                member = Some(
+                  List(
+                    Agent(account = Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER")))
+                  )
+                )
+              )
+            )
+          )
+        }
+        assert(exception.getMessage.contains("An authority represented as a group must have exactly two members"))
+      }
+      it("should throw a validation error if the authority is a group with more then two members") {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            authority = Some(
+              Group(
+                objectType = StatementObjectType.Group,
+                member = Some(
+                  List(
+                    Agent(account = Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER"))),
+                    Agent(mbox = Some(MBox("mailto:test.1@integralla.io"))),
+                    Agent(mbox = Some(MBox("mailto:test.2@integralla.io")))
+                  )
+                )
+              )
+            )
+          )
+        }
+        assert(exception.getMessage.contains("An authority represented as a group must have exactly two members"))
+      }
+      it("should throw a validation error if the authority is a group where no members are represented by an account") {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            authority = Some(
+              Group(
+                objectType = StatementObjectType.Group,
+                member = Some(
+                  List(
+                    Agent(mbox = Some(MBox("mailto:test.1@integralla.io"))),
+                    Agent(mbox = Some(MBox("mailto:test.2@integralla.io")))
+                  )
+                )
+              )
+            )
+          )
+        }
+        assert(
+          exception.getMessage.contains(
+            "An OAuth consumer represented by an authority group member must be identified by account"
+          )
+        )
+      }
       it(
         "should throw a statement validation error if the reserved verb for statement voiding is used when the statement object is not a statement ref"
       ) {
