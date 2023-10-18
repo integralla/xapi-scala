@@ -119,13 +119,24 @@ class ContextAgentTest extends UnitSpec {
 
     describe("[validation]") {
       it("should throw a validation error if the object type value is not recognized") {
-        assertThrows[StatementValidationException] {
+        val exception = intercept[StatementValidationException] {
           ContextAgent(
             objectType = "toto",
             agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
             relevantTypes = None
           )
         }
+        assert(exception.getMessage.contains("Incorrect objectType value for a context agent object"))
+      }
+      it("should throw a validation error if the relevantTypes list is empty") {
+        val exception = intercept[StatementValidationException] {
+          ContextAgent(
+            objectType = ContextAgent.contextType,
+            agent = Agent(mbox = Some(MBox("mailto:context.agent@example.com"))),
+            relevantTypes = Some(List.empty[IRI])
+          )
+        }
+        assert(exception.getMessage.contains("The relevantTypes list cannot be empty"))
       }
     }
 

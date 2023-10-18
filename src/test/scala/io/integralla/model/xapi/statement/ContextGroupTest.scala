@@ -212,7 +212,7 @@ class ContextGroupTest extends UnitSpec {
 
     describe("[validation]") {
       it("should throw a validation error if the object type value is not recognized") {
-        assertThrows[StatementValidationException] {
+        val exception = intercept[StatementValidationException] {
           ContextGroup(
             objectType = "tata",
             group = Group(
@@ -228,6 +228,27 @@ class ContextGroupTest extends UnitSpec {
             relevantTypes = None
           )
         }
+        assert(exception.getMessage.contains("Incorrect objectType value for a context group object"))
+      }
+      it("should throw a validation error if the relevantTypes list is empty") {
+        val exception = intercept[StatementValidationException] {
+          ContextGroup(
+            objectType = ContextGroup.contextType,
+            group = Group(
+              objectType = StatementObjectType.Group,
+              name = Some("Identified Group"),
+              mbox = Some(MBox("mailto:identified.group@integralla.io")),
+              member = Some(
+                List(
+                  Agent(mbox = Some(MBox("mailto:member.one@example.com"))),
+                  Agent(mbox = Some(MBox("mailto:member.two@example.com")))
+                )
+              )
+            ),
+            relevantTypes = Some(List.empty[IRI])
+          )
+        }
+        assert(exception.getMessage.contains("The relevantTypes list cannot be empty"))
       }
     }
 

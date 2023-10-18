@@ -55,7 +55,10 @@ case class ContextGroup(
   }
 
   override def validate: Seq[Either[String, Boolean]] = {
-    Seq(validateObjectType)
+    Seq(
+      validateObjectType,
+      validateRelevantTypes
+    )
   }
 
   /** @return
@@ -64,10 +67,20 @@ case class ContextGroup(
     */
   private def validateObjectType: Either[String, Boolean] = {
     if (objectType != contextType) {
-      Left("Incorrect object type value for a context group object")
+      Left("Incorrect objectType value for a context group object")
     } else {
       Right(true)
     }
+  }
+
+  /** @return
+    *   True if the relevantTypes property is undefined or non-empty, else a
+    *   description of the exception
+    */
+  private def validateRelevantTypes: Either[String, Boolean] = {
+    relevantTypes match
+      case Some(types) => if (types.nonEmpty) Right(true) else Left("The relevantTypes list cannot be empty")
+      case None        => Right(true)
   }
 }
 
