@@ -820,6 +820,36 @@ class StatementTest extends UnitSpec with StrictLogging {
     }
 
     describe("[validation]") {
+      it("should throw a validation error if a statement includes more than one signature attachment") {
+        val exception = intercept[StatementValidationException] {
+          Statement(
+            actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+            verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            attachments = Some(
+              List(
+                Attachment(
+                  usageType = IRI("http://adlnet.gov/expapi/attachments/signature"),
+                  display = LanguageMap(Map("en-US" -> "Signature")),
+                  description = Some(LanguageMap(Map("en-US" -> "A test signature"))),
+                  contentType = "application/octet-stream",
+                  length = 4235,
+                  sha2 = "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
+                ),
+                Attachment(
+                  usageType = IRI("http://adlnet.gov/expapi/attachments/signature"),
+                  display = LanguageMap(Map("en-US" -> "Signature")),
+                  description = Some(LanguageMap(Map("en-US" -> "A test signature"))),
+                  contentType = "application/octet-stream",
+                  length = 4235,
+                  sha2 = "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
+                )
+              )
+            )
+          )
+        }
+        assert(exception.getMessage.contains("A signed statement can only have on signature attachment"))
+      }
       it("should throw a validation error if the authority is an identified group") {
         val exception = intercept[StatementValidationException] {
           Statement(
@@ -904,7 +934,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         )
       }
       it(
-        "should throw a statement validation error if the reserved verb for statement voiding is used when the statement object is not a statement ref"
+        "should throw a validation error if the reserved verb for statement voiding is used when the statement object is not a statement ref"
       ) {
         val exception = intercept[StatementValidationException] {
           Statement(
@@ -920,7 +950,7 @@ class StatementTest extends UnitSpec with StrictLogging {
         )
       }
       it(
-        "should throw a statement validation error if the context.revision property is set when the statements object is not an activity"
+        "should throw a validation error if the context.revision property is set when the statements object is not an activity"
       ) {
         val exception = intercept[StatementValidationException] {
           Statement(
@@ -947,7 +977,7 @@ class StatementTest extends UnitSpec with StrictLogging {
       }
 
       it(
-        "should throw a statement validation error if the context.platform property is set when the statements object is not an activity"
+        "should throw a validation error if the context.platform property is set when the statements object is not an activity"
       ) {
         val exception = intercept[StatementValidationException] {
           Statement(
@@ -1319,6 +1349,39 @@ class StatementTest extends UnitSpec with StrictLogging {
           verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/attempted"), None)
         )
         assert(statement.isVoidingStatement === false)
+      }
+    }
+
+    describe("signatureAttachment") {
+      it("should return a signature attachment for a signed statement") {
+        val statement: Statement = Statement(
+          actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+          verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+          attachments = Some(
+            List(
+              Attachment(
+                usageType = IRI("http://adlnet.gov/expapi/attachments/signature"),
+                display = LanguageMap(Map("en-US" -> "Signature")),
+                description = Some(LanguageMap(Map("en-US" -> "A test signature"))),
+                contentType = "application/octet-stream",
+                length = 4235,
+                sha2 = "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
+              )
+            )
+          )
+        )
+        val signature: Option[Attachment] = statement.signatureAttachment
+        assert(signature.isDefined)
+      }
+      it("should return none for an un-signed statement") {
+        val statement: Statement = Statement(
+          actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
+          verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
+          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test")))
+        )
+        val signature: Option[Attachment] = statement.signatureAttachment
+        assert(signature.isEmpty)
       }
     }
 

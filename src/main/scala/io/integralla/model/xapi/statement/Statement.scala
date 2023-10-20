@@ -124,6 +124,18 @@ case class Statement(
     }
   }
 
+  /** Returns a signature attachment object if any is defined
+    *
+    * Note that a statement can only have a single signature attachment
+    * (enforced via statement validation).
+    *
+    * @return
+    *   A signature attachment if defined, else none
+    */
+  def signatureAttachment: Option[Attachment] = {
+    getAttachments.find(_.isSignature)
+  }
+
   /** @return
     *   The size of the statement in bytes based on the JSON representation of
     *   the statement, when printed with no spaces
@@ -135,6 +147,7 @@ case class Statement(
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
+      validateAttachments,
       validateAuthority,
       validateVoidingStatement,
       validateContextPropertiesRevision,
@@ -142,6 +155,21 @@ case class Statement(
     )
   }
 
+  /** Validates that a list of attachments contains no more than one signature
+    * attachment
+    */
+  private def validateAttachments: Either[String, Boolean] = {
+    attachments
+      .map(attachments =>
+        if (attachments.count(_.isSignature) <= 1) Right(true)
+        else Left("A signed statement can only have on signature attachment")
+      ).getOrElse(Right(true))
+  }
+
+  /** Validates that the authority property is either an agent or an anonymous
+    * group with two members, at least one of which must be represented by an
+    * account
+    */
   private def validateAuthority: Either[String, Boolean] = {
     authority.fold(Right(true)) {
       case _: Agent => Right(true)
@@ -162,8 +190,10 @@ case class Statement(
     }
   }
 
+  /** Validates that the object of a voiding statement is a statement reference
+    */
   private def validateVoidingStatement: Either[String, Boolean] = {
-    if (verb.id.value == "http://adlnet.gov/expapi/verbs/voided") {
+    if (verb.isVoiding) {
       `object`.value match
         case _: StatementRef => Right(true)
         case _ =>
@@ -175,6 +205,9 @@ case class Statement(
     }
   }
 
+  /** Validates that the context revision property is not used for a statement
+    * whose object is other than an activity
+    */
   private def validateContextPropertiesRevision: Either[String, Boolean] = {
     context
       .map((statementContext: StatementContext) => {
@@ -192,6 +225,9 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
+  /** Validates that the context platform property is not used for a statement
+    * whose object is other than an activity
+    */
   private def validateContextPropertiesPlatform: Either[String, Boolean] = {
     context
       .map((statementContext: StatementContext) => {
