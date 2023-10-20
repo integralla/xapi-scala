@@ -89,6 +89,16 @@ class StatementVerbTest extends UnitSpec {
         assert(left.isEquivalentTo(right) === false)
       }
     }
-  }
 
+    describe("isVoiding") {
+      it("should return true of the verb is a voiding verb") {
+        val verb: StatementVerb = StatementVerb(id = StatementVerb.voidingVerb)
+        assert(verb.isVoiding)
+      }
+      it("should return false of the verb is not a voiding verb") {
+        val verb: StatementVerb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))
+        assert(!verb.isVoiding)
+      }
+    }
+  }
 }

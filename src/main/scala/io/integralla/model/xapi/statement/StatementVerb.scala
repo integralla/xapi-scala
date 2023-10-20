@@ -1,9 +1,10 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.identifiers.IRI
+import io.integralla.model.xapi.statement.StatementVerb.voidingVerb
 
 /** A Verb defines the action between an Actor and an Activity
   *
@@ -14,6 +15,15 @@ import io.integralla.model.xapi.identifiers.IRI
   *   a string in the language specified in the tag
   */
 case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends Equivalence {
+
+  /** Indicates whether the verb is a voiding verb
+    *
+    * @return
+    *   True if the verb is http://adlnet.gov/expapi/verbs/voided, else false
+    */
+  def isVoiding: Boolean = {
+    if (id == voidingVerb) true else false
+  }
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects For a statement verb, only the verb identifier is used
@@ -26,6 +36,10 @@ case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends E
 }
 
 object StatementVerb {
+
+  /** The IRI value expected for a voiding statement */
+  val voidingVerb: IRI = IRI("http://adlnet.gov/expapi/verbs/voided")
+
   implicit val decoder: Decoder[StatementVerb] = deriveDecoder[StatementVerb]
   implicit val encoder: Encoder[StatementVerb] = deriveEncoder[StatementVerb].mapJson(_.dropNullValues)
 }
