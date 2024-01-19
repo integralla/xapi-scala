@@ -180,10 +180,10 @@ case class Statement(
   private def validateAuthority: Either[String, Boolean] = {
 
     authority match {
-      case Some(actor) => {
+      case Some(actor) =>
         actor match {
           case _: Agent => Right(true)
-          case group: Group => {
+          case group: Group =>
             if (group.isAnonymous) {
               if (group.member.fold(0)(_.length) == 2) {
                 if (group.member.get.exists(_.account.isDefined)) {
@@ -199,9 +199,7 @@ case class Statement(
             } else {
               Left("An authority cannot be an identified group")
             }
-          }
         }
-      }
       case None => Right(true)
     }
   }
