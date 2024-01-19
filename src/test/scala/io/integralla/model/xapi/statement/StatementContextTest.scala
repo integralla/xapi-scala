@@ -1,11 +1,10 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.Json
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.ExtensionMap
-import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
-import io.integralla.model.xapi.references.{AgentReference, ContextAgentRef, ContextGroupRef, InstructorRef, TeamRef}
+import io.integralla.model.xapi.identifiers.{IRI, MBox}
+import io.integralla.model.xapi.references._
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.UUID
@@ -14,8 +13,12 @@ class StatementContextTest extends UnitSpec {
 
   val sampleContext: StatementContext = StatementContext(
     registration = Some(UUID.fromString("1fc289d4-5061-4635-8500-ada2009fb7c8")),
-    instructor =
-      Some(Agent(objectType = Some(StatementObjectType.Agent), mbox = Some(MBox("mailto:instructor@integralla.io")))),
+    instructor = Some(
+      Agent(
+        objectType = Some(StatementObjectType.Agent),
+        mbox = Some(MBox("mailto:instructor@integralla.io"))
+      )
+    ),
     team = Some(
       Group(
         objectType = StatementObjectType.Group,
@@ -279,8 +282,10 @@ class StatementContextTest extends UnitSpec {
               ),
               ContextGroup(
                 objectType = ContextGroup.contextType,
-                group =
-                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  mbox = Some(MBox("mailto:other.group@integralla.io"))
+                )
               )
             )
           )
@@ -290,8 +295,10 @@ class StatementContextTest extends UnitSpec {
             List(
               ContextGroup(
                 objectType = ContextGroup.contextType,
-                group =
-                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  mbox = Some(MBox("mailto:other.group@integralla.io"))
+                )
               ),
               ContextGroup(
                 objectType = ContextGroup.contextType,
@@ -386,8 +393,10 @@ class StatementContextTest extends UnitSpec {
               ),
               ContextGroup(
                 objectType = ContextGroup.contextType,
-                group =
-                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  mbox = Some(MBox("mailto:other.group@integralla.io"))
+                )
               )
             )
           )
@@ -417,7 +426,9 @@ class StatementContextTest extends UnitSpec {
       it("should return false if the objects are not equivalent (statement)") {
         val left: StatementContext = sampleContext.copy()
         val right: StatementContext =
-          sampleContext.copy(statement = Some(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())))
+          sampleContext.copy(statement =
+            Some(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID()))
+          )
         assert(left.isEquivalentTo(right) === false)
       }
       it("should return false if the objects are not equivalent (extensions)") {
@@ -431,7 +442,10 @@ class StatementContextTest extends UnitSpec {
       it("should return a list of agent references for an instructor") {
         val context: StatementContext = StatementContext(
           instructor = Some(
-            Agent(objectType = Some(StatementObjectType.Agent), mbox = Some(MBox("mailto:instructor@integralla.io")))
+            Agent(
+              objectType = Some(StatementObjectType.Agent),
+              mbox = Some(MBox("mailto:instructor@integralla.io"))
+            )
           )
         )
         val references: List[AgentReference] = context.agentReferences(inSubStatement = false)
@@ -504,8 +518,10 @@ class StatementContextTest extends UnitSpec {
               ),
               ContextGroup(
                 objectType = ContextGroup.contextType,
-                group =
-                  Group(objectType = StatementObjectType.Group, mbox = Some(MBox("mailto:other.group@integralla.io")))
+                group = Group(
+                  objectType = StatementObjectType.Group,
+                  mbox = Some(MBox("mailto:other.group@integralla.io"))
+                )
               )
             )
           )
