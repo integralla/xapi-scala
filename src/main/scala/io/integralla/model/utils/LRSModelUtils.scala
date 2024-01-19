@@ -45,7 +45,9 @@ object LRSModelUtils {
     jawn.decode[A](json) match {
       case Left(exception) =>
         Failure(
-          new LRSModelDecodingException(s"Unable to decode string into type ${classTag[A].runtimeClass}: $exception")
+          new LRSModelDecodingException(
+            s"Unable to decode string into type ${classTag[A].runtimeClass}: $exception"
+          )
         )
       case Right(value) => Success(value)
     }

@@ -17,5 +17,6 @@ case class AboutResource(version: List[String], extensions: Option[ExtensionMap]
 
 object AboutResource {
   implicit val decoder: Decoder[AboutResource] = deriveDecoder[AboutResource]
-  implicit val encoder: Encoder[AboutResource] = deriveEncoder[AboutResource].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[AboutResource] =
+    deriveEncoder[AboutResource].mapJson(_.dropNullValues)
 }

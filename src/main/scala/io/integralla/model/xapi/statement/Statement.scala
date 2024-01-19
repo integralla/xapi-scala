@@ -5,7 +5,12 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.common.{Equivalence, XApiVersion}
 import io.integralla.model.xapi.common.CustomEncoders.timestampEncoder
-import io.integralla.model.xapi.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
+import io.integralla.model.xapi.references.{
+  ActivityReference,
+  ActorRef,
+  AgentReference,
+  AuthorityRef
+}
 
 import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
