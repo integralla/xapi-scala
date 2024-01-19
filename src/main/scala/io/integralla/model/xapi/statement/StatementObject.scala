@@ -1,11 +1,16 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.*
+import io.circe._
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.Equivalence
 import io.integralla.model.xapi.exceptions.StatementValidationException
 import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
-import io.integralla.model.xapi.references.{ActivityObjectRef, ActivityReference, AgentObjectRef, AgentReference}
+import io.integralla.model.xapi.references.{
+  ActivityObjectRef,
+  ActivityReference,
+  AgentObjectRef,
+  AgentReference
+}
 import io.integralla.model.xapi.statement.StatementObjectType.StatementObjectType
 
 import java.time.OffsetDateTime
@@ -28,7 +33,8 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     */
   def activityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
     value match {
-      case activity: Activity         => List(ActivityReference(activity, ActivityObjectRef, inSubStatement))
+      case activity: Activity =>
+        List(ActivityReference(activity, ActivityObjectRef, inSubStatement))
       case subStatement: SubStatement => subStatement.activityReferences
       case _                          => List.empty[ActivityReference]
     }
@@ -96,7 +102,11 @@ object StatementObject {
         /* Activity Object */
         case None =>
           try {
-            Activity(None, c.get[IRI]("id").toOption.get, c.get[ActivityDefinition]("definition").toOption)
+            Activity(
+              None,
+              c.get[IRI]("id").toOption.get,
+              c.get[ActivityDefinition]("definition").toOption
+            )
           } catch {
             case _: Throwable =>
               throw new StatementValidationException(
@@ -104,7 +114,11 @@ object StatementObject {
               )
           }
         case Some(StatementObjectType.Activity) =>
-          Activity(objectType, c.get[IRI]("id").toOption.get, c.get[ActivityDefinition]("definition").toOption)
+          Activity(
+            objectType,
+            c.get[IRI]("id").toOption.get,
+            c.get[ActivityDefinition]("definition").toOption
+          )
 
         /* Agent Object */
         case Some(StatementObjectType.Agent) =>
@@ -130,18 +144,25 @@ object StatementObject {
           )
 
         /* Statement Reference Object */
-        case Some(StatementObjectType.StatementRef) => StatementRef(objectType.get, c.get[UUID]("id").toOption.get)
+        case Some(StatementObjectType.StatementRef) =>
+          StatementRef(objectType.get, c.get[UUID]("id").toOption.get)
 
         /* Sub-Statement Object */
         case Some(StatementObjectType.SubStatement) =>
           val statementObject: StatementObject =
             c.downField("object").downField("objectType").as[StatementObjectType].toOption match {
-              case None | Some(StatementObjectType.Activity) => StatementObject(c.get[Activity]("object").toOption.get)
-              case Some(StatementObjectType.Agent)           => StatementObject(c.get[Agent]("object").toOption.get)
-              case Some(StatementObjectType.Group)           => StatementObject(c.get[Group]("object").toOption.get)
-              case Some(StatementObjectType.StatementRef) => StatementObject(c.get[StatementRef]("object").toOption.get)
+              case None | Some(StatementObjectType.Activity) =>
+                StatementObject(c.get[Activity]("object").toOption.get)
+              case Some(StatementObjectType.Agent) =>
+                StatementObject(c.get[Agent]("object").toOption.get)
+              case Some(StatementObjectType.Group) =>
+                StatementObject(c.get[Group]("object").toOption.get)
+              case Some(StatementObjectType.StatementRef) =>
+                StatementObject(c.get[StatementRef]("object").toOption.get)
               case Some(StatementObjectType.SubStatement) =>
-                throw new StatementValidationException("A sub-statement cannot contain a sub-statement of it's own")
+                throw new StatementValidationException(
+                  "A sub-statement cannot contain a sub-statement of it's own"
+                )
               case _ => throw new StatementValidationException("Unsupported object type")
             }
 

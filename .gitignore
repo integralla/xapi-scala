@@ -1,23 +1,52 @@
-# IntelliJ
-# User-specific stuff
-.idea/
-
-auto-import.
-*.iml
-*.ipr
-
-# SBT
-lib_managed
-target
-project/boot
-project/build/target
-project/plugins/lib_managed
-project/plugins/src_managed
-project/plugins/target
-project/plugins/project/build.properties
-
-# Other Build System
+# Build
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+dist/*
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
 .bloop
 .bsp
 .metals
 project/metals.sbt
+
+# Containers
+docker/
+volume/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

@@ -2,7 +2,7 @@ package io.integralla.model.xapi.statement
 
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.jawn.decode
-import io.circe.parser.*
+import io.circe.parser._
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.ExtensionMap
 import io.integralla.model.xapi.exceptions.StatementValidationException

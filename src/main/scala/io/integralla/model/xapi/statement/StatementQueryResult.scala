@@ -7,5 +7,6 @@ case class StatementQueryResult(statements: StatementList, more: Option[String] 
 
 object StatementQueryResult {
   implicit val decoder: Decoder[StatementQueryResult] = deriveDecoder[StatementQueryResult]
-  implicit val encoder: Encoder[StatementQueryResult] = deriveEncoder[StatementQueryResult].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[StatementQueryResult] =
+    deriveEncoder[StatementQueryResult].mapJson(_.dropNullValues)
 }

@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 import io.integralla.model.xapi.common.Equivalence
 
 import java.util.Locale
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 
 /** A language map is a dictionary where the key is a RFC 5646 Language Tag, and
   * the value is a string in the language specified in the tag.
@@ -46,9 +46,10 @@ case class LanguageMap(value: Map[String, String]) extends Equivalence {
     */
   def preferred(priorityList: List[Locale.LanguageRange]): Option[LanguageMap] =
     if (priorityList.nonEmpty) {
-      Option(Locale.lookupTag(priorityList.asJava, value.keys.toList.asJava)) match
+      Option(Locale.lookupTag(priorityList.asJava, value.keys.toList.asJava)) match {
         case Some(tag) => lookup(tag)
         case None      => first
+      }
     } else first
 
   /** Generates a signature that can be used to test logical equivalence between
@@ -77,6 +78,8 @@ case class LanguageMap(value: Map[String, String]) extends Equivalence {
 }
 
 object LanguageMap {
-  implicit val encoder: Encoder[LanguageMap] = Encoder.encodeMap[String, String].contramap[LanguageMap](_.value)
-  implicit val decoder: Decoder[LanguageMap] = Decoder.decodeMap[String, String].map[LanguageMap](LanguageMap.apply)
+  implicit val encoder: Encoder[LanguageMap] =
+    Encoder.encodeMap[String, String].contramap[LanguageMap](_.value)
+  implicit val decoder: Decoder[LanguageMap] =
+    Decoder.decodeMap[String, String].map[LanguageMap](LanguageMap.apply)
 }

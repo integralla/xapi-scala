@@ -116,5 +116,6 @@ case class StatementContext(
 
 object StatementContext {
   implicit val decoder: Decoder[StatementContext] = deriveDecoder[StatementContext]
-  implicit val encoder: Encoder[StatementContext] = deriveEncoder[StatementContext].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[StatementContext] =
+    deriveEncoder[StatementContext].mapJson(_.dropNullValues)
 }

@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.common.{Equivalence, XApiVersion}
-import io.integralla.model.xapi.common.CustomEncoders.*
+import io.integralla.model.xapi.common.CustomEncoders.timestampEncoder
 import io.integralla.model.xapi.references.{ActivityReference, ActorRef, AgentReference, AuthorityRef}
 
 import java.nio.charset.StandardCharsets
@@ -63,7 +63,10 @@ case class Statement(
   def activityReferences: List[ActivityReference] = {
     List(
       `object`.activityReferences(),
-      context.flatMap(_.contextActivities.map(_.activityReferences())).getOrElse(List.empty[ActivityReference])
+      context
+        .flatMap(_.contextActivities.map(_.activityReferences())).getOrElse(
+          List.empty[ActivityReference]
+        )
     ).flatten.distinct
   }
 
@@ -84,7 +87,10 @@ case class Statement(
           )
         }),
       `object`.agentReferences(inSubStatement = false),
-      context.map(context => context.agentReferences(inSubStatement = false)).getOrElse(List.empty[AgentReference]),
+      context
+        .map(context => context.agentReferences(inSubStatement = false)).getOrElse(
+          List.empty[AgentReference]
+        ),
       authority
         .map(_.asList().map(agent => {
           AgentReference(
@@ -107,9 +113,10 @@ case class Statement(
   def getAttachments: List[Attachment] =
     List(
       attachments,
-      `object`.value match
+      `object`.value match {
         case subStatement: SubStatement => subStatement.attachments
         case _                          => None
+      }
     ).flatMap(_.getOrElse(List.empty[Attachment]))
 
   /** Tests whether the statement is a voiding statement
@@ -171,22 +178,31 @@ case class Statement(
     * account
     */
   private def validateAuthority: Either[String, Boolean] = {
-    authority.fold(Right(true)) {
-      case _: Agent => Right(true)
-      case group: Group =>
-        if (group.isAnonymous) {
-          if (group.member.fold(0)(_.length) == 2) {
-            if (group.member.get.exists(_.account.isDefined)) {
-              Right(true)
+
+    authority match {
+      case Some(actor) => {
+        actor match {
+          case _: Agent => Right(true)
+          case group: Group => {
+            if (group.isAnonymous) {
+              if (group.member.fold(0)(_.length) == 2) {
+                if (group.member.get.exists(_.account.isDefined)) {
+                  Right(true)
+                } else {
+                  Left(
+                    "An OAuth consumer represented by an authority group member must be identified by account"
+                  )
+                }
+              } else {
+                Left("An authority represented as a group must have exactly two members")
+              }
             } else {
-              Left("An OAuth consumer represented by an authority group member must be identified by account")
+              Left("An authority cannot be an identified group")
             }
-          } else {
-            Left("An authority represented as a group must have exactly two members")
           }
-        } else {
-          Left("An authority cannot be an identified group")
         }
+      }
+      case None => Right(true)
     }
   }
 
@@ -194,12 +210,13 @@ case class Statement(
     */
   private def validateVoidingStatement: Either[String, Boolean] = {
     if (verb.isVoiding) {
-      `object`.value match
+      `object`.value match {
         case _: StatementRef => Right(true)
         case _ =>
           Left(
             """The reserved verb http://adlnet.gov/expapi/verbs/voided can only be used when the statement object is a statement reference"""
           )
+      }
     } else {
       Right(true)
     }

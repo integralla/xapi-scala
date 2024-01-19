@@ -10,6 +10,8 @@ object CustomEncoders {
 
   /** Encodes a timestamp with nanosecond precision */
   implicit val timestampEncoder: Encoder[OffsetDateTime] = Encoder.encodeString
-    .contramap[OffsetDateTime](_.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.nnnnnnnnnXXX")))
+    .contramap[OffsetDateTime](
+      _.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.nnnnnnnnnXXX"))
+    )
 
 }

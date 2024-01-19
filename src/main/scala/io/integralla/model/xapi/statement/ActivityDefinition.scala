@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.{Equivalence, ExtensionMap}
 import io.integralla.model.xapi.identifiers.IRI
 import io.integralla.model.xapi.statement.InteractionType.{
@@ -120,7 +120,9 @@ case class ActivityDefinition(
       */
     def correctResponsePatternIsCompatible(): Boolean = {
       if (instance.correctResponsesPattern.isDefined) {
-        this.correctResponsesPattern.exists(pattern => pattern.isEquivalentTo(instance.correctResponsesPattern.get))
+        this.correctResponsesPattern.exists(pattern =>
+          pattern.isEquivalentTo(instance.correctResponsesPattern.get)
+        )
       } else true
     }
 
@@ -152,7 +154,8 @@ case class ActivityDefinition(
       }
 
       if (
-        List(instance.choices, instance.scale, instance.source, instance.target, instance.steps).exists(_.isDefined)
+        List(instance.choices, instance.scale, instance.source, instance.target, instance.steps)
+          .exists(_.isDefined)
       ) {
         List(
           compareInteractionComponents(this.choices, instance.choices),
@@ -188,7 +191,8 @@ case class ActivityDefinition(
       .map(_ => {
         interactionType match {
           case Some(_) => Right(true)
-          case None    => Left("An interaction type must be specified when the activity type is cmi.interaction")
+          case None =>
+            Left("An interaction type must be specified when the activity type is cmi.interaction")
         }
       }).getOrElse(Right(true))
   }
@@ -198,7 +202,8 @@ case class ActivityDefinition(
       .map(_ => {
         interactionType match {
           case Some(_) => Right(true)
-          case None    => Left("An interaction type must be specified when a correct response pattern is defined")
+          case None =>
+            Left("An interaction type must be specified when a correct response pattern is defined")
         }
       }).getOrElse(Right(true))
   }
@@ -207,7 +212,8 @@ case class ActivityDefinition(
     if (List(choices, scale, source, steps, target).exists(_.isDefined)) {
       interactionType match {
         case Some(_) => Right(true)
-        case None    => Left("An interaction type must be specified when interaction components are defined")
+        case None =>
+          Left("An interaction type must be specified when interaction components are defined")
       }
     } else Right(true)
   }
@@ -237,7 +243,9 @@ case class ActivityDefinition(
             }
           case MATCHING =>
             if (List(choices, scale, steps).exists(_.isDefined)) {
-              Left(s"The $value interaction type only supports the source and target interaction components")
+              Left(
+                s"The $value interaction type only supports the source and target interaction components"
+              )
             } else {
               Right(true)
             }
@@ -259,8 +267,9 @@ case class ActivityDefinition(
     moreInfo
       .map((iri: IRI) => {
         AbsoluteUrl.parseTry(iri.value) match {
-          case Failure(exception) => Left(f"The value of moreInfo must be a valid IRL: ${exception.getMessage}")
-          case Success(_)         => Right(true)
+          case Failure(exception) =>
+            Left(f"The value of moreInfo must be a valid IRL: ${exception.getMessage}")
+          case Success(_) => Right(true)
         }
       }).getOrElse(Right(true))
   }
@@ -302,5 +311,6 @@ case class ActivityDefinition(
 
 object ActivityDefinition {
   implicit val decoder: Decoder[ActivityDefinition] = deriveDecoder[ActivityDefinition]
-  implicit val encoder: Encoder[ActivityDefinition] = deriveEncoder[ActivityDefinition].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[ActivityDefinition] =
+    deriveEncoder[ActivityDefinition].mapJson(_.dropNullValues)
 }

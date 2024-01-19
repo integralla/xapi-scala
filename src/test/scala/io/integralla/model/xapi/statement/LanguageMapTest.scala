@@ -5,7 +5,7 @@ import io.circe.syntax.EncoderOps
 import io.integralla.testing.spec.UnitSpec
 
 import java.util.Locale
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 
 class LanguageMapTest extends UnitSpec {
   describe("LanguageMap") {

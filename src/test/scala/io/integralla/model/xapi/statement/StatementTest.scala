@@ -7,7 +7,7 @@ import io.integralla.model.utils.LRSModelUtils
 import io.integralla.model.xapi.common.XApiVersion
 import io.integralla.model.xapi.exceptions.StatementValidationException
 import io.integralla.model.xapi.identifiers.{Account, IRI, MBox}
-import io.integralla.model.xapi.references.*
+import io.integralla.model.xapi.references._
 import io.integralla.testing.spec.UnitSpec
 
 import java.time.{OffsetDateTime, ZoneId}

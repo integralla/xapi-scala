@@ -8,7 +8,8 @@ import io.integralla.model.xapi.statement.StatementValidation
 import scala.util.{Failure, Success, Try}
 import scala.util.matching.Regex
 
-case class XApiVersion(major: Int, minor: Int, patch: Option[Int]) extends LRSModel with StatementValidation {
+case class XApiVersion(major: Int, minor: Int, patch: Option[Int])
+    extends LRSModel with StatementValidation {
 
   def format: String =
     (List(major, minor) ++ patch).mkString(".")
@@ -16,21 +17,25 @@ case class XApiVersion(major: Int, minor: Int, patch: Option[Int]) extends LRSMo
   override def validate: Seq[Either[String, Boolean]] =
     Seq(
       Try(
-        major match
+        major match {
           case 1 =>
-            minor match
+            minor match {
               case 0 =>
                 if (patch.getOrElse(0) <= 9) true else throw new Exception()
               case _ => throw new Exception()
+            }
           case 2 =>
-            minor match
+            minor match {
               case 0 =>
                 if (patch.getOrElse(0) == 0) true else throw new Exception()
               case _ => throw new Exception()
+            }
           case _ => throw new Exception()
-      ) match
+        }
+      ) match {
         case Success(_) => Right(true)
         case Failure(_) => Left("Unsupported xAPI version")
+      }
     )
 }
 
@@ -48,10 +53,12 @@ object XApiVersion {
 
   implicit val encoder: Encoder[XApiVersion] = Encoder.encodeString.contramap[XApiVersion](_.format)
 
-  implicit val decoder: Decoder[XApiVersion] = Decoder.decodeString.map[XApiVersion](value =>
+  implicit val decoder: Decoder[XApiVersion] = Decoder.decodeString.map[XApiVersion](value => {
     val pattern: Regex = """^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?$""".r
-    value match
-      case pattern(major, minor, _, patch) => XApiVersion(major.toInt, minor.toInt, Option(patch).map(_.toInt))
-      case _                               => throw new StatementValidationException("Invalid xAPI version")
-  )
+    value match {
+      case pattern(major, minor, _, patch) =>
+        XApiVersion(major.toInt, minor.toInt, Option(patch).map(_.toInt))
+      case _ => throw new StatementValidationException("Invalid xAPI version")
+    }
+  })
 }

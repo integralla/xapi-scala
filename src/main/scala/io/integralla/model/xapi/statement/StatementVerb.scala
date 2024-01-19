@@ -41,5 +41,6 @@ object StatementVerb {
   val voidingVerb: IRI = IRI("http://adlnet.gov/expapi/verbs/voided")
 
   implicit val decoder: Decoder[StatementVerb] = deriveDecoder[StatementVerb]
-  implicit val encoder: Encoder[StatementVerb] = deriveEncoder[StatementVerb].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[StatementVerb] =
+    deriveEncoder[StatementVerb].mapJson(_.dropNullValues)
 }

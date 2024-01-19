@@ -26,13 +26,15 @@ trait LRSModel {
     */
   def toJson[A](spaces: Boolean = false, sorted: Boolean = false)(implicit
     encoder: Encoder[A]
-  ): String =
+  ): String = {
     val encoded: Json = this.asInstanceOf[A].asJson.dropNullValues
-    (spaces, sorted) match
+    (spaces, sorted) match {
       case (true, true)   => encoded.spaces2SortKeys
       case (true, false)  => encoded.spaces2
       case (false, true)  => encoded.noSpacesSortKeys
       case (false, false) => encoded.noSpaces
+    }
+  }
 }
 
 object LRSModel {
@@ -50,7 +52,7 @@ object LRSModel {
     *   An instance of the model
     */
   def apply[A: ClassTag](json: String)(implicit decoder: Decoder[A]): Try[A] =
-    decode[A](json) match
+    decode[A](json) match {
       case Left(exception) =>
         Failure(
           new LRSModelDecodingException(
@@ -58,5 +60,6 @@ object LRSModel {
           )
         )
       case Right(value) => Success(value)
+    }
 
 }

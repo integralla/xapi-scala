@@ -2,7 +2,7 @@ package io.integralla.model.xapi.document
 
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.Json
-import io.circe.parser.*
+import io.circe.parser._
 import io.integralla.model.xapi.exceptions.JsonObjectValidationException
 
 import scala.util.{Failure, Success, Try}
@@ -25,7 +25,7 @@ case class JsonDocumentResource(json: Json) {
     *   JSON Document Resource object
     */
   def merge(that: JsonDocumentResource): JsonDocumentResource = {
-    (json.asObject, that.json.asObject) match
+    (json.asObject, that.json.asObject) match {
       case (Some(left), Some(right)) =>
         new JsonDocumentResource(
           Json.fromJsonObject {
@@ -35,6 +35,7 @@ case class JsonDocumentResource(json: Json) {
           }
         )
       case _ => that
+    }
   }
 
   /** @return JSON encoded representation of the document resource */
@@ -46,9 +47,10 @@ case class JsonDocumentResource(json: Json) {
     *   JSON Document Resource instance on success, else an exception
     */
   private def validate: Try[JsonDocumentResource] =
-    json.asObject match
+    json.asObject match {
       case Some(_) => Success(this)
       case None    => Failure(new JsonObjectValidationException("JSON must be a JSON object"))
+    }
 
 }
 
@@ -66,10 +68,11 @@ object JsonDocumentResource extends StrictLogging {
     *   JSON Document Resource instance on success, else an exception
     */
   def apply(value: String): Try[JsonDocumentResource] = {
-    parse(value) match
+    parse(value) match {
       case Right(json) => new JsonDocumentResource(json).validate
       case Left(exception) =>
         logger.warn(exception.getMessage)
         Failure(new JsonObjectValidationException("Unable to parse document resource"))
+    }
   }
 }

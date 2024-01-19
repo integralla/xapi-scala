@@ -91,5 +91,6 @@ case class StatementResult(
 
 object StatementResult {
   implicit val decoder: Decoder[StatementResult] = deriveDecoder[StatementResult]
-  implicit val encoder: Encoder[StatementResult] = deriveEncoder[StatementResult].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[StatementResult] =
+    deriveEncoder[StatementResult].mapJson(_.dropNullValues)
 }

@@ -32,7 +32,9 @@ trait StatementValidation {
     * validation failures are detected
     */
   if (exceptions.nonEmpty) {
-    throw new StatementValidationException(s"Statement Validation Errors: ${exceptions.mkString("; ")}")
+    throw new StatementValidationException(
+      s"Statement Validation Errors: ${exceptions.mkString("; ")}"
+    )
   }
 
 }

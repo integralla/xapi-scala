@@ -1,6 +1,6 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.*
+import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
 import io.integralla.model.xapi.common.Equivalence
@@ -118,9 +118,14 @@ object StatementActor {
       member <- c.get[Option[List[Agent]]]("member")
 
       actor: StatementActor = objectType match {
-        case None | Some(StatementObjectType.Agent) => Agent(objectType, name, mbox, mbox_sha1sum, openid, account)
-        case Some(StatementObjectType.Group) => Group(objectType.get, name, mbox, mbox_sha1sum, openid, account, member)
-        case _ => throw new StatementValidationException(s"$objectType is not a supported objectType for an actor")
+        case None | Some(StatementObjectType.Agent) =>
+          Agent(objectType, name, mbox, mbox_sha1sum, openid, account)
+        case Some(StatementObjectType.Group) =>
+          Group(objectType.get, name, mbox, mbox_sha1sum, openid, account, member)
+        case _ =>
+          throw new StatementValidationException(
+            s"$objectType is not a supported objectType for an actor"
+          )
       }
     } yield actor
 
@@ -261,7 +266,10 @@ case class Group(
   override def asList(): List[(StatementActor, Boolean)] = {
     List(
       if (!isAnonymous) List((this, false)) else List.empty[(StatementActor, Boolean)],
-      member.map(members => members.map(member => (member, true))).getOrElse(List.empty[(StatementActor, Boolean)])
+      member
+        .map(members => members.map(member => (member, true))).getOrElse(
+          List.empty[(StatementActor, Boolean)]
+        )
     ).flatten
   }
 
@@ -323,7 +331,8 @@ case class Group(
   }
 
   private def validateObjectType: Either[String, Boolean] = {
-    if (objectType != StatementObjectType.Group) Left("A Group must have the object type of 'Group'")
+    if (objectType != StatementObjectType.Group)
+      Left("A Group must have the object type of 'Group'")
     else Right(true)
   }
 }

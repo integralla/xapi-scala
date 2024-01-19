@@ -78,9 +78,11 @@ case class ContextGroup(
     *   description of the exception
     */
   private def validateRelevantTypes: Either[String, Boolean] = {
-    relevantTypes match
-      case Some(types) => if (types.nonEmpty) Right(true) else Left("The relevantTypes list cannot be empty")
-      case None        => Right(true)
+    relevantTypes match {
+      case Some(types) =>
+        if (types.nonEmpty) Right(true) else Left("The relevantTypes list cannot be empty")
+      case None => Right(true)
+    }
   }
 }
 
@@ -91,5 +93,6 @@ object ContextGroup {
 
   /** Implicit encoder/decoder instances */
   implicit val decoder: Decoder[ContextGroup] = deriveDecoder[ContextGroup]
-  implicit val encoder: Encoder[ContextGroup] = deriveEncoder[ContextGroup].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[ContextGroup] =
+    deriveEncoder[ContextGroup].mapJson(_.dropNullValues)
 }

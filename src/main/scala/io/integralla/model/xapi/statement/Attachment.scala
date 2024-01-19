@@ -32,7 +32,7 @@ case class Attachment(
   length: Int,
   sha2: String,
   fileUrl: Option[IRI] = None
-) extends StatementValidation:
+) extends StatementValidation {
 
   /** Indicates whether the attachment is a JWS for a signed statement
     *
@@ -57,10 +57,13 @@ case class Attachment(
       if (isSignature) {
         if (contentType.startsWith("application/octet-stream")) { Right(true) }
         else {
-          Left("The JWS for a signed statement must have the attachment content-type of application/octet-stream")
+          Left(
+            "The JWS for a signed statement must have the attachment content-type of application/octet-stream"
+          )
         }
       } else { Right(true) }
     )
+}
 
 object Attachment {
 

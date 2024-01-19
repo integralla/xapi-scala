@@ -10,6 +10,8 @@ import io.circe.{Decoder, Encoder}
 case class StatementList(statements: List[Statement])
 
 object StatementList {
-  implicit val encoder: Encoder[StatementList] = Encoder.encodeList[Statement].contramap[StatementList](_.statements)
-  implicit val decoder: Decoder[StatementList] = Decoder.decodeList[Statement].map[StatementList](StatementList.apply)
+  implicit val encoder: Encoder[StatementList] =
+    Encoder.encodeList[Statement].contramap[StatementList](_.statements)
+  implicit val decoder: Decoder[StatementList] =
+    Decoder.decodeList[Statement].map[StatementList](StatementList.apply)
 }

@@ -37,6 +37,8 @@ case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
 }
 
 object ExtensionMap {
-  implicit val encoder: Encoder[ExtensionMap] = Encoder.encodeMap[IRI, Json].contramap[ExtensionMap](_.value)
-  implicit val decoder: Decoder[ExtensionMap] = Decoder.decodeMap[IRI, Json].map[ExtensionMap](ExtensionMap.apply)
+  implicit val encoder: Encoder[ExtensionMap] =
+    Encoder.encodeMap[IRI, Json].contramap[ExtensionMap](_.value)
+  implicit val decoder: Decoder[ExtensionMap] =
+    Decoder.decodeMap[IRI, Json].map[ExtensionMap](ExtensionMap.apply)
 }

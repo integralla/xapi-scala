@@ -12,7 +12,8 @@ import io.integralla.model.xapi.common.Equivalence
   *   A description of the interaction component (for example, the text for a
   *   given choice in a multiple-choice interaction)
   */
-case class InteractionComponent(id: String, definition: Option[LanguageMap] = None) extends Equivalence {
+case class InteractionComponent(id: String, definition: Option[LanguageMap] = None)
+    extends Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects
@@ -35,5 +36,6 @@ case class InteractionComponent(id: String, definition: Option[LanguageMap] = No
 
 object InteractionComponent {
   implicit val decoder: Decoder[InteractionComponent] = deriveDecoder[InteractionComponent]
-  implicit val encoder: Encoder[InteractionComponent] = deriveEncoder[InteractionComponent].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[InteractionComponent] =
+    deriveEncoder[InteractionComponent].mapJson(_.dropNullValues)
 }

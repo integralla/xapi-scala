@@ -1,7 +1,7 @@
 package io.integralla.model.xapi.statement
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.model.xapi.common.Equivalence
 
 /** A score represents the outcome of a graded Activity achieved by an Agent
@@ -52,7 +52,9 @@ case class Score(
         min
           .map((minScore: Double) => {
             if (rawScore < minScore) {
-              Left("The raw score cannot be less than the lowest possible (min) score defined for the experience")
+              Left(
+                "The raw score cannot be less than the lowest possible (min) score defined for the experience"
+              )
             } else {
               Right(true)
             }
@@ -66,7 +68,9 @@ case class Score(
         max
           .map((maxScore: Double) => {
             if (rawScore > maxScore) {
-              Left("The raw score cannot be greater than the highest possible (max) score defined for the experience")
+              Left(
+                "The raw score cannot be greater than the highest possible (max) score defined for the experience"
+              )
             } else {
               Right(true)
             }
@@ -80,7 +84,9 @@ case class Score(
         min
           .map((minScore: Double) => {
             if (maxScore <= minScore) {
-              Left("The highest possible score (max) must be greater than the lowest possible score (min)")
+              Left(
+                "The highest possible score (max) must be greater than the lowest possible score (min)"
+              )
             } else {
               Right(true)
             }

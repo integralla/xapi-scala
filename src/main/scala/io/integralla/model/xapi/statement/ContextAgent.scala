@@ -74,9 +74,11 @@ case class ContextAgent(
     *   description of the exception
     */
   private def validateRelevantTypes: Either[String, Boolean] = {
-    relevantTypes match
-      case Some(types) => if (types.nonEmpty) Right(true) else Left("The relevantTypes list cannot be empty")
-      case None        => Right(true)
+    relevantTypes match {
+      case Some(types) =>
+        if (types.nonEmpty) Right(true) else Left("The relevantTypes list cannot be empty")
+      case None => Right(true)
+    }
   }
 }
 
@@ -87,5 +89,6 @@ object ContextAgent {
 
   /** Implicit encoder/decoder instances */
   implicit val decoder: Decoder[ContextAgent] = deriveDecoder[ContextAgent]
-  implicit val encoder: Encoder[ContextAgent] = deriveEncoder[ContextAgent].mapJson(_.dropNullValues)
+  implicit val encoder: Encoder[ContextAgent] =
+    deriveEncoder[ContextAgent].mapJson(_.dropNullValues)
 }

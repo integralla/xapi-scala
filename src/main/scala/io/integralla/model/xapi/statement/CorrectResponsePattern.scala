@@ -29,7 +29,8 @@ case class CorrectResponsePattern(responses: List[String]) extends Equivalence {
 }
 
 object CorrectResponsePattern {
-  implicit val encoder: Encoder[CorrectResponsePattern] = Encoder.encodeList[String].contramap(_.responses)
+  implicit val encoder: Encoder[CorrectResponsePattern] =
+    Encoder.encodeList[String].contramap(_.responses)
   implicit val decoder: Decoder[CorrectResponsePattern] =
     Decoder.decodeList[String].map[CorrectResponsePattern](CorrectResponsePattern.apply)
 }
