@@ -3,7 +3,7 @@ import com.integralla.sbt.CompilerOptions
 ThisBuild / organization := "io.integralla"
 ThisBuild / startYear := Some(2022)
 
-ThisBuild / version := "1.0.0-SNAPSHOT"
+ThisBuild / version := "1.0.0"
 ThisBuild / versionScheme := Some("semver-spec")
 
 lazy val scala213 = "2.13.12"
@@ -27,8 +27,7 @@ lazy val root = (project in file("."))
         case Some((2, n)) if n == 13 => CompilerOptions.common ++ CompilerOptions.scala213
         case _                       => CompilerOptions.common
       }
-    },
-//    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1)
+    }
   )
 
 /** DEPENDENCIES */
@@ -56,5 +55,5 @@ lazy val loggingDependencies = Seq(
 
 /* Testing Dependencies */
 lazy val testDependencies = Seq(
-  "io.integralla" %% "integralla-test" % "1.0.0-SNAPSHOT" % "test"
+  "io.integralla" %% "integralla-test" % "1.0.0" % "test"
 )
