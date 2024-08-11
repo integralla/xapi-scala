@@ -1,10 +1,9 @@
 package io.integralla.xapi.model.utils
 
 import com.typesafe.scalalogging.LazyLogging
-import io.integralla.model.xapi.statement._
 import io.integralla.xapi.model.exceptions.LRSModelDecodingException
 import io.integralla.xapi.model.identifiers.{IRI, MBox}
-import io.integralla.xapi.model.statement.{Activity, Agent, Statement, StatementActor, StatementObjectType}
+import io.integralla.xapi.model.statement._
 import org.scalatest.funspec.AnyFunSpec
 
 import scala.io.Source

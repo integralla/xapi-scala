@@ -2,10 +2,9 @@ package io.integralla.xapi.model.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.model.xapi.references._
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.identifiers.{Account, IRI, MBox}
-import io.integralla.xapi.model.references.{ActivityObjectRef, ActivityReference, ActorRef, AgentObjectRef, AgentReference, InstructorRef, TeamRef}
+import io.integralla.xapi.model.references._
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID
