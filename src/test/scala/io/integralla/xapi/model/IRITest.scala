@@ -2,13 +2,16 @@ package io.integralla.xapi.model
 
 import io.circe.generic.auto._
 import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
+import io.integralla.xapi.model.common.{Decodable, Encodable}
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
 
+import scala.util.Try
+
 class IRITest extends AnyFunSpec {
 
-  case class Wrapper(id: IRI)
+  case class Wrapper(id: IRI) extends Encodable[Wrapper]
+  object Wrapper extends Decodable[Wrapper]
 
   describe("[validation]") {
     it("should validate a valid URL") {
@@ -40,8 +43,13 @@ class IRITest extends AnyFunSpec {
 
   describe("[encoding]") {
     it("should successfully encode an IRI") {
+      val iri: IRI = IRI("http://example.com/visited")
+      val encoded: String = iri.toJson()
+      assert(encoded === """"http://example.com/visited"""")
+    }
+    it("should successfully encode an IRI when used as a key") {
       val wrapper: Wrapper = Wrapper(IRI("http://example.com/visited"))
-      val actual: String = wrapper.asJson.noSpaces
+      val actual: String = wrapper.toJson()
       val expected: String = """{"id":"http://example.com/visited"}"""
       assert(actual === expected)
     }
@@ -49,13 +57,20 @@ class IRITest extends AnyFunSpec {
 
   describe("[decoding]") {
     it("should successfully decode an IRI") {
+      val data: String = """"http://example.com/visited""""
+      val decoded: Try[IRI] = IRI(data)
+      val expected: IRI = IRI("http://example.com/visited")
+
+      assert(decoded.isSuccess)
+      assert(decoded.get === expected)
+
+    }
+    it("should successfully decode an IRI used as a key") {
       val data: String = """{"id":"http://example.com/visited"}"""
-      val decoded: Either[io.circe.Error, Wrapper] = decode[Wrapper](data)
+      val decoded: Try[Wrapper] = Wrapper(data)
       val expected = Wrapper(IRI("http://example.com/visited"))
-      decoded match {
-        case Right(actual) => assert(actual === expected)
-        case Left(_)       => false
-      }
+      assert(decoded.isSuccess)
+      assert(decoded.get === expected)
     }
 
     it("should throw a statement validation exception if the value is not a valid IRI") {

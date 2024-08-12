@@ -1,20 +1,36 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.references._
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class ContextActivitiesTest extends AnyFunSpec {
 
   val sampleParent: Activity =
-    Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/test"), None)
+    Activity(
+      Some(StatementObjectType.Activity),
+      IRI("http://example.adlnet.gov/xapi/example/test"),
+      None
+    )
   val sampleGrouping: Activity =
-    Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/class"), None)
+    Activity(
+      Some(StatementObjectType.Activity),
+      IRI("http://example.adlnet.gov/xapi/example/class"),
+      None
+    )
   val sampleCategory: Activity =
-    Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/category"), None)
+    Activity(
+      Some(StatementObjectType.Activity),
+      IRI("http://example.adlnet.gov/xapi/example/category"),
+      None
+    )
   val sampleOther: Activity =
-    Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/other"), None)
+    Activity(
+      Some(StatementObjectType.Activity),
+      IRI("http://example.adlnet.gov/xapi/example/other"),
+      None
+    )
 
   val sampleContextActivities: ContextActivities = ContextActivities(
     Some(List(sampleParent)),
@@ -28,13 +44,16 @@ class ContextActivitiesTest extends AnyFunSpec {
   describe("Context Activities") {
     describe("[encoding]") {
       it("should successfully encode a context references object") {
-        val actual = sampleContextActivities.asJson.noSpaces
+        val actual = sampleContextActivities.toJson()
         assert(actual === sampleContextActivitiesEncoded)
       }
 
-      it("should successfully encode a context references object in which not all properties are defined") {
-        val contextActivities: ContextActivities = ContextActivities(Some(List(sampleParent)), None, None, None)
-        val actual = contextActivities.asJson.noSpaces
+      it(
+        "should successfully encode a context references object in which not all properties are defined"
+      ) {
+        val contextActivities: ContextActivities =
+          ContextActivities(Some(List(sampleParent)), None, None, None)
+        val actual = contextActivities.toJson()
         val expected: String =
           """{"parent":[{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/test"}]}"""
         assert(actual === expected)
@@ -43,23 +62,21 @@ class ContextActivitiesTest extends AnyFunSpec {
 
     describe("[decoding]") {
       it("should successfully decode a context references object") {
-        val decoded: Either[io.circe.Error, ContextActivities] =
-          decode[ContextActivities](sampleContextActivitiesEncoded)
-        decoded match {
-          case Right(actual) => assert(actual === sampleContextActivities)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ContextActivities] = ContextActivities(sampleContextActivitiesEncoded)
+        assert(decoded.isSuccess)
       }
 
-      it("should successfully decode a context references object in which not all properties are defined") {
+      it(
+        "should successfully decode a context references object in which not all properties are defined"
+      ) {
         val data: String =
           """{"parent":[{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/test"}]}"""
-        val decoded: Either[io.circe.Error, ContextActivities] = decode[ContextActivities](data)
-        val expected: ContextActivities = ContextActivities(Some(List(sampleParent)), None, None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val expected: ContextActivities =
+          ContextActivities(Some(List(sampleParent)), None, None, None)
+
+        val decoded: Try[ContextActivities] = ContextActivities(data)
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it(
@@ -67,11 +84,8 @@ class ContextActivitiesTest extends AnyFunSpec {
       ) {
         val data: String =
           """{"parent": {"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/test"},"grouping":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/class"},"category":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/category"},"other":{"objectType":"Activity","id":"http://example.adlnet.gov/xapi/example/other"}}"""
-        val decoded: Either[io.circe.Error, ContextActivities] = decode[ContextActivities](data)
-        decoded match {
-          case Right(actual) => assert(actual === sampleContextActivities)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ContextActivities] = ContextActivities(data)
+        assert(decoded.isSuccess)
       }
     }
 
@@ -82,15 +96,25 @@ class ContextActivitiesTest extends AnyFunSpec {
         assert(left.isEquivalentTo(right))
       }
 
-      it("should return true if both context activity objects are equivalent, excepting list order") {
+      it(
+        "should return true if both context activity objects are equivalent, excepting list order"
+      ) {
         val left: ContextActivities = ContextActivities(
           parent = None,
           grouping = None,
           category = None,
           other = Some(
             List(
-              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None),
-              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None)
+              Activity(
+                Some(StatementObjectType.Activity),
+                IRI("http://example.adlnet.gov/xapi/example/one"),
+                None
+              ),
+              Activity(
+                Some(StatementObjectType.Activity),
+                IRI("http://example.adlnet.gov/xapi/example/two"),
+                None
+              )
             )
           )
         )
@@ -101,8 +125,16 @@ class ContextActivitiesTest extends AnyFunSpec {
           category = None,
           other = Some(
             List(
-              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/two"), None),
-              Activity(Some(StatementObjectType.Activity), IRI("http://example.adlnet.gov/xapi/example/one"), None)
+              Activity(
+                Some(StatementObjectType.Activity),
+                IRI("http://example.adlnet.gov/xapi/example/two"),
+                None
+              ),
+              Activity(
+                Some(StatementObjectType.Activity),
+                IRI("http://example.adlnet.gov/xapi/example/one"),
+                None
+              )
             )
           )
         )
@@ -120,8 +152,10 @@ class ContextActivitiesTest extends AnyFunSpec {
     describe("activityReferences") {
       val baseContextActivities: ContextActivities = ContextActivities(
         parent = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))),
-        grouping = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
-        category = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))),
+        grouping =
+          Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
+        category =
+          Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))),
         other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None)))
       )
 
@@ -136,15 +170,27 @@ class ContextActivitiesTest extends AnyFunSpec {
         assert(iris.contains("https://lrs.integralla.io/activity/category"))
         assert(iris.contains("https://lrs.integralla.io/activity/other"))
 
-        assert(references.find(_.activity.id.value.endsWith("parent")).get.referenceType === ParentRef)
-        assert(references.find(_.activity.id.value.endsWith("grouping")).get.referenceType === GroupingRef)
-        assert(references.find(_.activity.id.value.endsWith("category")).get.referenceType === CategoryRef)
-        assert(references.find(_.activity.id.value.endsWith("other")).get.referenceType === OtherRef)
+        assert(
+          references.find(_.activity.id.value.endsWith("parent")).get.referenceType === ParentRef
+        )
+        assert(
+          references
+            .find(_.activity.id.value.endsWith("grouping")).get.referenceType === GroupingRef
+        )
+        assert(
+          references
+            .find(_.activity.id.value.endsWith("category")).get.referenceType === CategoryRef
+        )
+        assert(
+          references.find(_.activity.id.value.endsWith("other")).get.referenceType === OtherRef
+        )
 
         assert(references.map(_.inSubStatement).forall(_ === false))
       }
 
-      it("should set the inSubStatement property to true, if the inSubStatement parameter is true") {
+      it(
+        "should set the inSubStatement property to true, if the inSubStatement parameter is true"
+      ) {
         val contextActivities: ContextActivities = baseContextActivities.copy()
         val references: List[ActivityReference] = contextActivities.activityReferences(true)
         assert(references.map(_.inSubStatement).forall(_ === true))

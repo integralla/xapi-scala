@@ -2,7 +2,6 @@ package io.integralla.xapi.model
 
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references.{AgentReference, ContextAgentRef}
-import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec
 
 import scala.util.Try
@@ -22,12 +21,12 @@ class ContextAgentTest extends AnyFunSpec {
           )
         )
 
-        val encoded: String = LRSModelUtils.toJSON[ContextAgent](contextAgent)
+        val encoded: String = contextAgent.toJson()
         assert(
           encoded === """{"objectType":"contextAgent","agent":{"mbox":"mailto:context.agent@example.com"},"relevantTypes":["https://lrs.integralla.io/types/instructor","https://lrs.integralla.io/types/subject-matter-expert"]}""".stripMargin
         )
 
-        val decoded: Try[ContextAgent] = LRSModelUtils.fromJSON[ContextAgent](encoded)
+        val decoded: Try[ContextAgent] = ContextAgent(encoded)
         assert(decoded.isSuccess)
         assert(decoded.get === contextAgent)
       }
@@ -38,12 +37,12 @@ class ContextAgentTest extends AnyFunSpec {
           relevantTypes = None
         )
 
-        val encoded: String = LRSModelUtils.toJSON[ContextAgent](contextAgent)
+        val encoded: String = contextAgent.toJson()
         assert(
           encoded === """{"objectType":"contextAgent","agent":{"mbox":"mailto:context.agent@example.com"}}""".stripMargin
         )
 
-        val decoded: Try[ContextAgent] = LRSModelUtils.fromJSON[ContextAgent](encoded)
+        val decoded: Try[ContextAgent] = ContextAgent(encoded)
         assert(decoded.isSuccess)
         assert(decoded.get === contextAgent)
       }
@@ -125,7 +124,9 @@ class ContextAgentTest extends AnyFunSpec {
             relevantTypes = None
           )
         }
-        assert(exception.getMessage.contains("Incorrect objectType value for a context agent object"))
+        assert(
+          exception.getMessage.contains("Incorrect objectType value for a context agent object")
+        )
       }
       it("should throw a validation error if the relevantTypes list is empty") {
         val exception = intercept[StatementValidationException] {

@@ -24,7 +24,7 @@ trait Encodable[A] {
   def toJson(spaces: Boolean = false, sorted: Boolean = false)(implicit
     encoder: Encoder[A]
   ): String = {
-    val encoded: Json = this.asInstanceOf[A].asJson.dropNullValues
+    val encoded: Json = this.asInstanceOf[A].asJson
     (spaces, sorted) match {
       case (true, true)   => encoded.spaces2SortKeys
       case (true, false)  => encoded.spaces2

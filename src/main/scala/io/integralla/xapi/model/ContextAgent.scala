@@ -3,10 +3,10 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import ContextAgent.contextType
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.references.{AgentReference, ContextAgentRef}
 
-/** Model for xAPI 2.0 Context Agent object
+/** xAPI 2.0 Context Agent model
   *
   * @param objectType
   *   Static value that must be set to "contextAgent"
@@ -19,7 +19,7 @@ case class ContextAgent(
   objectType: String,
   agent: Agent,
   relevantTypes: Option[List[IRI]] = None
-) extends Equivalence with StatementValidation {
+) extends Encodable[ContextAgent] with Equivalence with StatementValidation {
 
   /** Return an agent reference for the context agent
     *
@@ -81,7 +81,7 @@ case class ContextAgent(
   }
 }
 
-object ContextAgent {
+object ContextAgent extends Decodable[ContextAgent] {
 
   /** Required value for the objectType property */
   val contextType: String = "contextAgent"

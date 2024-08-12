@@ -1,7 +1,7 @@
 package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.lemonlabs.uri.{QueryString, Uri, Url}
 
 import scala.util.{Failure, Success, Try}
@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
   * @param value
   *   An IRI string
   */
-case class IRI(value: String) extends StatementValidation with Equivalence {
+case class IRI(value: String) extends Encodable[IRI] with Equivalence with StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateIRI
@@ -69,7 +69,7 @@ case class IRI(value: String) extends StatementValidation with Equivalence {
   }
 }
 
-object IRI {
+object IRI extends Decodable[IRI] {
   implicit val encoder: Encoder[IRI] = Encoder.encodeString.contramap[IRI](_.value)
   implicit val decoder: Decoder[IRI] = Decoder.decodeString.map[IRI](IRI.apply)
 

@@ -1,7 +1,7 @@
 package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 /** The Correct Responses Pattern, if used, is intended to be an exhaustive list
   * of possible correct responses, each represented by a string
@@ -9,7 +9,8 @@ import io.integralla.xapi.model.common.Equivalence
   * @param responses
   *   A list of strings, each representing a possible correct response
   */
-case class CorrectResponsePattern(responses: List[String]) extends Equivalence {
+case class CorrectResponsePattern(responses: List[String])
+    extends Encodable[CorrectResponsePattern] with Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects
@@ -28,7 +29,7 @@ case class CorrectResponsePattern(responses: List[String]) extends Equivalence {
   }
 }
 
-object CorrectResponsePattern {
+object CorrectResponsePattern extends Decodable[CorrectResponsePattern] {
   implicit val encoder: Encoder[CorrectResponsePattern] =
     Encoder.encodeList[String].contramap(_.responses)
   implicit val decoder: Decoder[CorrectResponsePattern] =

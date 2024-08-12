@@ -1,7 +1,7 @@
 package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder, Json}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 /** Extensions are defined by a map and logically relate to the part of the
   * Statement where they are present.
@@ -10,7 +10,7 @@ import io.integralla.xapi.model.common.Equivalence
   *   A map where each key must be a valid IRI, and each value a JSON data
   *   structure or value
   */
-case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
+case class ExtensionMap(value: Map[IRI, Json]) extends Encodable[ExtensionMap] with Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects
@@ -36,7 +36,7 @@ case class ExtensionMap(value: Map[IRI, Json]) extends Equivalence {
   }
 }
 
-object ExtensionMap {
+object ExtensionMap extends Decodable[ExtensionMap] {
   implicit val encoder: Encoder[ExtensionMap] =
     Encoder.encodeMap[IRI, Json].contramap[ExtensionMap](_.value)
   implicit val decoder: Decoder[ExtensionMap] =

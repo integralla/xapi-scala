@@ -1,11 +1,11 @@
-package io.integralla.xapi.model.common
+package io.integralla.xapi.model
 
 import com.typesafe.scalalogging.StrictLogging
-import io.circe.ParsingFailure
 import io.circe.parser._
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.{ExtensionMap, IRI}
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class ExtensionMapTest extends AnyFunSpec with StrictLogging {
 
@@ -39,42 +39,55 @@ class ExtensionMapTest extends AnyFunSpec with StrictLogging {
     )
   )
 
-  val json: String =
-    """
-      |{
-      |"https://lrs.integralla.io/extensions/array":[3,"different",{"types":"of values"}],
-      |"https://lrs.integralla.io/extensions/boolean":true,
-      |"https://lrs.integralla.io/extensions/integer":100,
-      |"https://lrs.integralla.io/extensions/null":null,
-      |"https://lrs.integralla.io/extensions/number":1.9891E30,
-      |"https://lrs.integralla.io/extensions/object":{"array":[3,"different",{"types":"of values"}],"boolean":true,"integer":100,"null":null,"number":1.9891E30,"object":{"one":1},"string":"text"},
-      |"https://lrs.integralla.io/extensions/string":"text"}
-      |""".stripMargin.replaceAll("\n", "")
-
   describe("ExtensionMap") {
-    describe("[encoding]") {
-      it("should encode an extension map") {
-        val encoded = extensions.asJson
-        logger.info("Encoded:\n" + encoded.noSpacesSortKeys)
-        assert(encoded.noSpacesSortKeys === json)
-      }
-    }
+    describe("[encoding/decoding]") {
+      it("should encode/decode an extension map") {
 
-    describe("[decoding]") {
-      it("should decode an extension map") {
-        val decoded: Either[io.circe.Error, ExtensionMap] = decode[ExtensionMap](json)
-        decoded match {
-          case Right(actual) => assert(actual === extensions)
-          case Left(_)       => false
-        }
-      }
+        val expected: String =
+          """{
+            |  "https://lrs.integralla.io/extensions/object" : {
+            |    "array" : [
+            |      3,
+            |      "different",
+            |      {
+            |        "types" : "of values"
+            |      }
+            |    ],
+            |    "boolean" : true,
+            |    "integer" : 100,
+            |    "null" : null,
+            |    "number" : 1.9891E30,
+            |    "object" : {
+            |      "one" : 1
+            |    },
+            |    "string" : "text"
+            |  },
+            |  "https://lrs.integralla.io/extensions/array" : [
+            |    3,
+            |    "different",
+            |    {
+            |      "types" : "of values"
+            |    }
+            |  ],
+            |  "https://lrs.integralla.io/extensions/null" : null,
+            |  "https://lrs.integralla.io/extensions/string" : "text",
+            |  "https://lrs.integralla.io/extensions/number" : 1.9891E30,
+            |  "https://lrs.integralla.io/extensions/boolean" : true,
+            |  "https://lrs.integralla.io/extensions/integer" : 100
+            |}""".stripMargin
 
+        val encoded: String = extensions.toJson(spaces = true)
+        assert(encoded === expected)
+
+        val decoded: Try[ExtensionMap] = ExtensionMap(encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === extensions)
+      }
       it("should throw an exception if the extension map values are not json") {
-        val json = """"https://lrs.integralla.io/extensions/uuid": e8aaf354-e6b1-47ba-b522-aa6904aaa1f7}"""
-        val decoded: Either[io.circe.Error, ExtensionMap] = decode[ExtensionMap](json)
-        assertThrows[ParsingFailure] {
-          decoded.toTry.get
-        }
+        val json =
+          """"https://lrs.integralla.io/extensions/uuid": e8aaf354-e6b1-47ba-b522-aa6904aaa1f7}"""
+        val decoded: Try[ExtensionMap] = ExtensionMap(json)
+        assert(decoded.isFailure)
       }
     }
 
@@ -83,7 +96,9 @@ class ExtensionMapTest extends AnyFunSpec with StrictLogging {
         val left: ExtensionMap = ExtensionMap(
           Map(
             IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson,
-            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get
+            IRI("https://lrs.integralla.io/extensions/object") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get
           )
         )
         val right = left.copy()
@@ -93,29 +108,39 @@ class ExtensionMapTest extends AnyFunSpec with StrictLogging {
         val left: ExtensionMap = ExtensionMap(
           Map(
             IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
-            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get
           )
         )
         val right: ExtensionMap = ExtensionMap(
           Map(
-            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get,
             IRI("https://lrs.integralla.io/extensions/object") -> true.asJson
           )
         )
         assert(left.isEquivalentTo(right))
       }
 
-      it("should return true of both extension maps are equivalent, excepting IRI exceptions [case]") {
+      it(
+        "should return true of both extension maps are equivalent, excepting IRI exceptions [case]"
+      ) {
         val left: ExtensionMap = ExtensionMap(
           Map(
             IRI("https://lrs.integralla.io/extensions/object") -> true.asJson,
-            IRI("https://lrs.integralla.io/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
+            IRI("https://lrs.integralla.io/extensions/integer") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get
           )
         )
         val right: ExtensionMap = ExtensionMap(
           Map(
             IRI("https://LRS.INTEGRALLA.IO/extensions/object") -> true.asJson,
-            IRI("https://LRS.INTEGRALLA.IO/extensions/integer") -> parse("""{"one": 1, "two": 2}""").toOption.get
+            IRI("https://LRS.INTEGRALLA.IO/extensions/integer") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get
           )
         )
         assert(left.isEquivalentTo(right))
@@ -124,13 +149,17 @@ class ExtensionMapTest extends AnyFunSpec with StrictLogging {
       it("should return false if both extension maps are not equivalent") {
         val left: ExtensionMap = ExtensionMap(
           Map(
-            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/object") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get,
             IRI("https://lrs.integralla.io/extensions/boolean") -> true.asJson
           )
         )
         val right: ExtensionMap = ExtensionMap(
           Map(
-            IRI("https://lrs.integralla.io/extensions/object") -> parse("""{"one": 1, "two": 2}""").toOption.get,
+            IRI("https://lrs.integralla.io/extensions/object") -> parse(
+              """{"one": 1, "two": 2}"""
+            ).toOption.get,
             IRI("https://lrs.integralla.io/extensions/boolean") -> false.asJson
           )
         )

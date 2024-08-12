@@ -2,9 +2,9 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
-/** Interaction Component
+/** Interaction Component model
   *
   * @param id
   *   Identifies the interaction component within the list
@@ -13,7 +13,7 @@ import io.integralla.xapi.model.common.Equivalence
   *   given choice in a multiple-choice interaction)
   */
 case class InteractionComponent(id: String, definition: Option[LanguageMap] = None)
-    extends Equivalence {
+    extends Encodable[InteractionComponent] with Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects
@@ -34,7 +34,7 @@ case class InteractionComponent(id: String, definition: Option[LanguageMap] = No
   }
 }
 
-object InteractionComponent {
+object InteractionComponent extends Decodable[InteractionComponent] {
   implicit val decoder: Decoder[InteractionComponent] = deriveDecoder[InteractionComponent]
   implicit val encoder: Encoder[InteractionComponent] =
     deriveEncoder[InteractionComponent].mapJson(_.dropNullValues)

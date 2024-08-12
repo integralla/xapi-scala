@@ -2,7 +2,6 @@ package io.integralla.xapi.model
 
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references.{AgentReference, ContextGroupRef}
-import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec
 
 import scala.util.Try
@@ -32,7 +31,7 @@ class ContextGroupTest extends AnyFunSpec {
           )
         )
 
-        val encoded: String = LRSModelUtils.toJSON[ContextGroup](contextGroup, spaces = true)
+        val encoded: String = contextGroup.toJson(spaces = true)
         val expected: String =
           """{
             |  "objectType" : "contextGroup",
@@ -57,7 +56,7 @@ class ContextGroupTest extends AnyFunSpec {
 
         assert(encoded === expected)
 
-        val decoded: Try[ContextGroup] = LRSModelUtils.fromJSON[ContextGroup](encoded)
+        val decoded: Try[ContextGroup] = ContextGroup(encoded)
         assert(decoded.isSuccess)
         assert(decoded.get === contextGroup)
       }
@@ -77,7 +76,7 @@ class ContextGroupTest extends AnyFunSpec {
           relevantTypes = None
         )
 
-        val encoded: String = LRSModelUtils.toJSON[ContextGroup](contextGroup, spaces = true)
+        val encoded: String = contextGroup.toJson(spaces = true)
         val expected: String =
           """{
             |  "objectType" : "contextGroup",
@@ -97,7 +96,7 @@ class ContextGroupTest extends AnyFunSpec {
 
         assert(encoded === expected)
 
-        val decoded: Try[ContextGroup] = LRSModelUtils.fromJSON[ContextGroup](encoded)
+        val decoded: Try[ContextGroup] = ContextGroup(encoded)
         assert(decoded.isSuccess)
         assert(decoded.get === contextGroup)
       }
@@ -227,7 +226,9 @@ class ContextGroupTest extends AnyFunSpec {
             relevantTypes = None
           )
         }
-        assert(exception.getMessage.contains("Incorrect objectType value for a context group object"))
+        assert(
+          exception.getMessage.contains("Incorrect objectType value for a context group object")
+        )
       }
       it("should throw a validation error if the relevantTypes list is empty") {
         val exception = intercept[StatementValidationException] {

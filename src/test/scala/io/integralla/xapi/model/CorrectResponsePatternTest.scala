@@ -1,8 +1,8 @@
 package io.integralla.xapi.model
 
-import io.circe.parser.decode
-import io.circe.syntax.EncoderOps
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class CorrectResponsePatternTest extends AnyFunSpec {
   describe("CorrectResponsePattern") {
@@ -16,13 +16,13 @@ class CorrectResponsePatternTest extends AnyFunSpec {
           )
         )
 
-        val encoded = crp.asJson.noSpacesSortKeys
+        val encoded: String = crp.toJson()
         assert(encoded === """["quartz[,]crystal","quartz"]""")
       }
 
       it("should encode a correct response pattern that is an empty list") {
         val crp: CorrectResponsePattern = CorrectResponsePattern(List.empty[String])
-        val encoded = crp.asJson.noSpacesSortKeys
+        val encoded: String = crp.toJson()
         assert(encoded === """[]""")
       }
     }
@@ -30,36 +30,29 @@ class CorrectResponsePatternTest extends AnyFunSpec {
     describe("[decoding]") {
       it("should decode a correct response pattern") {
         val crpStr: String = """["quartz[,]crystal","quartz"]"""
-        val decoded: Either[io.circe.Error, CorrectResponsePattern] = decode[CorrectResponsePattern](crpStr)
-        decoded match {
-          case Right(actual) =>
-            assert(actual.responses.length === 2)
-            assert(actual.responses.contains("quartz[,]crystal"))
-            assert(actual.responses.contains("quartz"))
-          case Left(err) => throw err
-        }
+        val decoded: Try[CorrectResponsePattern] = CorrectResponsePattern(crpStr)
+        assert(decoded.isSuccess)
+        assert(decoded.get.responses === List("quartz[,]crystal", "quartz"))
       }
 
       it("should decode a correct response pattern that is an empty list") {
         val crpStr: String = """[]"""
-        val decoded: Either[io.circe.Error, CorrectResponsePattern] = decode[CorrectResponsePattern](crpStr)
-        decoded match {
-          case Right(actual) =>
-            assert(actual.responses.isEmpty)
-          case Left(err) => throw err
-        }
+        val decoded: Try[CorrectResponsePattern] = CorrectResponsePattern(crpStr)
+        assert(decoded.isSuccess)
+        assert(decoded.get.responses.isEmpty)
       }
 
       it("should decode a correct response pattern that included characterizing parameters") {
-        val crpStr: String = """["{case_matters=false}{lang=en}To store and provide access to learning experiences."]"""
-        val decoded: Either[io.circe.Error, CorrectResponsePattern] = decode[CorrectResponsePattern](crpStr)
-        decoded match {
-          case Right(actual) =>
-            assert(
-              actual.responses.head === """{case_matters=false}{lang=en}To store and provide access to learning experiences."""
-            )
-          case Left(err) => throw err
-        }
+        val crpStr: String =
+          """["{case_matters=false}{lang=en}To store and provide access to learning experiences."]"""
+
+        val decoded: Try[CorrectResponsePattern] = CorrectResponsePattern(crpStr)
+        assert(decoded.isSuccess)
+        assert(
+          decoded.get.responses === List(
+            """{case_matters=false}{lang=en}To store and provide access to learning experiences."""
+          )
+        )
       }
     }
 

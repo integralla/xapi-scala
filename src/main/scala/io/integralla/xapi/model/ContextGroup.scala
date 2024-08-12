@@ -3,10 +3,10 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import ContextGroup.contextType
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.references.{AgentReference, ContextGroupRef}
 
-/** Model for xAPI 2.0 Context Group object
+/** xAPI 2.0 Context Group model
   *
   * @param objectType
   *   Static value that must be set to "contextGroup"
@@ -19,7 +19,7 @@ case class ContextGroup(
   objectType: String,
   group: Group,
   relevantTypes: Option[List[IRI]] = None
-) extends Equivalence with StatementValidation {
+) extends Encodable[ContextGroup] with Equivalence with StatementValidation {
 
   /** A list of agent references composed of the those identified by group (if
     * identified) and all member agents (if any)
@@ -85,7 +85,7 @@ case class ContextGroup(
   }
 }
 
-object ContextGroup {
+object ContextGroup extends Decodable[ContextGroup] {
 
   /** Required value for the objectType property */
   val contextType: String = "contextGroup"

@@ -3,7 +3,7 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.references._
 
 /** A map of the types of learning activity context that the statement is
@@ -25,7 +25,7 @@ case class ContextActivities(
   grouping: Option[List[Activity]] = None,
   category: Option[List[Activity]] = None,
   other: Option[List[Activity]] = None
-) extends Equivalence {
+) extends Encodable[ContextActivities] with Equivalence {
 
   /** @return A distinct list of all activities referenced in the context */
   def activityReferences(inSubStatement: Boolean = false): List[ActivityReference] = {
@@ -75,7 +75,7 @@ case class ContextActivities(
   }
 }
 
-object ContextActivities {
+object ContextActivities extends Decodable[ContextActivities] {
 
   /** For backwards compatibility, the specification allows an activity provider
     * to set each of the properties to a single activity object rather than an
