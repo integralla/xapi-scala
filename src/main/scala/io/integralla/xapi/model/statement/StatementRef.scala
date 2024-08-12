@@ -3,7 +3,7 @@ package io.integralla.xapi.model.statement
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import StatementObjectType.StatementObjectType
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 import java.util.UUID
 
@@ -14,7 +14,8 @@ import java.util.UUID
   * @param id
   *   The UUID of the referenced statement
   */
-case class StatementRef(objectType: StatementObjectType, id: UUID) extends Equivalence {
+case class StatementRef(objectType: StatementObjectType, id: UUID)
+    extends Encodable[StatementRef] with Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between objects
     *
@@ -30,7 +31,7 @@ case class StatementRef(objectType: StatementObjectType, id: UUID) extends Equiv
   }
 }
 
-object StatementRef {
+object StatementRef extends Decodable[StatementRef] {
   implicit val decoder: Decoder[StatementRef] = deriveDecoder[StatementRef]
   implicit val encoder: Encoder[StatementRef] = deriveEncoder[StatementRef]
 }

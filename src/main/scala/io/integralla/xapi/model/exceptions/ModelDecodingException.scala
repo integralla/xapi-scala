@@ -5,4 +5,4 @@ package io.integralla.xapi.model.exceptions
   * @param message
   *   Message providing an explanation of the error
   */
-class LRSModelDecodingException(message: String) extends Exception(message)
+class ModelDecodingException(message: String) extends Exception(message)

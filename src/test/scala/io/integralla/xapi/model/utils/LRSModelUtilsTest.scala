@@ -1,7 +1,7 @@
 package io.integralla.xapi.model.utils
 
 import com.typesafe.scalalogging.LazyLogging
-import io.integralla.xapi.model.exceptions.LRSModelDecodingException
+import io.integralla.xapi.model.exceptions.ModelDecodingException
 import io.integralla.xapi.model.identifiers.{IRI, MBox}
 import io.integralla.xapi.model.statement._
 import org.scalatest.funspec.AnyFunSpec
@@ -62,7 +62,7 @@ class LRSModelUtilsTest extends AnyFunSpec with LazyLogging {
         val encoded: String = """{"objectType":"Agent","name":"John Doe","mbox":"mailto:john.doe@example.com"}"""
         val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
         assert(decoded.isFailure)
-        val caught = intercept[LRSModelDecodingException] {
+        val caught = intercept[ModelDecodingException] {
           decoded.get
         }
         assert(caught.getMessage.contains("DecodingFailure"))
@@ -71,7 +71,7 @@ class LRSModelUtilsTest extends AnyFunSpec with LazyLogging {
         val encoded: String = """Content-Type: application/json"""
         val decoded: Try[Statement] = LRSModelUtils.fromJSON[Statement](encoded)
         assert(decoded.isFailure)
-        val caught = intercept[LRSModelDecodingException] {
+        val caught = intercept[ModelDecodingException] {
           decoded.get
         }
         assert(caught.getMessage.contains("ParsingFailure"))
