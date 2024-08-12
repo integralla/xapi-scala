@@ -2,8 +2,7 @@ package io.integralla.xapi.model.about
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.ExtensionMap
-import io.integralla.xapi.model.utils.LRSModel
+import io.integralla.xapi.model.common.{Decodable, Encodable, ExtensionMap}
 
 /** Model for the about resource
   *
@@ -13,9 +12,10 @@ import io.integralla.xapi.model.utils.LRSModel
   * @param extensions
   *   A map of other properties, adhering to the format of an extension map
   */
-case class AboutResource(version: List[String], extensions: Option[ExtensionMap]) extends LRSModel
+case class AboutResource(version: List[String], extensions: Option[ExtensionMap])
+    extends Encodable[AboutResource]
 
-object AboutResource {
+object AboutResource extends Decodable[AboutResource] {
   implicit val decoder: Decoder[AboutResource] = deriveDecoder[AboutResource]
   implicit val encoder: Encoder[AboutResource] =
     deriveEncoder[AboutResource].mapJson(_.dropNullValues)

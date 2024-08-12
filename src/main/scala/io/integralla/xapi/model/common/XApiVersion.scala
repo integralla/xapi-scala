@@ -3,17 +3,33 @@ package io.integralla.xapi.model.common
 import io.circe.{Decoder, Encoder}
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.statement.StatementValidation
-import io.integralla.xapi.model.utils.LRSModel
 
 import scala.util.{Failure, Success, Try}
 import scala.util.matching.Regex
 
+/** xAPI version model
+  *
+  * @param major
+  *   Major version number
+  * @param minor
+  *   Minor version number
+  * @param patch
+  *   Patch version number
+  */
 case class XApiVersion(major: Int, minor: Int, patch: Option[Int])
-    extends LRSModel with StatementValidation {
+    extends Encodable[XApiVersion] with StatementValidation {
 
+  /** @return Version formatted as a string */
   def format: String =
     (List(major, minor) ++ patch).mkString(".")
 
+  /** Validate that the version is a valid xAPI version
+    *
+    * @return
+    *   Sequence whose values are an `Either` where `Left` provides a
+    *   description of validation exception and `Right` represents a boolean
+    *   indicating that validation succeeded
+    */
   override def validate: Seq[Either[String, Boolean]] =
     Seq(
       Try(
@@ -39,7 +55,7 @@ case class XApiVersion(major: Int, minor: Int, patch: Option[Int])
     )
 }
 
-object XApiVersion {
+object XApiVersion extends Decodable[XApiVersion] {
 
   /** Latest patch version supported for xAPI 1.0 */
   val XAPI_V1: String = "1.0.3"

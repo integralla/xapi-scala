@@ -2,10 +2,10 @@ package io.integralla.xapi.model.person
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.xapi.model.common.{Decodable, Encodable}
 import io.integralla.xapi.model.statement.{Account, MBox}
-import io.integralla.xapi.model.utils.LRSModel
 
-/** xAPI Person object
+/** xAPI Person model
   *
   * @param objectType
   *   Static value that must be set to "Person"
@@ -27,9 +27,9 @@ case class Person(
   mbox_sha1sum: Option[List[String]] = None,
   openid: Option[List[String]] = None,
   account: Option[List[Account]] = None
-) extends LRSModel
+) extends Encodable[Person]
 
-object Person {
+object Person extends Decodable[Person] {
 
   /** Required value for the objectType property */
   val objectType: String = "Person"

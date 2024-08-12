@@ -1,7 +1,6 @@
 package io.integralla.xapi.model.person
 
 import io.integralla.xapi.model.statement.{Account, MBox}
-import io.integralla.xapi.model.utils.LRSModel
 import org.scalatest.funspec.AnyFunSpec
 
 class PersonTest extends AnyFunSpec {
@@ -40,10 +39,10 @@ class PersonTest extends AnyFunSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.toJson[Person](spaces = true)
+        val encoded: String = person.toJson(spaces = true)
         assert(encoded === expected)
 
-        val decoded: Person = LRSModel[Person](encoded).get
+        val decoded: Person = Person(encoded).get
         assert(decoded === person)
       }
       it("should encode/decode a person object, removing null fields") {
@@ -64,10 +63,10 @@ class PersonTest extends AnyFunSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.toJson[Person](spaces = true)
+        val encoded: String = person.toJson(spaces = true)
         assert(encoded === expected)
 
-        val decoded: Person = LRSModel[Person](encoded).get
+        val decoded: Person = Person(encoded).get
         assert(decoded === person)
       }
       it("should encode/decode a person object with multiple field values") {
@@ -89,10 +88,10 @@ class PersonTest extends AnyFunSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = person.toJson[Person](spaces = true)
+        val encoded: String = person.toJson(spaces = true)
         assert(encoded === expected)
 
-        val decoded: Person = LRSModel[Person](encoded).get
+        val decoded: Person = Person(encoded).get
         assert(decoded === person)
       }
     }
