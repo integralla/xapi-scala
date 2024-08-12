@@ -1,10 +1,9 @@
-package io.integralla.xapi.model.identifiers
+package io.integralla.xapi.model.statement
 
 import io.circe.generic.auto._
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.statement.MBox
 import org.scalatest.funspec.AnyFunSpec
 
 class MBoxTest extends AnyFunSpec {
