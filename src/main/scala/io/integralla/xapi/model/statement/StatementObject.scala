@@ -16,16 +16,18 @@ import io.integralla.xapi.model.references.{
 import java.time.OffsetDateTime
 import java.util.UUID
 
-/** This class provides a wrapper around the five statement object types that the `object` property
-  * can be set to It is used for encoding / decoding purposes only
+/** This class provides a wrapper around the five statement object types that
+  * the `object` property can be set to It is used for encoding / decoding
+  * purposes only
   *
   * @param value
   *   – An object of one of the five supported statement object types
   */
 case class StatementObject(value: AnyRef) extends Equivalence {
 
-  /** A list of activities (if any) referenced by the statement object Activities can be referenced
-    * via the statement object, or in a sub-statement
+  /** A list of activities (if any) referenced by the statement object
+    * Activities can be referenced via the statement object, or in a
+    * sub-statement
     * @return
     *   A list of activities
     */
@@ -38,7 +40,8 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     }
   }
 
-  /** A list of agent references composed of the those identified by the statement object
+  /** A list of agent references composed of the those identified by the
+    * statement object
     *
     * @param inSubStatement
     *   Whether the reference occurs in a sub-statement
@@ -72,7 +75,8 @@ case class StatementObject(value: AnyRef) extends Equivalence {
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     * @return
     *   A string identifier
     */

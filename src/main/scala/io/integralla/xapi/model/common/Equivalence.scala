@@ -3,7 +3,8 @@ package io.integralla.xapi.model.common
 import java.security.MessageDigest
 import java.util.Locale
 
-/** Provides methods for comparing one instance of an object that implements this trait to another
+/** Provides methods for comparing one instance of an object that implements
+  * this trait to another
   */
 trait Equivalence {
 
@@ -59,7 +60,8 @@ trait Equivalence {
     hash(combine(list.map(_.signature()).sorted))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     * @return
     *   A string identifier
     */

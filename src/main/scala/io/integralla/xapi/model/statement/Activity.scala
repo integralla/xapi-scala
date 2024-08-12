@@ -21,8 +21,8 @@ case class Activity(
   definition: Option[ActivityDefinition] = None
 ) extends Equivalence {
 
-  /** Similar to `isEquivalentTo` but includes the activity definition in addition to the activity
-    * identifier
+  /** Similar to `isEquivalentTo` but includes the activity definition in
+    * addition to the activity identifier
     *
     * @param instance
     *   The instance to test logical equivalence against
@@ -40,11 +40,12 @@ case class Activity(
     ).forall(_ == true)
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature of an activity is based solely on it's identifier which is handled as a IRI. As
-    * per the specification, the activity definition is not considered as part of the immutable
-    * statement definition
+    * The signature of an activity is based solely on it's identifier which is
+    * handled as a IRI. As per the specification, the activity definition is not
+    * considered as part of the immutable statement definition
     *
     * @return
     *   A string identifier

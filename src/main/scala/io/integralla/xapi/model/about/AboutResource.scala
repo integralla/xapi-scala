@@ -8,7 +8,8 @@ import io.integralla.xapi.model.utils.LRSModel
 /** Model for the about resource
   *
   * @param version
-  *   A list of versions, composed of the supported latest versions for each major version
+  *   A list of versions, composed of the supported latest versions for each
+  *   major version
   * @param extensions
   *   A map of other properties, adhering to the format of an extension map
   */

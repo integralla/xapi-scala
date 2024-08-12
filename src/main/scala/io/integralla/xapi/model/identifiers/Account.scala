@@ -35,10 +35,11 @@ case class Account(
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * To generate the signature, the account name is appended to the homepage as a URL fragment and
-    * the combined value handled as an IRI
+    * To generate the signature, the account name is appended to the homepage as
+    * a URL fragment and the combined value handled as an IRI
     *
     * @return
     *   A string identifier

@@ -17,7 +17,8 @@ import java.util.UUID
 case class StatementRef(objectType: StatementObjectType, id: UUID)
     extends Encodable[StatementRef] with Equivalence {
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * @return
     *   A string identifier

@@ -34,8 +34,8 @@ trait Decodable[A] {
     }
   }
 
-  /** Apply method which can be used to create an instance of the specified type from a JSON encoded
-    * instance
+  /** Apply method which can be used to create an instance of the specified type
+    * from a JSON encoded instance
     *
     * @param json
     *   The JSON encoded string to decode

@@ -32,19 +32,21 @@ case class IRI(value: String) extends StatementValidation with Equivalence {
     }
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * As per the xAPI specification, when comparing IRIs, LRSs SHOULD* handle them only by using one
-    * or more of the approaches described in 5.3.1 (Simple String Comparison) and 5.3.2
-    * (Syntax-Based Normalization) of RFC 3987, and SHOULD* NOT handle them using any approaches
-    * described in 5.3.3 (Scheme-Based Normalization) or 5.3.4 (Protocol-Based Normalization) of the
-    * same RFC, or any other approaches.
+    * As per the xAPI specification, when comparing IRIs, LRSs SHOULD* handle
+    * them only by using one or more of the approaches described in 5.3.1
+    * (Simple String Comparison) and 5.3.2 (Syntax-Based Normalization) of RFC
+    * 3987, and SHOULD* NOT handle them using any approaches described in 5.3.3
+    * (Scheme-Based Normalization) or 5.3.4 (Protocol-Based Normalization) of
+    * the same RFC, or any other approaches.
     *
-    * Here, we lower case both the schema and host name (if present) and sort the query string
-    * parameters.
+    * Here, we lower case both the schema and host name (if present) and sort
+    * the query string parameters.
     *
-    * By default, `scala-uri` will URL percent encode paths and query string parameters upon
-    * parsing. We do nothing to override this behavior.
+    * By default, `scala-uri` will URL percent encode paths and query string
+    * parameters upon parsing. We do nothing to override this behavior.
     *
     * @return
     *   A string identifier

@@ -16,7 +16,8 @@ import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
 import java.util.UUID
 
-/** Statements are the evidence for any sort of experience or event which is to be tracked in xAPI
+/** Statements are the evidence for any sort of experience or event which is to
+  * be tracked in xAPI
   *
   * @param id
   *   A UUID used to uniquely identify the statement
@@ -25,9 +26,11 @@ import java.util.UUID
   * @param verb
   *   The action taken by the actor
   * @param `object`
-  *   An agent, activity, or another statement that is the object of the statement
+  *   An agent, activity, or another statement that is the object of the
+  *   statement
   * @param result
-  *   A result object that provides further details representing a measured outcome
+  *   A result object that provides further details representing a measured
+  *   outcome
   * @param context
   *   A context object that provides additional meaning for the statement
   * @param timestamp
@@ -35,12 +38,14 @@ import java.util.UUID
   * @param stored
   *   The time at which this statement was persisted by the LRS
   * @param authority
-  *   An agent or group object indicating who is asserting the validity of the statement
-  * @param version
-  *   The statement’s associated xAPI version, formatted according to Semantic Versioning 1.0.0
-  * @param attachments
-  *   An array of attachment objects which provide headers for any attachments associated with the
+  *   An agent or group object indicating who is asserting the validity of the
   *   statement
+  * @param version
+  *   The statement’s associated xAPI version, formatted according to Semantic
+  *   Versioning 1.0.0
+  * @param attachments
+  *   An array of attachment objects which provide headers for any attachments
+  *   associated with the statement
   */
 case class Statement(
   id: Option[UUID] = None,
@@ -104,7 +109,8 @@ case class Statement(
     ).flatten.distinct
   }
 
-  /** Extracts and returns all attachment objects from a statement and/or its sub-statement
+  /** Extracts and returns all attachment objects from a statement and/or its
+    * sub-statement
     *
     * @return
     *   List of attachment objects
@@ -132,8 +138,8 @@ case class Statement(
 
   /** Returns a signature attachment object if any is defined
     *
-    * Note that a statement can only have a single signature attachment (enforced via statement
-    * validation).
+    * Note that a statement can only have a single signature attachment
+    * (enforced via statement validation).
     *
     * @return
     *   A signature attachment if defined, else none
@@ -143,8 +149,8 @@ case class Statement(
   }
 
   /** @return
-    *   The size of the statement in bytes based on the JSON representation of the statement, when
-    *   printed with no spaces
+    *   The size of the statement in bytes based on the JSON representation of
+    *   the statement, when printed with no spaces
     */
   def size: Int =
     LRSModelUtils
@@ -161,7 +167,9 @@ case class Statement(
     )
   }
 
-  /** Validates that a list of attachments contains no more than one signature attachment */
+  /** Validates that a list of attachments contains no more than one signature
+    * attachment
+    */
   private def validateAttachments: Either[String, Boolean] = {
     attachments
       .map(attachments =>
@@ -170,8 +178,9 @@ case class Statement(
       ).getOrElse(Right(true))
   }
 
-  /** Validates that the authority property is either an agent or an anonymous group with two
-    * members, at least one of which must be represented by an account
+  /** Validates that the authority property is either an agent or an anonymous
+    * group with two members, at least one of which must be represented by an
+    * account
     */
   private def validateAuthority: Either[String, Boolean] = {
 
@@ -200,7 +209,8 @@ case class Statement(
     }
   }
 
-  /** Validates that the object of a voiding statement is a statement reference */
+  /** Validates that the object of a voiding statement is a statement reference
+    */
   private def validateVoidingStatement: Either[String, Boolean] = {
     if (verb.isVoiding) {
       `object`.value match {
@@ -215,8 +225,8 @@ case class Statement(
     }
   }
 
-  /** Validates that the context revision property is not used for a statement whose object is other
-    * than an activity
+  /** Validates that the context revision property is not used for a statement
+    * whose object is other than an activity
     */
   private def validateContextPropertiesRevision: Either[String, Boolean] = {
     context
@@ -235,8 +245,8 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
-  /** Validates that the context platform property is not used for a statement whose object is other
-    * than an activity
+  /** Validates that the context platform property is not used for a statement
+    * whose object is other than an activity
     */
   private def validateContextPropertiesPlatform: Either[String, Boolean] = {
     context
@@ -255,7 +265,8 @@ case class Statement(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * @return
     *   A string identifier

@@ -9,16 +9,18 @@ import io.integralla.xapi.model.common.Equivalence
   * @param id
   *   Identifies the interaction component within the list
   * @param definition
-  *   A description of the interaction component (for example, the text for a given choice in a
-  *   multiple-choice interaction)
+  *   A description of the interaction component (for example, the text for a
+  *   given choice in a multiple-choice interaction)
   */
 case class InteractionComponent(id: String, definition: Option[LanguageMap] = None)
     extends Equivalence {
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature for an interaction component is computed by concatenating the identifier and the
-    * signature of the definition language map with a standard separator and then hashing
+    * The signature for an interaction component is computed by concatenating
+    * the identifier and the signature of the definition language map with a
+    * standard separator and then hashing
     *
     * @return
     *   A string identifier

@@ -47,7 +47,8 @@ object XApiVersion {
   /** Latest patch version supported for xAPI 2.0 */
   val XAPI_V2: String = "2.0.0"
 
-  /** List of latest minor and patch versions supported, for each major version */
+  /** List of latest minor and patch versions supported, for each major version
+    */
   val supportedVersions: List[String] = List(XAPI_V1, XAPI_V2)
 
   implicit val encoder: Encoder[XApiVersion] = Encoder.encodeString.contramap[XApiVersion](_.format)

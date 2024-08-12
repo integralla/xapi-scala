@@ -8,8 +8,8 @@ import io.integralla.xapi.model.references.{ActivityReference, ActorRef, AgentRe
 
 import java.time.OffsetDateTime
 
-/** A SubStatement is a type of object that can be used to represent an experience that has not
-  * already occurred
+/** A SubStatement is a type of object that can be used to represent an
+  * experience that has not already occurred
   *
   * @param objectType
   *   SubStatement
@@ -18,16 +18,18 @@ import java.time.OffsetDateTime
   * @param verb
   *   The action taken by the actor
   * @param `object`
-  *   An agent, activity, or another statement that is the object of the statement
+  *   An agent, activity, or another statement that is the object of the
+  *   statement
   * @param result
-  *   A result object that provides further details representing a measured outcome
+  *   A result object that provides further details representing a measured
+  *   outcome
   * @param context
   *   A context object that provides additional meaning for the statement
   * @param timestamp
   *   The time at which the experience occurred
   * @param attachments
-  *   An array of attachment objects which provide headers for any attachments associated with the
-  *   statement
+  *   An array of attachment objects which provide headers for any attachments
+  *   associated with the statement
   */
 case class SubStatement(
   objectType: StatementObjectType = StatementObjectType.SubStatement,
@@ -52,7 +54,8 @@ case class SubStatement(
     ).flatten.distinct
   }
 
-  /** A list of agent references composed of the those identified within a sub-statement
+  /** A list of agent references composed of the those identified within a
+    * sub-statement
     *
     * @return
     *   A list of agent references
@@ -126,7 +129,8 @@ case class SubStatement(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * @return
     *   A string identifier

@@ -1,10 +1,10 @@
 package io.integralla.xapi.model.references
 
-/** An ADT to represent the ways in which an agent (or identified group) can be referenced within a
-  * statement
+/** An ADT to represent the ways in which an agent (or identified group) can be
+  * referenced within a statement
   *
-  * Note that an agent can be referenced in any of these positions either as a standalone agent or
-  * as a member of a group
+  * Note that an agent can be referenced in any of these positions either as a
+  * standalone agent or as a member of a group
   */
 sealed trait AgentReferenceType
 

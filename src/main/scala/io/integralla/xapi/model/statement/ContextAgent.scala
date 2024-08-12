@@ -58,7 +58,8 @@ case class ContextAgent(
   }
 
   /** @return
-    *   True if the objectType value is valid, else an description of the exception
+    *   True if the objectType value is valid, else an description of the
+    *   exception
     */
   private def validateObjectType: Either[String, Boolean] = {
     if (objectType != contextType) {
@@ -69,8 +70,8 @@ case class ContextAgent(
   }
 
   /** @return
-    *   True if the relevantTypes property is undefined or non-empty, else a description of the
-    *   exception
+    *   True if the relevantTypes property is undefined or non-empty, else a
+    *   description of the exception
     */
   private def validateRelevantTypes: Either[String, Boolean] = {
     relevantTypes match {

@@ -7,18 +7,18 @@ import io.integralla.xapi.model.common.Equivalence
 /** A score represents the outcome of a graded Activity achieved by an Agent
   *
   * @param scaled
-  *   The score related to the experience as modified by scaling and/or normalization. Decimal
-  *   number between -1 and 1, inclusive
+  *   The score related to the experience as modified by scaling and/or
+  *   normalization. Decimal number between -1 and 1, inclusive
   * @param raw
-  *   The score achieved by the Actor in the experience described by the Statement. This is not
-  *   modified by any scaling or normalization. Decimal number between min and max (if present,
-  *   otherwise unrestricted), inclusive
+  *   The score achieved by the Actor in the experience described by the
+  *   Statement. This is not modified by any scaling or normalization. Decimal
+  *   number between min and max (if present, otherwise unrestricted), inclusive
   * @param min
-  *   The lowest possible score for the experience described by the Statement. Decimal number less
-  *   than max (if present)
+  *   The lowest possible score for the experience described by the Statement.
+  *   Decimal number less than max (if present)
   * @param max
-  *   The highest possible score for the experience described by the Statement. Decimal number
-  *   greater than min (if present)
+  *   The highest possible score for the experience described by the Statement.
+  *   Decimal number greater than min (if present)
   */
 case class Score(
   scaled: Option[Double] = None,
@@ -94,10 +94,11 @@ case class Score(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature is composed of each property, cast as a string when defined, or replaced with
-    * the default placeholder value when undefined
+    * The signature is composed of each property, cast as a string when defined,
+    * or replaced with the default placeholder value when undefined
     *
     * @return
     *   A string identifier

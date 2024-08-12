@@ -5,7 +5,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import Attachment.signatureUsageType
 import io.integralla.xapi.model.identifiers.IRI
 
-/** An attachment represents a resource that is logically associated with the statement
+/** An attachment represents a resource that is logically associated with the
+  * statement
   *
   * @param usageType
   *   Identifies the intended usage of this attachment
@@ -20,7 +21,8 @@ import io.integralla.xapi.model.identifiers.IRI
   * @param sha2
   *   A SHA-2 hash of the attachment data
   * @param fileUrl
-  *   An IRL at which the attachment data can be retrieved, or from which it used to be retrievable
+  *   An IRL at which the attachment data can be retrieved, or from which it
+  *   used to be retrievable
   */
 case class Attachment(
   usageType: IRI,
@@ -41,12 +43,14 @@ case class Attachment(
     if (usageType == signatureUsageType) true else false
   }
 
-  /** Validates that if the attachment usage type is http://adlnet.gov/expapi/attachments/signature,
-    * the content type is application/octet-stream
+  /** Validates that if the attachment usage type is
+    * http://adlnet.gov/expapi/attachments/signature, the content type is
+    * application/octet-stream
     *
     * @return
-    *   Sequence whose values are an `Either` where `Left` provides a description of validation
-    *   exception and `Right` represents a boolean indicating that validation succeeded
+    *   Sequence whose values are an `Either` where `Left` provides a
+    *   description of validation exception and `Right` represents a boolean
+    *   indicating that validation succeeded
     */
   override def validate: Seq[Either[String, Boolean]] =
     Seq(

@@ -7,10 +7,12 @@ import net.time4j.{ClockUnit, Duration, IsoUnit}
 
 import java.text.ParseException
 
-/** A Result represents a measured outcome related to the statement in which it is included
+/** A Result represents a measured outcome related to the statement in which it
+  * is included
   *
   * @param score
-  *   The score of the agent in relation to the success or quality of the experience
+  *   The score of the agent in relation to the success or quality of the
+  *   experience
   * @param success
   *   Indicates whether or not the attempt on the activity was successful
   * @param completion
@@ -52,11 +54,13 @@ case class StatementResult(
       }).getOrElse(Right(true))
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * Per the specification, when comparing durations, any precision beyond 0.01 second precision
-    * SHOULD* NOT be included in the comparison. To accommodate this requirement, we extract the
-    * nano-seconds from the duration and round it to the nearest ten-millionth
+    * Per the specification, when comparing durations, any precision beyond 0.01
+    * second precision SHOULD* NOT be included in the comparison. To accommodate
+    * this requirement, we extract the nano-seconds from the duration and round
+    * it to the nearest ten-millionth
     *
     * @return
     *   A string identifier

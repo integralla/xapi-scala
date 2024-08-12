@@ -6,12 +6,15 @@ import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.common.Equivalence
 import io.integralla.xapi.model.references._
 
-/** A map of the types of learning activity context that the statement is related to
+/** A map of the types of learning activity context that the statement is
+  * related to
   *
   * @param parent
-  *   An activity with a direct relation to the activity which is the object of the statement
+  *   An activity with a direct relation to the activity which is the object of
+  *   the statement
   * @param grouping
-  *   An activity with an indirect relation to the activity which is the object of the statement
+  *   An activity with an indirect relation to the activity which is the object
+  *   of the statement
   * @param category
   *   An activity used to categorize the statement
   * @param other
@@ -34,12 +37,14 @@ case class ContextActivities(
     ).flatMap(_.getOrElse(List.empty[ActivityReference])).distinct
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
-    * The signature for context activities is computed by extracting the activity signature for each
-    * activity, in each context classification, sorting them, and then concatenating the results
-    * together. The resulting strings generated for each classification are then concatenated
-    * themselves and hashed
+    * The signature for context activities is computed by extracting the
+    * activity signature for each activity, in each context classification,
+    * sorting them, and then concatenating the results together. The resulting
+    * strings generated for each classification are then concatenated themselves
+    * and hashed
     *
     * @return
     *   A string identifier
@@ -72,9 +77,10 @@ case class ContextActivities(
 
 object ContextActivities {
 
-  /** For backwards compatibility, the specification allows an activity provider to set each of the
-    * properties to a single activity object rather than an array of activity objects. The LRS,
-    * however, is expected to wrap a single activity object in an array and return it as such
+  /** For backwards compatibility, the specification allows an activity provider
+    * to set each of the properties to a single activity object rather than an
+    * array of activity objects. The LRS, however, is expected to wrap a single
+    * activity object in an array and return it as such
     */
   implicit val decoder: Decoder[ContextActivities] = (c: HCursor) => {
     for {

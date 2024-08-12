@@ -39,8 +39,8 @@ trait LRSModel {
 
 object LRSModel {
 
-  /** An apply method to generate an instance of class that extends this trait from a JSON encoded
-    * object
+  /** An apply method to generate an instance of class that extends this trait
+    * from a JSON encoded object
     *
     * @param json
     *   The JSON encoded object

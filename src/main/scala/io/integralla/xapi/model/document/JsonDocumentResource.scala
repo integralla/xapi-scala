@@ -16,8 +16,8 @@ case class JsonDocumentResource(json: Json) {
 
   /** Merges the JSON of the current document resource with that of another
     *
-    * Only the top-level properties of the documents are merged (as required by the xAPI
-    * specification), and no attempt is made to preserve type.
+    * Only the top-level properties of the documents are merged (as required by
+    * the xAPI specification), and no attempt is made to preserve type.
     *
     * @param that
     *   Another JSON document resource object to merge with the current instance
@@ -56,10 +56,11 @@ case class JsonDocumentResource(json: Json) {
 
 object JsonDocumentResource extends StrictLogging {
 
-  /** Alternate constructor, enabling the initialization of a new instance from a string value
+  /** Alternate constructor, enabling the initialization of a new instance from
+    * a string value
     *
-    * A `JsonObjectValidationException` will be returned in the case that the value cannot be
-    * parsed, of if the parsed value is not a JSON object.
+    * A `JsonObjectValidationException` will be returned in the case that the
+    * value cannot be parsed, of if the parsed value is not a JSON object.
     *
     * @param value
     *   String that represents a valid JSON value

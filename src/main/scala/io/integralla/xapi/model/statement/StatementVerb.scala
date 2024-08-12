@@ -11,8 +11,8 @@ import io.integralla.xapi.model.identifiers.IRI
   * @param id
   *   An IRI that corresponds to a Verb definition
   * @param display
-  *   A language map where the key is a RFC 5646 Language Tag, and the value is a string in the
-  *   language specified in the tag
+  *   A language map where the key is a RFC 5646 Language Tag, and the value is
+  *   a string in the language specified in the tag
   */
 case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends Equivalence {
 
@@ -25,8 +25,8 @@ case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends E
     if (id == voidingVerb) true else false
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects For a
-    * statement verb, only the verb identifier is used
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects For a statement verb, only the verb identifier is used
     * @return
     *   A string identifier
     */

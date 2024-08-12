@@ -22,8 +22,8 @@ case class ContextGroup(
   relevantTypes: Option[List[IRI]] = None
 ) extends Equivalence with StatementValidation {
 
-  /** A list of agent references composed of the those identified by group (if identified) and all
-    * member agents (if any)
+  /** A list of agent references composed of the those identified by group (if
+    * identified) and all member agents (if any)
     *
     * @param inSubStatement
     *   Whether the reference occurs in a sub-statement
@@ -62,7 +62,8 @@ case class ContextGroup(
   }
 
   /** @return
-    *   True if the objectType value is valid, else an description of the exception
+    *   True if the objectType value is valid, else an description of the
+    *   exception
     */
   private def validateObjectType: Either[String, Boolean] = {
     if (objectType != contextType) {
@@ -73,8 +74,8 @@ case class ContextGroup(
   }
 
   /** @return
-    *   True if the relevantTypes property is undefined or non-empty, else a description of the
-    *   exception
+    *   True if the relevantTypes property is undefined or non-empty, else a
+    *   description of the exception
     */
   private def validateRelevantTypes: Either[String, Boolean] = {
     relevantTypes match {

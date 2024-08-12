@@ -11,7 +11,9 @@ import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success}
 
-/** Actor Used to define whom a statement is about An actor can be either an agent or a group */
+/** Actor Used to define whom a statement is about An actor can be either an
+  * agent or a group
+  */
 sealed trait StatementActor extends StatementValidation with Equivalence {
 
   /** @return The actor name */
@@ -62,15 +64,17 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
     }
   }
 
-  /** Returns a list of identified actors (an agent or identified group) from the actor object
+  /** Returns a list of identified actors (an agent or identified group) from
+    * the actor object
     *
-    * If the actor is an agent, the list will only include the actor itself. If the actor is an
-    * identified group, the list will include the group itself. If the group has members, the list
-    * will include each member of the group.
+    * If the actor is an agent, the list will only include the actor itself. If
+    * the actor is an identified group, the list will include the group itself.
+    * If the group has members, the list will include each member of the group.
     *
     * @return
-    *   For each identified actor in the group, a tuple is returned where the first value is the
-    *   actor itself, and the second value is a boolean indicating if the actor is a group member
+    *   For each identified actor in the group, a tuple is returned where the
+    *   first value is the actor itself, and the second value is a boolean
+    *   indicating if the actor is a group member
     */
   def asList(): List[(StatementActor, Boolean)]
 
@@ -167,7 +171,8 @@ case class Agent(
     )
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * For an agent, the following process is applied to generate the signature:
     *   - The `objectType` is set to Agent if not defined
@@ -220,8 +225,9 @@ object Agent {
   implicit val encoder: Encoder[Agent] = deriveEncoder[Agent].mapJson(_.dropNullValues)
 }
 
-/** A group represents a collection of agents A group can be anonymous (no inverse functional
-  * identifier is provided) Or, a group can be identified (a single inverse identifier is provided)
+/** A group represents a collection of agents A group can be anonymous (no
+  * inverse functional identifier is provided) Or, a group can be identified (a
+  * single inverse identifier is provided)
   *
   * An anonymous group must have members
   *
@@ -274,7 +280,8 @@ case class Group(
     )
   }
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * For an agent, the following process is applied to generate the signature:
     *   - If `name` is defined, use as is
@@ -282,8 +289,8 @@ case class Group(
     *   - If `mbox_sha1sum` is defined, use lower case value
     *   - If `openid` is defined, treat as an IRI and use signature
     *   - If `account` is defined, use signature
-    *   - If `member` is defined, generate a string composed of the sorted signatures from each
-    *     member agent
+    *   - If `member` is defined, generate a string composed of the sorted
+    *     signatures from each member agent
     *
     * @return
     *   A string identifier

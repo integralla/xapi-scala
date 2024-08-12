@@ -12,26 +12,33 @@ import java.util.UUID
   * @param registration
   *   The registration that the statement is associated with
   * @param instructor
-  *   The instructor that the statement relates to, if not included as the actor of the statement
+  *   The instructor that the statement relates to, if not included as the actor
+  *   of the statement
   * @param team
-  *   The team (group) that this statement relates to, if not included as the actor of the statement
+  *   The team (group) that this statement relates to, if not included as the
+  *   actor of the statement
   * @param contextActivities
-  *   A map of the types of learning activity context that this statement is related to
+  *   A map of the types of learning activity context that this statement is
+  *   related to
   * @param contextAgents
-  *   [xAPI 2.0] Collection of objects each describing a relation between this statement and an
-  *   agent, optionally categorized by a list of "Relevant Type" IRIs
+  *   [xAPI 2.0] Collection of objects each describing a relation between this
+  *   statement and an agent, optionally categorized by a list of "Relevant
+  *   Type" IRIs
   * @param contextGroups
-  *   [xAPI 2.0] Collection of objects each describing a relation between this statement and a group
-  *   (identified or anonymous), optionally categorized by a list of "Relevant Type" IRIs
+  *   [xAPI 2.0] Collection of objects each describing a relation between this
+  *   statement and a group (identified or anonymous), optionally categorized by
+  *   a list of "Relevant Type" IRIs
   * @param revision
   *   The revision of the learning activity associated with this statement
   * @param platform
   *   The platform used in the experience of this learning activity
   * @param language
-  *   An RFC 5646 language tag representing the language in which the experience being recorded in
-  *   this statement (mainly) occurred in, if applicable and known
+  *   An RFC 5646 language tag representing the language in which the experience
+  *   being recorded in this statement (mainly) occurred in, if applicable and
+  *   known
   * @param statement
-  *   A reference to another statement to be considered as context for this statement
+  *   A reference to another statement to be considered as context for this
+  *   statement
   * @param extensions
   *   A map of any other domain-specific context relevant to this statement
   */
@@ -49,7 +56,8 @@ case class StatementContext(
   extensions: Option[ExtensionMap] = None
 ) extends Equivalence {
 
-  /** Generates a signature that can be used to test logical equivalence between objects
+  /** Generates a signature that can be used to test logical equivalence between
+    * objects
     *
     * @return
     *   A string identifier
@@ -74,8 +82,8 @@ case class StatementContext(
     }
   }
 
-  /** A list of agent references composed of the those identified by the instructor and team
-    * properties
+  /** A list of agent references composed of the those identified by the
+    * instructor and team properties
     *
     * @param inSubStatement
     *   Whether the reference occurs in a sub-statement
