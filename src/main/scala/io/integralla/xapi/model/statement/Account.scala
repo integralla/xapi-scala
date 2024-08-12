@@ -1,10 +1,9 @@
-package io.integralla.xapi.model.identifiers
+package io.integralla.xapi.model.statement
 
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.statement.StatementValidation
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success, Try}

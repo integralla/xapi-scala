@@ -4,7 +4,6 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import ContextGroup.contextType
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.identifiers.IRI
 import io.integralla.xapi.model.references.{AgentReference, ContextGroupRef}
 
 /** Model for xAPI 2.0 Context Group object

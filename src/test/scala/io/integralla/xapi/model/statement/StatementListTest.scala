@@ -4,7 +4,6 @@ import io.circe
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.{IRI, MBox}
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID

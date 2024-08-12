@@ -2,7 +2,6 @@ package io.integralla.xapi.model.utils
 
 import com.typesafe.scalalogging.LazyLogging
 import io.integralla.xapi.model.exceptions.ModelDecodingException
-import io.integralla.xapi.model.identifiers.{IRI, MBox}
 import io.integralla.xapi.model.statement._
 import org.scalatest.funspec.AnyFunSpec
 

@@ -1,8 +1,7 @@
-package io.integralla.xapi.model.identifiers
+package io.integralla.xapi.model.statement
 
 import io.circe.{Decoder, Encoder}
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.statement.StatementValidation
 import io.lemonlabs.uri.{UrlPath, UrlWithoutAuthority}
 
 import java.security.MessageDigest

@@ -2,7 +2,7 @@ package io.integralla.xapi.model.about
 
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.common.ExtensionMap
-import io.integralla.xapi.model.identifiers.IRI
+import io.integralla.xapi.model.statement.IRI
 import io.integralla.xapi.model.utils.LRSModel
 import org.scalatest.funspec.AnyFunSpec
 

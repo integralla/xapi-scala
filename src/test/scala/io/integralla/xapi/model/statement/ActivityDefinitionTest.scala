@@ -5,7 +5,6 @@ import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.common.ExtensionMap
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.IRI
 import org.scalatest.funspec.AnyFunSpec
 
 class ActivityDefinitionTest extends AnyFunSpec {

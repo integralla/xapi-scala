@@ -1,6 +1,6 @@
 package io.integralla.xapi.model.person
 
-import io.integralla.xapi.model.identifiers.{Account, MBox}
+import io.integralla.xapi.model.statement.{Account, MBox}
 import io.integralla.xapi.model.utils.LRSModel
 import org.scalatest.funspec.AnyFunSpec
 

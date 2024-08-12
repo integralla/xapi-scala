@@ -3,7 +3,6 @@ package io.integralla.xapi.model.statement
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import Attachment.signatureUsageType
-import io.integralla.xapi.model.identifiers.IRI
 
 /** An attachment represents a resource that is logically associated with the
   * statement

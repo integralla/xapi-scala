@@ -2,7 +2,7 @@ package io.integralla.xapi.model.person
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.identifiers.{Account, MBox}
+import io.integralla.xapi.model.statement.{Account, MBox}
 import io.integralla.xapi.model.utils.LRSModel
 
 /** xAPI Person object

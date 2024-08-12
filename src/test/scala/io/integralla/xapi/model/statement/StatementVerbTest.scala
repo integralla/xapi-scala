@@ -3,7 +3,6 @@ package io.integralla.xapi.model.statement
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.IRI
 import org.scalatest.funspec.AnyFunSpec
 
 class StatementVerbTest extends AnyFunSpec {

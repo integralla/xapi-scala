@@ -1,7 +1,6 @@
 package io.integralla.xapi.model.statement
 
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.{IRI, MBox}
 import io.integralla.xapi.model.references.{AgentReference, ContextGroupRef}
 import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec

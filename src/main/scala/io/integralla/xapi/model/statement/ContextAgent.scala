@@ -4,7 +4,6 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import ContextAgent.contextType
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.identifiers.IRI
 import io.integralla.xapi.model.references.{AgentReference, ContextAgentRef}
 
 /** Model for xAPI 2.0 Context Agent object

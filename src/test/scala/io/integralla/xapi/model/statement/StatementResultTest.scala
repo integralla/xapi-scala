@@ -6,7 +6,6 @@ import io.circe.parser._
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.common.ExtensionMap
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.IRI
 import org.scalatest.funspec.AnyFunSpec
 
 class StatementResultTest extends AnyFunSpec with StrictLogging {

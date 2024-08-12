@@ -5,7 +5,6 @@ import io.circe.syntax.EncoderOps
 import StatementObjectType.StatementObjectType
 import io.integralla.xapi.model.common.Equivalence
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.{Account, IRI, MBox}
 import io.integralla.xapi.model.references.{
   ActivityObjectRef,
   ActivityReference,

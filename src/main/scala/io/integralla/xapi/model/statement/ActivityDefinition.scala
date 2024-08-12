@@ -16,7 +16,6 @@ import InteractionType.{
   TRUE_FALSE
 }
 import io.integralla.xapi.model.common.{Equivalence, ExtensionMap}
-import io.integralla.xapi.model.identifiers.IRI
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success}

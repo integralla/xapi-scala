@@ -1,7 +1,6 @@
 package io.integralla.xapi.model.statement
 
 import io.circe.jawn.decode
-import io.integralla.xapi.model.identifiers.{IRI, MBox}
 import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec
 

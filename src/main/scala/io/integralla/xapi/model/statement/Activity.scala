@@ -4,7 +4,6 @@ import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import StatementObjectType.StatementObjectType
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.identifiers.IRI
 
 /** A statement activity
   *

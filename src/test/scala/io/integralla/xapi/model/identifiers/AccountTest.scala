@@ -3,6 +3,7 @@ package io.integralla.xapi.model.identifiers
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
+import io.integralla.xapi.model.statement.Account
 import org.scalatest.funspec.AnyFunSpec
 
 class AccountTest extends AnyFunSpec {

@@ -5,7 +5,6 @@ import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.common.XApiVersion
 import io.integralla.xapi.model.exceptions.StatementValidationException
-import io.integralla.xapi.model.identifiers.{Account, IRI, MBox}
 import io.integralla.xapi.model.references._
 import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec

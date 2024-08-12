@@ -2,7 +2,6 @@ package io.integralla.xapi.model.statement
 
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.identifiers.IRI
 import io.integralla.xapi.model.references.{ActivityReference, CategoryRef, GroupingRef, OtherRef, ParentRef}
 import org.scalatest.funspec.AnyFunSpec
 

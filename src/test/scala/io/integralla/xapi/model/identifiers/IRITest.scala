@@ -4,6 +4,7 @@ import io.circe.generic.auto._
 import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
+import io.integralla.xapi.model.statement.IRI
 import org.scalatest.funspec.AnyFunSpec
 
 class IRITest extends AnyFunSpec {

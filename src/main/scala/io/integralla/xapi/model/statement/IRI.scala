@@ -1,8 +1,7 @@
-package io.integralla.xapi.model.identifiers
+package io.integralla.xapi.model.statement
 
 import io.circe.{Decoder, Encoder, KeyDecoder, KeyEncoder}
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.statement.StatementValidation
 import io.lemonlabs.uri.{QueryString, Uri, Url}
 
 import scala.util.{Failure, Success, Try}

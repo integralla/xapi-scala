@@ -4,7 +4,6 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import StatementVerb.voidingVerb
 import io.integralla.xapi.model.common.Equivalence
-import io.integralla.xapi.model.identifiers.IRI
 
 /** A Verb defines the action between an Actor and an Activity
   *
