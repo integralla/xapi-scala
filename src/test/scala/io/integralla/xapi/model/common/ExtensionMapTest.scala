@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.StrictLogging
 import io.circe.ParsingFailure
 import io.circe.parser._
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.statement.IRI
+import io.integralla.xapi.model.{ExtensionMap, IRI}
 import org.scalatest.funspec.AnyFunSpec
 
 class ExtensionMapTest extends AnyFunSpec with StrictLogging {

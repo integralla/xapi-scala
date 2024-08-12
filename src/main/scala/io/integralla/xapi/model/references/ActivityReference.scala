@@ -1,6 +1,6 @@
 package io.integralla.xapi.model.references
 
-import io.integralla.xapi.model.statement.Activity
+import io.integralla.xapi.model.Activity
 
 /** Model for an activity reference within a statement
   *

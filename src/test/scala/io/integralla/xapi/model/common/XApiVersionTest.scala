@@ -1,5 +1,6 @@
 package io.integralla.xapi.model.common
 
+import io.integralla.xapi.model.XApiVersion
 import org.scalatest.funspec.AnyFunSpec
 
 import scala.util.Try

@@ -1,6 +1,6 @@
 package io.integralla.xapi.model.references
 
-import io.integralla.xapi.model.statement.StatementActor
+import io.integralla.xapi.model.StatementActor
 
 /** Model for an agent reference within a statement
   *

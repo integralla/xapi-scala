@@ -1,8 +1,7 @@
 package io.integralla.xapi.model.about
 
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.common.ExtensionMap
-import io.integralla.xapi.model.statement.IRI
+import io.integralla.xapi.model.{ExtensionMap, IRI}
 import org.scalatest.funspec.AnyFunSpec
 
 class AboutResourceTest extends AnyFunSpec {

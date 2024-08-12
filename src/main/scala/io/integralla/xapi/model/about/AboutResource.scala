@@ -2,7 +2,8 @@ package io.integralla.xapi.model.about
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.{Decodable, Encodable, ExtensionMap}
+import io.integralla.xapi.model.common.{Decodable, Encodable}
+import io.integralla.xapi.model.ExtensionMap
 
 /** Model for the about resource
   *
