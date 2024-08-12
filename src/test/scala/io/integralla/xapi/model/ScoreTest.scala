@@ -1,19 +1,23 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class ScoreTest extends AnyFunSpec {
 
   describe("Score") {
     describe("[validation]") {
-      it("should not throw a statement validation error if the scaled score has been normalized (-1)") {
+      it(
+        "should not throw a statement validation error if the scaled score has been normalized (-1)"
+      ) {
         Score(Some(-1.0), None, None, None)
       }
 
-      it("should not throw a statement validation error if the scaled score has been normalized (1)") {
+      it(
+        "should not throw a statement validation error if the scaled score has been normalized (1)"
+      ) {
         Score(Some(1.0), None, None, None)
       }
 
@@ -21,17 +25,27 @@ class ScoreTest extends AnyFunSpec {
         val exception = intercept[StatementValidationException] {
           Score(Some(-1.1), None, None, None)
         }
-        assert(exception.getMessage.contains("A scaled score must be a normalized value between -1 and 1, inclusive"))
+        assert(
+          exception.getMessage.contains(
+            "A scaled score must be a normalized value between -1 and 1, inclusive"
+          )
+        )
       }
 
       it("should throw a statement validation error if the scaled score is greater than 1") {
         val exception = intercept[StatementValidationException] {
           Score(Some(1.1), None, None, None)
         }
-        assert(exception.getMessage.contains("A scaled score must be a normalized value between -1 and 1, inclusive"))
+        assert(
+          exception.getMessage.contains(
+            "A scaled score must be a normalized value between -1 and 1, inclusive"
+          )
+        )
       }
 
-      it("should throw a statement validation error if the raw score is less than the defined min score") {
+      it(
+        "should throw a statement validation error if the raw score is less than the defined min score"
+      ) {
         val exception = intercept[StatementValidationException] {
           Score(None, Some(-0.1), Some(0.0), Some(1.0))
         }
@@ -42,7 +56,9 @@ class ScoreTest extends AnyFunSpec {
         )
       }
 
-      it("should throw a statement validation error if the raw score is greater than the defined max score") {
+      it(
+        "should throw a statement validation error if the raw score is greater than the defined max score"
+      ) {
         val exception = intercept[StatementValidationException] {
           Score(None, Some(100.0), Some(0.0), Some(1.0))
         }
@@ -70,14 +86,14 @@ class ScoreTest extends AnyFunSpec {
     describe("[encoding]") {
       it("should successfully encode a score") {
         val score: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
-        val actual: String = score.asJson.noSpaces
+        val actual: String = score.toJson()
         val expected: String = """{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0}"""
         assert(actual === expected)
       }
 
       it("should successfully encode a score in which some values are not set") {
         val score: Score = Score(Some(0.5), Some(5.0), None, None)
-        val actual: String = score.asJson.noSpaces
+        val actual: String = score.toJson()
         val expected: String = """{"scaled":0.5,"raw":5.0}"""
         assert(actual === expected)
       }
@@ -86,22 +102,20 @@ class ScoreTest extends AnyFunSpec {
     describe("[decoding]") {
       it("should successfully decode a score") {
         val data: String = """{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0}"""
-        val decoded: Either[io.circe.Error, Score] = decode[Score](data)
+        val decoded: Try[Score] = Score(data)
         val expected: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a score in which some values are not set") {
         val data: String = """{"scaled":0.5,"raw":5.0}"""
-        val decoded: Either[io.circe.Error, Score] = decode[Score](data)
+        val decoded: Try[Score] = Score(data)
         val expected: Score = Score(Some(0.5), Some(5.0), None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
     }
 

@@ -1,8 +1,6 @@
 package io.integralla.xapi.model
 
 import com.typesafe.scalalogging.StrictLogging
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references._
 import io.integralla.xapi.model.utils.LRSModelUtils
@@ -11,58 +9,45 @@ import org.scalatest.funspec.AnyFunSpec
 import java.time.{OffsetDateTime, ZoneId}
 import java.util.UUID
 import scala.io.Source
-import scala.util.Using
+import scala.util.{Try, Using}
 
 class StatementTest extends AnyFunSpec with StrictLogging {
 
   val basicStatement: Statement = Statement(
-    Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-    StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
-    StatementObject(
-      Activity(None, IRI("http://example.adlnet.gov/xapi/example/activity"), None)
+    id = Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
+    actor = Agent(
+      objectType = Some(StatementObjectType.Agent),
+      mbox = Some(MBox("mailto:xapi@adlnet.gov"))
     ),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    verb = StatementVerb(
+      id = IRI("http://adlnet.gov/expapi/verbs/created"),
+      display = Some(LanguageMap(Map("en-US" -> "created")))
+    ),
+    `object` = StatementObject(
+      Activity(None, IRI("http://example.adlnet.gov/xapi/example/activity"), None)
+    )
   )
 
   val sampleAgentActor: StatementActor = new Agent(
-    Some(StatementObjectType.Agent),
-    Some("John Doe"),
-    Some(MBox("mailto:john.doe@example.com")),
-    None,
-    None,
-    None
+    objectType = Some(StatementObjectType.Agent),
+    name = Some("John Doe"),
+    mbox = Some(MBox("mailto:john.doe@example.com"))
   )
   val sampleGroupActor: StatementActor = new Group(
-    StatementObjectType.Group,
-    Some("Team A"),
-    Some(MBox("mailto:team.a@example.com")),
-    None,
-    None,
-    None,
-    Some(
+    objectType = StatementObjectType.Group,
+    name = Some("Team A"),
+    mbox = Some(MBox("mailto:team.a@example.com")),
+    member = Some(
       List(
         new Agent(
           Some(StatementObjectType.Agent),
           Some("John Doe"),
-          Some(MBox("mailto:john.doe@example.com")),
-          None,
-          None,
-          None
+          Some(MBox("mailto:john.doe@example.com"))
         ),
         new Agent(
           Some(StatementObjectType.Agent),
           Some("Richard Roe"),
-          Some(MBox("mailto:richard.roe@example.com")),
-          None,
-          None,
-          None
+          Some(MBox("mailto:richard.roe@example.com"))
         )
       )
     )
@@ -81,17 +66,7 @@ class StatementTest extends AnyFunSpec with StrictLogging {
       Some(
         ActivityDefinition(
           Some(LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))),
-          Some(LanguageMap(Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI"))),
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          Some(LanguageMap(Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")))
         )
       )
     )
@@ -114,14 +89,12 @@ class StatementTest extends AnyFunSpec with StrictLogging {
               InteractionComponent("golf", Some(LanguageMap(Map("en-US" -> "Golf Example")))),
               InteractionComponent("facebook", Some(LanguageMap(Map("en-US" -> "Facebook App")))),
               InteractionComponent("tetris", Some(LanguageMap(Map("en-US" -> "Tetris Example")))),
-              InteractionComponent("scrabble", Some(LanguageMap(Map("en-US" -> "Scrabble Example"))))
+              InteractionComponent(
+                "scrabble",
+                Some(LanguageMap(Map("en-US" -> "Scrabble Example")))
+              )
             )
-          ),
-          None,
-          None,
-          None,
-          None,
-          None
+          )
         )
       )
     )
@@ -129,40 +102,28 @@ class StatementTest extends AnyFunSpec with StrictLogging {
 
   val sampleAgentObject: StatementObject = StatementObject(
     Agent(
-      Some(StatementObjectType.Agent),
-      Some("Andrew Downes"),
-      Some(MBox("mailto:andrew@example.co.uk")),
-      None,
-      None,
-      None
+      objectType = Some(StatementObjectType.Agent),
+      name = Some("Andrew Downes"),
+      mbox = Some(MBox("mailto:andrew@example.co.uk"))
     )
   )
 
   val sampleGroupObject: StatementObject = StatementObject(
     Group(
-      StatementObjectType.Group,
-      Some("Example Group"),
-      None,
-      None,
-      None,
-      Some(Account("http://example.com/homePage", "GroupAccount")),
-      Some(
+      objectType = StatementObjectType.Group,
+      name = Some("Example Group"),
+      account = Some(Account("http://example.com/homePage", "GroupAccount")),
+      member = Some(
         List(
           Agent(
-            Some(StatementObjectType.Agent),
-            Some("Andrew Downes"),
-            Some(MBox("mailto:andrew@example.co.uk")),
-            None,
-            None,
-            None
+            objectType = Some(StatementObjectType.Agent),
+            name = Some("Andrew Downes"),
+            mbox = Some(MBox("mailto:andrew@example.co.uk"))
           ),
           Agent(
-            Some(StatementObjectType.Agent),
-            Some("Aaron Silvers"),
-            None,
-            None,
-            Some("http://aaron.openid.example.org"),
-            None
+            objectType = Some(StatementObjectType.Agent),
+            name = Some("Aaron Silvers"),
+            openid = Some("http://aaron.openid.example.org")
           )
         )
       )
@@ -170,40 +131,34 @@ class StatementTest extends AnyFunSpec with StrictLogging {
   )
 
   val sampleStatementRef: StatementRef =
-    StatementRef(StatementObjectType.StatementRef, UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f"))
+    StatementRef(
+      StatementObjectType.StatementRef,
+      UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f")
+    )
   val sampleStatementRefObject: StatementObject = StatementObject(sampleStatementRef)
 
   val sampleSubStatementObject: StatementObject = StatementObject(
     SubStatement(
       StatementObjectType.SubStatement,
-      Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-      StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
+      Agent(
+        objectType = Some(StatementObjectType.Agent),
+        mbox = Some(MBox("mailto:test@example.com"))
+      ),
+      StatementVerb(
+        IRI("http://example.com/visited"),
+        Some(LanguageMap(Map("en-US" -> "will visit")))
+      ),
       StatementObject(
         Activity(
           Some(StatementObjectType.Activity),
           IRI("http://example.com/website"),
           Some(
             ActivityDefinition(
-              Some(LanguageMap(Map("en-US" -> "Some Awesome Website"))),
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None
+              Some(LanguageMap(Map("en-US" -> "Some Awesome Website")))
             )
           )
         )
-      ),
-      None,
-      None,
-      None,
-      None
+      )
     )
   )
 
@@ -217,24 +172,18 @@ class StatementTest extends AnyFunSpec with StrictLogging {
   )
 
   val sampleContext: StatementContext = StatementContext(
-    None,
-    None,
-    None,
-    Some(
+    contextActivities = Some(
       ContextActivities(
         Some(
-          List(Activity(Some(StatementObjectType.Activity), IRI("http://www.example.com/meetings/series/267"), None))
-        ),
-        None,
-        None,
-        None
+          List(
+            Activity(
+              Some(StatementObjectType.Activity),
+              IRI("http://www.example.com/meetings/series/267")
+            )
+          )
+        )
       )
-    ),
-    None,
-    None,
-    None,
-    None,
-    None
+    )
   )
 
   val sampleOffsetDateTime: OffsetDateTime = OffsetDateTime.parse("2021-09-17T10:48:38-04:00")
@@ -260,144 +209,128 @@ class StatementTest extends AnyFunSpec with StrictLogging {
   describe("Statement") {
     describe("[encoding]") {
       it("should encode a simple statement") {
-        val actual: String = basicStatement.asJson.spaces2
+        val actual: String = basicStatement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-simplest.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the actor is an agent") {
         val statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
-        val actual = statement.asJson.spaces2
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleActivityObject
+          )
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-actor-is-agent.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the actor is an group") {
         val statement =
-          Statement(None, sampleGroupActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
-        val actual = statement.asJson.spaces2
+          Statement(
+            actor = sampleGroupActor,
+            verb = sampleVerb,
+            `object` = sampleActivityObject
+          )
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-actor-is-group.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the object is an activity") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleInteractionActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleInteractionActivityObject
         )
-        val actual = statement.asJson.spaces2
-        val expected: String = getStatementResource("data/sample-statement-object-is-choice-activity.json")
+        val actual = statement.toJson(spaces = true)
+        val expected: String =
+          getStatementResource("data/sample-statement-object-is-choice-activity.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the object is an agent") {
         val statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
-        val actual = statement.asJson.spaces2
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleAgentObject
+          )
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-object-is-agent.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the object is a group") {
         val statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleGroupObject, None, None, None, None, None, None, None)
-        val actual = statement.asJson.spaces2
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleGroupObject
+          )
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-object-is-group.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the object is a statement reference") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleStatementRefObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleStatementRefObject
         )
-        val actual = statement.asJson.spaces2
-        val expected: String = getStatementResource("data/sample-statement-object-is-statement-ref.json")
+        val actual = statement.toJson(spaces = true)
+        val expected: String =
+          getStatementResource("data/sample-statement-object-is-statement-ref.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement where the object is a sub-statement") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleSubStatementObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleSubStatementObject
         )
-        val actual = statement.asJson.spaces2
-        val expected: String = getStatementResource("data/sample-statement-object-is-sub-statement.json")
+        val actual = statement.toJson(spaces = true)
+        val expected: String =
+          getStatementResource("data/sample-statement-object-is-sub-statement.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement with a result object") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          Some(sampleResult),
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          result = Some(sampleResult)
         )
-        val actual = statement.asJson.spaces2
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-with-result.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement with a context object") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          Some(sampleContext),
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          context = Some(sampleContext)
         )
-        val actual = statement.asJson.spaces2
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-with-context.json")
         assert(actual === expected)
       }
 
-      it("should successfully encode a statement with a timestamp property, preserving millisecond precision") {
+      it(
+        "should successfully encode a statement with a timestamp property, preserving millisecond precision"
+      ) {
         val timestamp: String = "2023-08-21T16:55:59.000Z"
         val statement: Statement = Statement(
           actor = Agent(mbox = Some(MBox("mailto:lorum.ipsum@integralla.io"))),
           verb = StatementVerb(IRI("https://lrs.integralla.io/xapi/verbs/test")),
-          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
+          `object` =
+            StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
           timestamp = Some(OffsetDateTime.parse(timestamp))
         )
 
@@ -415,7 +348,7 @@ class StatementTest extends AnyFunSpec with StrictLogging {
             |  "timestamp" : "2023-08-21T16:55:59.000000000Z"
             |}""".stripMargin
 
-        val encoded: String = statement.asJson.spaces2
+        val encoded: String = statement.toJson(spaces = true)
         assert(encoded === expected)
       }
 
@@ -424,7 +357,8 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         val statement: Statement = Statement(
           actor = Agent(mbox = Some(MBox("mailto:lorum.ipsum@integralla.io"))),
           verb = StatementVerb(IRI("https://lrs.integralla.io/xapi/verbs/test")),
-          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
+          `object` =
+            StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/activity/test"))),
           stored = Some(OffsetDateTime.parse(timestamp))
         )
 
@@ -442,63 +376,42 @@ class StatementTest extends AnyFunSpec with StrictLogging {
             |  "stored" : "2023-08-21T16:55:59.000000000Z"
             |}""".stripMargin
 
-        val encoded: String = statement.asJson.spaces2
+        val encoded: String = statement.toJson(spaces = true)
         assert(encoded === expected)
       }
 
       it("should successfully encode a statement with an authority property") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          Some(sampleAgentActor),
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          authority = Some(sampleAgentActor)
         )
-        val actual = statement.asJson.spaces2
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-with-authority.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement with a version property") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          Some(XApiVersion(1, 0, Some(0))),
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          version = Some(XApiVersion(1, 0, Some(0)))
         )
-        val actual = statement.asJson.spaces2
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-with-version.json")
         assert(actual === expected)
       }
 
       it("should successfully encode a statement with an attachments property") {
         val statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          Some(List(sampleAttachment))
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          attachments = Some(List(sampleAttachment))
         )
-        val actual = statement.asJson.spaces2
+        val actual = statement.toJson(spaces = true)
         val expected: String = getStatementResource("data/sample-statement-with-attachments.json")
         assert(actual === expected)
       }
@@ -507,323 +420,256 @@ class StatementTest extends AnyFunSpec with StrictLogging {
     describe("[decoding]") {
       it("should successfully decode a simple statement") {
         val data: String = getStatementResource("data/sample-statement-simplest.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
-        decoded match {
-          case Right(actual) => assert(actual === basicStatement)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[Statement] = Statement(data)
+        assert(decoded.isSuccess)
+        assert(decoded.get === basicStatement)
       }
 
       it("should successfully decode a statement where the actor is an agent") {
         val data: String = getStatementResource("data/sample-statement-actor-is-agent.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleActivityObject
+          )
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the actor is an group") {
         val data: String = getStatementResource("data/sample-statement-actor-is-group.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement =
-          Statement(None, sampleGroupActor, sampleVerb, sampleActivityObject, None, None, None, None, None, None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+          Statement(
+            actor = sampleGroupActor,
+            verb = sampleVerb,
+            `object` = sampleActivityObject
+          )
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the object is an activity object") {
-        val data: String = getStatementResource("data/sample-statement-object-is-choice-activity.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val data: String =
+          getStatementResource("data/sample-statement-object-is-choice-activity.json")
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleInteractionActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleInteractionActivityObject
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the object is an agent") {
         val data: String = getStatementResource("data/sample-statement-object-is-agent.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleAgentObject
+          )
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the object is a group") {
         val data: String = getStatementResource("data/sample-statement-object-is-group.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleGroupObject, None, None, None, None, None, None, None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleGroupObject
+          )
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the object is a statement reference") {
-        val data: String = getStatementResource("data/sample-statement-object-is-statement-ref.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val data: String =
+          getStatementResource("data/sample-statement-object-is-statement-ref.json")
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleStatementRefObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleStatementRefObject
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement where the object is a sub-statement") {
-        val data: String = getStatementResource("data/sample-statement-object-is-sub-statement.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val data: String =
+          getStatementResource("data/sample-statement-object-is-sub-statement.json")
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleSubStatementObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleSubStatementObject
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with a result object") {
         val data: String = getStatementResource("data/sample-statement-with-result.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          Some(sampleResult),
-          None,
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          result = Some(sampleResult)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with a context object") {
         val data: String = getStatementResource("data/sample-statement-with-context.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          Some(sampleContext),
-          None,
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          context = Some(sampleContext)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with a timestamp property") {
         val data: String = getStatementResource("data/sample-statement-with-timestamp.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          Some(sampleOffsetDateTime),
-          None,
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          timestamp = Some(sampleOffsetDateTime)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with a stored property") {
         val data: String = getStatementResource("data/sample-statement-with-stored.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          Some(sampleOffsetDateTime),
-          Some(sampleOffsetDateTime),
-          None,
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          timestamp = Some(sampleOffsetDateTime),
+          stored = Some(sampleOffsetDateTime)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with an authority property") {
         val data: String = getStatementResource("data/sample-statement-with-authority.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          Some(sampleAgentActor),
-          None,
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          authority = Some(sampleAgentActor)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with a version property") {
         val data: String = getStatementResource("data/sample-statement-with-version.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          Some(XApiVersion(1, 0, Some(0))),
-          None
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          version = Some(XApiVersion(1, 0, Some(0)))
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a statement with an attachments property") {
         val data: String = getStatementResource("data/sample-statement-with-attachments.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
+        val decoded: Try[Statement] = Statement(data)
         val expected: Statement = Statement(
-          None,
-          sampleAgentActor,
-          sampleVerb,
-          sampleActivityObject,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          Some(List(sampleAttachment))
+          actor = sampleAgentActor,
+          verb = sampleVerb,
+          `object` = sampleActivityObject,
+          attachments = Some(List(sampleAttachment))
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
-      it("should successfully decode a complex statement that showcases most statement properties") {
+      it(
+        "should successfully decode a complex statement that showcases most statement properties"
+      ) {
         val data: String = getStatementResource("data/sample-statement-property-showcase.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
-        decoded match {
-          case Right(actual) =>
-            logger.info(s"DECODED: $actual")
-            logger.info(s"RE-ENCODED: ${actual.asJson}")
-            assert(actual.id === Some(UUID.fromString("6690e6c9-3ef0-4ed3-8b37-7f3964730bee")))
-            actual.actor match {
-              case group: Group => assert(group.member.isDefined)
-              case _            => ()
-            }
-            assert(actual.result.isDefined)
-            assert(actual.context.isDefined)
-            assert(actual.context.get.contextActivities.isDefined)
-            assert(actual.stored.isDefined)
-            assert(actual.authority.isDefined)
-            assert(actual.version.isDefined)
-            assert(actual.`object`.value.isInstanceOf[Activity])
-          case Left(err) => throw new Error(s"Decoding failed: $err")
+        val decoded: Try[Statement] = Statement(data)
+        assert(decoded.isSuccess)
+
+        val actual: Statement = decoded.get
+        assert(actual.id === Some(UUID.fromString("6690e6c9-3ef0-4ed3-8b37-7f3964730bee")))
+        actual.actor match {
+          case group: Group => assert(group.member.isDefined)
+          case _            => ()
         }
+        assert(actual.result.isDefined)
+        assert(actual.context.isDefined)
+        assert(actual.context.get.contextActivities.isDefined)
+        assert(actual.stored.isDefined)
+        assert(actual.authority.isDefined)
+        assert(actual.version.isDefined)
+        assert(actual.`object`.value.isInstanceOf[Activity])
       }
 
       it("should successfully decode a statement following the cmi5 Community of Practice") {
         val data: String = getStatementResource("data/sample-statement-cmi5-example.json")
-        val decoded: Either[io.circe.Error, Statement] = decode[Statement](data)
-        decoded match {
-          case Right(actual) =>
-            assert(actual.id === Some(UUID.fromString("2a41c918-b88b-4220-20a5-a4c32391a240")))
-            assert(actual.result.isDefined)
-            assert(actual.context.isDefined)
-            assert(actual.context.get.contextActivities.isDefined)
-            assert(actual.context.get.extensions.isDefined)
-            assert(actual.timestamp === Some(OffsetDateTime.parse("2012-06-01T19:09:13.245+00:00")))
-          case Left(err) => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[Statement] = Statement(data)
+
+        assert(decoded.isSuccess)
+
+        val actual: Statement = decoded.get
+        assert(actual.id === Some(UUID.fromString("2a41c918-b88b-4220-20a5-a4c32391a240")))
+        assert(actual.result.isDefined)
+        assert(actual.context.isDefined)
+        assert(actual.context.get.contextActivities.isDefined)
+        assert(actual.context.get.extensions.isDefined)
+        assert(actual.timestamp === Some(OffsetDateTime.parse("2012-06-01T19:09:13.245+00:00")))
       }
     }
 
     describe("[validation]") {
-      it("should throw a validation error if a statement includes more than one signature attachment") {
+      it(
+        "should throw a validation error if a statement includes more than one signature attachment"
+      ) {
         val exception = intercept[StatementValidationException] {
           Statement(
             actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
             verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            `object` =
+              StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
             attachments = Some(
               List(
                 Attachment(
@@ -846,14 +692,17 @@ class StatementTest extends AnyFunSpec with StrictLogging {
             )
           )
         }
-        assert(exception.getMessage.contains("A signed statement can only have on signature attachment"))
+        assert(
+          exception.getMessage.contains("A signed statement can only have one signature attachment")
+        )
       }
       it("should throw a validation error if the authority is an identified group") {
         val exception = intercept[StatementValidationException] {
           Statement(
             actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
             verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            `object` =
+              StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
             authority = Some(
               Group(
                 objectType = StatementObjectType.Group,
@@ -869,33 +718,43 @@ class StatementTest extends AnyFunSpec with StrictLogging {
           Statement(
             actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
             verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            `object` =
+              StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
             authority = Some(
               Group(
                 objectType = StatementObjectType.Group,
                 member = Some(
                   List(
-                    Agent(account = Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER")))
+                    Agent(account =
+                      Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER"))
+                    )
                   )
                 )
               )
             )
           )
         }
-        assert(exception.getMessage.contains("An authority represented as a group must have exactly two members"))
+        assert(
+          exception.getMessage.contains(
+            "An authority represented as a group must have exactly two members"
+          )
+        )
       }
       it("should throw a validation error if the authority is a group with more then two members") {
         val exception = intercept[StatementValidationException] {
           Statement(
             actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
             verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            `object` =
+              StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
             authority = Some(
               Group(
                 objectType = StatementObjectType.Group,
                 member = Some(
                   List(
-                    Agent(account = Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER"))),
+                    Agent(account =
+                      Some(Account("https://lrs.integralla.io/xapi/identity", "OAUTH_CONSUMER"))
+                    ),
                     Agent(mbox = Some(MBox("mailto:test.1@integralla.io"))),
                     Agent(mbox = Some(MBox("mailto:test.2@integralla.io")))
                   )
@@ -904,14 +763,21 @@ class StatementTest extends AnyFunSpec with StrictLogging {
             )
           )
         }
-        assert(exception.getMessage.contains("An authority represented as a group must have exactly two members"))
+        assert(
+          exception.getMessage.contains(
+            "An authority represented as a group must have exactly two members"
+          )
+        )
       }
-      it("should throw a validation error if the authority is a group where no members are represented by an account") {
+      it(
+        "should throw a validation error if the authority is a group where no members are represented by an account"
+      ) {
         val exception = intercept[StatementValidationException] {
           Statement(
             actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
             verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-            `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+            `object` =
+              StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
             authority = Some(
               Group(
                 objectType = StatementObjectType.Group,
@@ -952,19 +818,22 @@ class StatementTest extends AnyFunSpec with StrictLogging {
       ) {
         val exception = intercept[StatementValidationException] {
           Statement(
-            Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
-            Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
-            StatementObject(
-              StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
+            id = Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
+            actor = Agent(
+              objectType = Some(StatementObjectType.Agent),
+              mbox = Some(MBox("mailto:xapi@adlnet.gov"))
             ),
-            None,
-            Some(StatementContext(revision = Some("1.0.0"))),
-            None,
-            None,
-            None,
-            None,
-            None
+            verb = StatementVerb(
+              IRI("http://adlnet.gov/expapi/verbs/created"),
+              Some(LanguageMap(Map("en-US" -> "created")))
+            ),
+            `object` = StatementObject(
+              StatementRef(
+                StatementObjectType.StatementRef,
+                UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
+              )
+            ),
+            context = Some(StatementContext(revision = Some("1.0.0")))
           )
         }
         assert(
@@ -979,19 +848,22 @@ class StatementTest extends AnyFunSpec with StrictLogging {
       ) {
         val exception = intercept[StatementValidationException] {
           Statement(
-            Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
-            Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-            StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
-            StatementObject(
-              StatementRef(StatementObjectType.StatementRef, UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2"))
+            id = Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
+            actor = Agent(
+              objectType = Some(StatementObjectType.Agent),
+              mbox = Some(MBox("mailto:xapi@adlnet.gov"))
             ),
-            None,
-            Some(StatementContext(platform = Some("lrp"))),
-            None,
-            None,
-            None,
-            None,
-            None
+            verb = StatementVerb(
+              IRI("http://adlnet.gov/expapi/verbs/created"),
+              Some(LanguageMap(Map("en-US" -> "created")))
+            ),
+            `object` = StatementObject(
+              StatementRef(
+                StatementObjectType.StatementRef,
+                UUID.fromString("7cf5941a-9631-4741-83eb-28beb8ff28e2")
+              )
+            ),
+            context = Some(StatementContext(platform = Some("lrp")))
           )
         }
         assert(
@@ -1020,7 +892,16 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         val left: Statement = getStatementFromResource("data/sample-statement-simplest.json")
         val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
           .copy(authority =
-            Some(Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None))
+            Some(
+              Agent(
+                Some(StatementObjectType.Agent),
+                None,
+                Some(MBox("mailto:xapi@adlnet.gov")),
+                None,
+                None,
+                None
+              )
+            )
           )
         assert(left.isEquivalentTo(right))
       }
@@ -1047,9 +928,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
       }
 
       it("should return true if both statements are equivalent, excepting attachments") {
-        val left: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
-          .copy(attachments = None)
+        val left: Statement =
+          getStatementFromResource("data/sample-statement-with-attachments.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-with-attachments.json")
+            .copy(attachments = None)
         assert(left.isEquivalentTo(right))
       }
 
@@ -1058,12 +941,8 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         val right: Statement = getStatementFromResource("data/sample-statement-simplest.json")
           .copy(actor =
             Agent(
-              Some(StatementObjectType.Agent),
-              None,
-              Some(MBox("mailto:populus.tremuloides@integralla.io")),
-              None,
-              None,
-              None
+              objectType = Some(StatementObjectType.Agent),
+              mbox = Some(MBox("mailto:populus.tremuloides@integralla.io"))
             )
           )
         assert(left.isEquivalentTo(right) === false)
@@ -1083,31 +962,39 @@ class StatementTest extends AnyFunSpec with StrictLogging {
 
       it("should return true if both statements are equivalent (object is agent)") {
         val left: Statement = getStatementFromResource("data/sample-statement-object-is-agent.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-object-is-agent.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-object-is-agent.json")
         assert(left.isEquivalentTo(right))
       }
 
       it("should return true if both statements are equivalent (object is group)") {
         val left: Statement = getStatementFromResource("data/sample-statement-object-is-group.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-object-is-group.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-object-is-group.json")
         assert(left.isEquivalentTo(right))
       }
 
       it("should return true if both statements are equivalent (object is statement reference)") {
-        val left: Statement = getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
+        val left: Statement =
+          getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-object-is-statement-ref.json")
         assert(left.isEquivalentTo(right))
       }
 
       it("should return true if both statements are equivalent (object is sub-statement)") {
-        val left: Statement = getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
+        val left: Statement =
+          getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-object-is-sub-statement.json")
         assert(left.isEquivalentTo(right))
       }
 
       it("should return true if both statements are equivalent (with attachments)") {
-        val left: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-with-attachments.json")
+        val left: Statement =
+          getStatementFromResource("data/sample-statement-with-attachments.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-with-attachments.json")
         assert(left.isEquivalentTo(right))
       }
 
@@ -1118,8 +1005,10 @@ class StatementTest extends AnyFunSpec with StrictLogging {
       }
 
       it("should return true if both statements are equivalent (property showcase example)") {
-        val left: Statement = getStatementFromResource("data/sample-statement-property-showcase.json")
-        val right: Statement = getStatementFromResource("data/sample-statement-property-showcase.json")
+        val left: Statement =
+          getStatementFromResource("data/sample-statement-property-showcase.json")
+        val right: Statement =
+          getStatementFromResource("data/sample-statement-property-showcase.json")
         assert(left.isEquivalentTo(right))
       }
     }
@@ -1133,7 +1022,9 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         assert(references.head.inSubStatement === false)
       }
 
-      it("should return a list that includes context activities if context activities are defined") {
+      it(
+        "should return a list that includes context activities if context activities are defined"
+      ) {
         val statement: Statement = basicStatement.copy(
           context = Some(sampleContext)
         )
@@ -1146,7 +1037,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         "should return an empty list if the statement object is not an activity, and no context activities are defined"
       ) {
         val statement =
-          Statement(None, sampleAgentActor, sampleVerb, sampleAgentObject, None, None, None, None, None, None, None)
+          Statement(
+            actor = sampleAgentActor,
+            verb = sampleVerb,
+            `object` = sampleAgentObject
+          )
         val references: List[ActivityReference] = statement.activityReferences
         assert(references.isEmpty)
       }
@@ -1162,7 +1057,10 @@ class StatementTest extends AnyFunSpec with StrictLogging {
             Some("Populus Tremuloides"),
             Some(MBox("mailto:populus.tremuloides@integralla.io"))
           ),
-          verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
+          verb = StatementVerb(
+            IRI("https://lrs.integralla.io/met"),
+            Some(LanguageMap(Map("en-US" -> "met")))
+          ),
           `object` = StatementObject(
             Agent(
               Some(StatementObjectType.Agent),
@@ -1194,15 +1092,18 @@ class StatementTest extends AnyFunSpec with StrictLogging {
 
         assert(references.map(_.inSubStatement).forall(_ === false))
 
-        val statementActor = references.find(_.agent.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
+        val statementActor =
+          references.find(_.agent.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
         assert(statementActor.referenceType === ActorRef)
         assert(statementActor.asGroupMember === false)
 
-        val statementObject = references.find(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io").get
+        val statementObject =
+          references.find(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io").get
         assert(statementObject.referenceType === AgentObjectRef)
         assert(statementObject.asGroupMember === false)
 
-        val instructor = references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
+        val instructor =
+          references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
         assert(instructor.referenceType === InstructorRef)
         assert(instructor.asGroupMember === false)
 
@@ -1242,7 +1143,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
               ),
               verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
               `object` = StatementObject(
-                Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+                Activity(
+                  Some(StatementObjectType.Activity),
+                  IRI("https://lrs.integralla.io/activity/test"),
+                  None
+                )
               ),
               result = None,
               context = None,
@@ -1252,7 +1157,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
                   Attachment(
                     IRI("https://example.com/attachment-usage/test"),
                     LanguageMap(Map("en-US" -> "Test Attachment", "it" -> "Allegato al test")),
-                    Some(LanguageMap(Map("en-US" -> "A test attachment", "it" -> "Un allegato al test"))),
+                    Some(
+                      LanguageMap(
+                        Map("en-US" -> "A test attachment", "it" -> "Un allegato al test")
+                      )
+                    ),
                     "text/plain; charset=ascii",
                     27,
                     "495395e777cd98da653df9615d09c0fd6bb2f8d4788394cd53c56a3bfdcd848a",
@@ -1284,10 +1193,22 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         )
         val attachments: List[Attachment] = statement.getAttachments
         assert(attachments.length === 2)
-        assert(attachments.map(_.sha2).contains("495395e777cd98da653df9615d09c0fd6bb2f8d4788394cd53c56a3bfdcd848a"))
-        assert(attachments.map(_.sha2).contains("672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"))
+        assert(
+          attachments
+            .map(_.sha2).contains(
+              "495395e777cd98da653df9615d09c0fd6bb2f8d4788394cd53c56a3bfdcd848a"
+            )
+        )
+        assert(
+          attachments
+            .map(_.sha2).contains(
+              "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
+            )
+        )
       }
-      it("should return an empty list if neither the statement, nor a sub-object, defines any attachments") {
+      it(
+        "should return an empty list if neither the statement, nor a sub-object, defines any attachments"
+      ) {
         val statement: Statement = Statement(
           id = Some(UUID.randomUUID()),
           actor = Agent(
@@ -1300,7 +1221,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
           ),
           verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
           `object` = StatementObject(
-            Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+            Activity(
+              Some(StatementObjectType.Activity),
+              IRI("https://lrs.integralla.io/activity/test"),
+              None
+            )
           ),
           result = None,
           context = None,
@@ -1327,7 +1252,8 @@ class StatementTest extends AnyFunSpec with StrictLogging {
           None
         ),
         verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/voided"), None),
-        `object` = StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
+        `object` =
+          StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
         result = None,
         context = None,
         timestamp = None,
@@ -1355,7 +1281,8 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         val statement: Statement = Statement(
           actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
           verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
+          `object` =
+            StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test"))),
           attachments = Some(
             List(
               Attachment(
@@ -1376,7 +1303,8 @@ class StatementTest extends AnyFunSpec with StrictLogging {
         val statement: Statement = Statement(
           actor = Agent(mbox = Some(MBox("mailto:test@integralla.io"))),
           verb = StatementVerb(id = IRI("https://lrs.integralla.io/xapi/verbs/test")),
-          `object` = StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test")))
+          `object` =
+            StatementObject(Activity(id = IRI("https://lrs.integralla.io/xapi/verbs/test")))
         )
         val signature: Option[Attachment] = statement.signatureAttachment
         assert(signature.isEmpty)
@@ -1390,13 +1318,11 @@ class StatementTest extends AnyFunSpec with StrictLogging {
           actor = Agent(
             Some(StatementObjectType.Agent),
             Some("Populus Tremuloides"),
-            Some(MBox("mailto:populus.tremuloides@integralla.io")),
-            None,
-            None,
-            None
+            Some(MBox("mailto:populus.tremuloides@integralla.io"))
           ),
           verb = StatementVerb(IRI("http://adlnet.gov/expapi/verbs/voided"), None),
-          `object` = StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
+          `object` =
+            StatementObject(StatementRef(StatementObjectType.StatementRef, UUID.randomUUID())),
           result = None,
           context = None,
           timestamp = None,

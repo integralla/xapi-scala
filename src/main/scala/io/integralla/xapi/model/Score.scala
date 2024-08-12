@@ -2,7 +2,7 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 /** A score represents the outcome of a graded Activity achieved by an Agent
   *
@@ -25,7 +25,7 @@ case class Score(
   raw: Option[Double] = None,
   min: Option[Double] = None,
   max: Option[Double] = None
-) extends StatementValidation with Equivalence {
+) extends Encodable[Score] with Equivalence with StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateScaled,
@@ -119,7 +119,7 @@ case class Score(
   }
 }
 
-object Score {
+object Score extends Decodable[Score] {
   implicit val decoder: Decoder[Score] = deriveDecoder[Score]
   implicit val encoder: Encoder[Score] = deriveEncoder[Score].mapJson(_.dropNullValues)
 }

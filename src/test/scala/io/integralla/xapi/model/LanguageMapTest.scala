@@ -1,11 +1,10 @@
 package io.integralla.xapi.model
 
-import io.circe.parser.decode
-import io.circe.syntax.EncoderOps
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.Locale
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 class LanguageMapTest extends AnyFunSpec {
   describe("LanguageMap") {
@@ -20,24 +19,26 @@ class LanguageMapTest extends AnyFunSpec {
           )
         )
 
-        val encoded: String = languageMap.asJson.noSpacesSortKeys
-        assert(encoded === """{"en":"Hello, World!","es":"¡Hola Mundo!","hi":"हैलो वर्ल्ड!","it":"Ciao mondo!"}""")
+        val encoded: String = languageMap.toJson()
+        assert(
+          encoded === """{"en":"Hello, World!","es":"¡Hola Mundo!","it":"Ciao mondo!","hi":"हैलो वर्ल्ड!"}"""
+        )
       }
     }
 
     describe("[decoding]") {
       it("should decode a language map") {
-        val raw: String = """{"en":"Hello, World!","es":"¡Hola Mundo!","hi":"हैलो वर्ल्ड!","it":"Ciao mondo!"}"""
-        val decoded: Either[io.circe.Error, LanguageMap] = decode[LanguageMap](raw)
-        decoded match {
-          case Right(actual) =>
-            assert(actual.value.size === 4)
-            assert(actual.value("en") === "Hello, World!")
-            assert(actual.value("es") === "¡Hola Mundo!")
-            assert(actual.value("it") === "Ciao mondo!")
-            assert(actual.value("hi") === "हैलो वर्ल्ड!")
-          case Left(err) => throw err
-        }
+        val raw: String =
+          """{"en":"Hello, World!","es":"¡Hola Mundo!","hi":"हैलो वर्ल्ड!","it":"Ciao mondo!"}"""
+        val decoded: Try[LanguageMap] = LanguageMap(raw)
+        assert(decoded.isSuccess)
+
+        val actual: LanguageMap = decoded.get
+        assert(actual.value.size === 4)
+        assert(actual.value("en") === "Hello, World!")
+        assert(actual.value("es") === "¡Hola Mundo!")
+        assert(actual.value("it") === "Ciao mondo!")
+        assert(actual.value("hi") === "हैलो वर्ल्ड!")
       }
     }
 
@@ -138,7 +139,8 @@ class LanguageMapTest extends AnyFunSpec {
 
     describe("preferred") {
       it("should return a single, preferred entry from the language map (single range)") {
-        val priorityList: List[Locale.LanguageRange] = Locale.LanguageRange.parse("en").asScala.toList
+        val priorityList: List[Locale.LanguageRange] =
+          Locale.LanguageRange.parse("en").asScala.toList
         val languageMap: LanguageMap = LanguageMap(
           Map(
             "hi" -> "हैलो वर्ल्ड!",
@@ -154,7 +156,8 @@ class LanguageMapTest extends AnyFunSpec {
         assert(result.get.value("en") === "Hello, World!")
       }
       it("should return a single, preferred entry from the language map (multiple ranges)") {
-        val priorityList: List[Locale.LanguageRange] = Locale.LanguageRange.parse("zh-Hant-TW, en-US").asScala.toList
+        val priorityList: List[Locale.LanguageRange] =
+          Locale.LanguageRange.parse("zh-Hant-TW, en-US").asScala.toList
         val languageMap: LanguageMap = LanguageMap(
           Map(
             "hi" -> "हैलो वर्ल्ड!",
@@ -169,7 +172,9 @@ class LanguageMapTest extends AnyFunSpec {
         assert(result.get.value.size === 1)
         assert(result.get.value("en") === "Hello, World!")
       }
-      it("should return a single, preferred entry from the language map (multiple ranges, weighted)") {
+      it(
+        "should return a single, preferred entry from the language map (multiple ranges, weighted)"
+      ) {
         val priorityList: List[Locale.LanguageRange] =
           Locale.LanguageRange.parse("fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5").asScala.toList
         val languageMap: LanguageMap = LanguageMap(
@@ -187,7 +192,8 @@ class LanguageMapTest extends AnyFunSpec {
         assert(result.get.value("en") === "Hello, World!")
       }
       it("should return the first entry from the map if no match is found in the priority list") {
-        val priorityList: List[Locale.LanguageRange] = Locale.LanguageRange.parse("zh-Hant-TW").asScala.toList
+        val priorityList: List[Locale.LanguageRange] =
+          Locale.LanguageRange.parse("zh-Hant-TW").asScala.toList
         val languageMap: LanguageMap = LanguageMap(
           Map(
             "hi" -> "हैलो वर्ल्ड!",
@@ -219,7 +225,8 @@ class LanguageMapTest extends AnyFunSpec {
         assert(result.get.value("hi") === "हैलो वर्ल्ड!")
       }
       it("should return none if the language map is empty") {
-        val priorityList: List[Locale.LanguageRange] = Locale.LanguageRange.parse("en").asScala.toList
+        val priorityList: List[Locale.LanguageRange] =
+          Locale.LanguageRange.parse("en").asScala.toList
         val languageMap: LanguageMap = LanguageMap(Map.empty[String, String])
 
         val result: Option[LanguageMap] = languageMap.preferred(priorityList)

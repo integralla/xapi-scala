@@ -1,7 +1,7 @@
 package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.lemonlabs.uri.{UrlPath, UrlWithoutAuthority}
 
 import java.security.MessageDigest
@@ -12,11 +12,13 @@ import scala.util.{Failure, Success, Try}
   * @param value
   *   A mailto IRI
   */
-case class MBox(value: String) extends StatementValidation with Equivalence {
+case class MBox(value: String) extends Encodable[MBox] with Equivalence with StatementValidation {
+
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       checkMbox
     )
+
   }
 
   /** Returns a SHA1 checksum of the mailto IRI
@@ -68,7 +70,7 @@ case class MBox(value: String) extends StatementValidation with Equivalence {
   }
 }
 
-object MBox {
+object MBox extends Decodable[MBox] {
   implicit val encoder: Encoder[MBox] = Encoder.encodeString.contramap[MBox](_.value)
   implicit val decoder: Decoder[MBox] = Decoder.decodeString.map[MBox](MBox.apply)
 }

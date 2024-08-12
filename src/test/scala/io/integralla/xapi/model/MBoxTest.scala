@@ -1,14 +1,16 @@
 package io.integralla.xapi.model
 
 import io.circe.generic.auto._
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
+import io.integralla.xapi.model.common.{Decodable, Encodable}
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
 
+import scala.util.Try
+
 class MBoxTest extends AnyFunSpec {
 
-  case class Wrapper(mbox: MBox)
+  case class Wrapper(mbox: MBox) extends Encodable[Wrapper]
+  object Wrapper extends Decodable[Wrapper]
 
   describe("An MBox") {
 
@@ -16,7 +18,7 @@ class MBoxTest extends AnyFunSpec {
       it("should throw a validation exception if the mbox value is not a valid mailto IRI") {
         val data: String = """{"mbox": "info@example.com"}""".stripMargin
         assertThrows[StatementValidationException] {
-          decode[Wrapper](data)
+          Wrapper(data)
         }
       }
     }
@@ -24,7 +26,7 @@ class MBoxTest extends AnyFunSpec {
     describe("[encoding]") {
       it("should support encoding as JSON") {
         val wrapper: Wrapper = Wrapper(MBox("mailto:info@example.com"))
-        val actual: String = wrapper.asJson.noSpaces
+        val actual: String = wrapper.toJson()
         val expected = """{"mbox":"mailto:info@example.com"}""".stripMargin
         assert(actual === expected)
       }
@@ -33,22 +35,17 @@ class MBoxTest extends AnyFunSpec {
     describe("[decoding]") {
       it("should support decoding from JSON") {
         val data: String = """{"mbox": "mailto:info@example.com"}""".stripMargin
-        val decoded: Either[io.circe.Error, Wrapper] = decode[Wrapper](data)
+        val decoded: Try[Wrapper] = Wrapper(data)
         val expected = Wrapper(MBox("mailto:info@example.com"))
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(_)       => false
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should fail on decoding JSON where the value of mbox is the wrong type") {
         val data: String = """{"mbox": 1}""".stripMargin
-        val decoded: Either[io.circe.Error, Wrapper] = decode[Wrapper](data)
-        val success = decoded match {
-          case Right(_) => true
-          case Left(_)  => false
-        }
-        assert(success === false)
+        val decoded: Try[Wrapper] = Wrapper(data)
+        assert(decoded.isFailure)
       }
     }
 

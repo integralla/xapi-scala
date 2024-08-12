@@ -2,8 +2,8 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.common.CustomEncoders._
-import io.integralla.xapi.model.common.Equivalence
 import io.integralla.xapi.model.references.{
   ActivityReference,
   ActorRef,
@@ -59,7 +59,7 @@ case class Statement(
   authority: Option[StatementActor] = None,
   version: Option[XApiVersion] = None,
   attachments: Option[List[Attachment]] = None
-) extends StatementValidation with Equivalence {
+) extends Encodable[Statement] with Equivalence with StatementValidation {
 
   /** Extracts and returns all activities (if any) referenced by the statement
     * @return
@@ -174,7 +174,7 @@ case class Statement(
     attachments
       .map(attachments =>
         if (attachments.count(_.isSignature) <= 1) Right(true)
-        else Left("A signed statement can only have on signature attachment")
+        else Left("A signed statement can only have one signature attachment")
       ).getOrElse(Right(true))
   }
 
@@ -288,7 +288,7 @@ case class Statement(
   private val _ = timestampEncoder
 }
 
-object Statement {
+object Statement extends Decodable[Statement] {
   implicit val decoder: Decoder[Statement] = deriveDecoder[Statement]
   implicit val encoder: Encoder[Statement] = deriveEncoder[Statement].mapJson(_.dropNullValues)
 }

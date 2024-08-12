@@ -1,7 +1,7 @@
 package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 import java.util.Locale
 import scala.jdk.CollectionConverters._
@@ -11,7 +11,7 @@ import scala.jdk.CollectionConverters._
   * @param value
   *   A map where both the keys and values are strings
   */
-case class LanguageMap(value: Map[String, String]) extends Equivalence {
+case class LanguageMap(value: Map[String, String]) extends Encodable[LanguageMap] with Equivalence {
 
   /** @return
     *   The first item in the language map if the map is non-empty, else none
@@ -77,7 +77,7 @@ case class LanguageMap(value: Map[String, String]) extends Equivalence {
   }
 }
 
-object LanguageMap {
+object LanguageMap extends Decodable[LanguageMap] {
   implicit val encoder: Encoder[LanguageMap] =
     Encoder.encodeMap[String, String].contramap[LanguageMap](_.value)
   implicit val decoder: Decoder[LanguageMap] =
