@@ -3,12 +3,12 @@ package io.integralla.xapi.model
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.lemonlabs.uri.AbsoluteUrl
 
 import scala.util.{Failure, Success, Try}
 
-/** An account object
+/** Account model
   *
   * @param homePage
   *   The canonical home page for the system the account is on
@@ -18,7 +18,7 @@ import scala.util.{Failure, Success, Try}
 case class Account(
   homePage: String,
   name: String
-) extends StatementValidation with Equivalence with LazyLogging {
+) extends Encodable[Account] with StatementValidation with Equivalence with LazyLogging {
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
@@ -48,7 +48,7 @@ case class Account(
   }
 }
 
-object Account {
+object Account extends Decodable[Account] {
   implicit val decoder: Decoder[Account] = deriveDecoder[Account]
   implicit val encoder: Encoder[Account] = deriveEncoder[Account]
 }

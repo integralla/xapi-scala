@@ -2,7 +2,7 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import InteractionType.{
   CHOICE,
   FILL_IN,
@@ -68,7 +68,7 @@ case class ActivityDefinition(
   steps: Option[List[InteractionComponent]] = None,
   target: Option[List[InteractionComponent]] = None,
   extensions: Option[ExtensionMap] = None
-) extends StatementValidation with Equivalence {
+) extends Encodable[ActivityDefinition] with Equivalence with StatementValidation {
 
   /** Computes whether this activity definition is compatible with another
     * instance
@@ -308,7 +308,7 @@ case class ActivityDefinition(
   }
 }
 
-object ActivityDefinition {
+object ActivityDefinition extends Decodable[ActivityDefinition] {
   implicit val decoder: Decoder[ActivityDefinition] = deriveDecoder[ActivityDefinition]
   implicit val encoder: Encoder[ActivityDefinition] =
     deriveEncoder[ActivityDefinition].mapJson(_.dropNullValues)

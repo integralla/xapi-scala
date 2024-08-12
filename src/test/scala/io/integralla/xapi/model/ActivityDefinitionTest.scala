@@ -1,15 +1,18 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
 import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
 
+import scala.util.Try
+
 class ActivityDefinitionTest extends AnyFunSpec {
 
   /* Shared */
-  val nameLanguageMap: LanguageMap = LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))
+  val nameLanguageMap: LanguageMap = LanguageMap(
+    Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
+  )
   val descriptionLanguageMap: LanguageMap = LanguageMap(
     Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
   )
@@ -20,48 +23,32 @@ class ActivityDefinitionTest extends AnyFunSpec {
       IRI("http://example.com/extenions/boolean") -> true.asJson,
       IRI("http://example.com/extenions/double") -> 1.0.asJson,
       IRI("http://example.com/extenions/string") -> "string".asJson,
-      IRI("http://example.com/extenions/other") -> parser.parse("""{"one": 1, "two": 2}""").toOption.get
+      IRI("http://example.com/extenions/other") -> parser
+        .parse("""{"one": 1, "two": 2}""").toOption.get
     )
   )
 
   /* Non-Interaction Activity */
   val nonInteractionActivity: ActivityDefinition = ActivityDefinition(
-    Some(nameLanguageMap),
-    Some(descriptionLanguageMap),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    name = Some(nameLanguageMap),
+    description = Some(descriptionLanguageMap)
   )
   val nonInteractionActivityEncoded: String =
     """{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"}}"""
 
   /* Non-Interaction Activity w/ Extensions */
   val activityWithExtensions: ActivityDefinition = ActivityDefinition(
-    Some(nameLanguageMap),
-    Some(descriptionLanguageMap),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    Some(extensions)
+    name = Some(nameLanguageMap),
+    description = Some(descriptionLanguageMap),
+    extensions = Some(extensions)
   )
   val activityWithExtensionsEncoded: String =
     """{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"},"extensions":{"http://example.com/extenions/boolean":true,"http://example.com/extenions/double":1.0,"http://example.com/extenions/string":"string","http://example.com/extenions/other":{"one":1,"two":2}}}"""
 
   /* Choice Interaction Activity */
-  val choiceCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("golf[,]tetris"))
+  val choiceCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("golf[,]tetris")
+  )
   val choiceInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("golf", Some(LanguageMap(Map("en-US" -> "Golf Example")))),
     InteractionComponent("facebook", Some(LanguageMap(Map("en-US" -> "Facebook App")))),
@@ -75,12 +62,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
     Some(moreInfo),
     Some(InteractionType.CHOICE),
     Some(choiceCorrectResponsePattern),
-    Some(choiceInteractionComponents),
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(choiceInteractionComponents)
   )
   val choiceInteractionActivityEncoded: String =
     """{
@@ -94,20 +76,16 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   /* Fill-In Interaction Activity */
-  val fillInCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("Lorum ipsum"))
+  val fillInCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("Lorum ipsum")
+  )
   val fillInInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
     Some(interactionActivityType),
     Some(moreInfo),
     Some(InteractionType.FILL_IN),
-    Some(fillInCorrectResponsesPattern),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(fillInCorrectResponsesPattern)
   )
   val fillInInteractionActivityEncoded: String =
     """{
@@ -120,12 +98,17 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   /* Likert Interaction Activity */
-  val likertCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("likert_3"))
+  val likertCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("likert_3")
+  )
   val likertInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("likert_0", Some(LanguageMap(Map("en-US" -> "It's OK")))),
     InteractionComponent("likert_1", Some(LanguageMap(Map("en-US" -> "It's Pretty Cool")))),
     InteractionComponent("likert_2", Some(LanguageMap(Map("en-US" -> "It's Damn Cool")))),
-    InteractionComponent("likert_3", Some(LanguageMap(Map("en-US" -> "It's Gonna Change the World"))))
+    InteractionComponent(
+      "likert_3",
+      Some(LanguageMap(Map("en-US" -> "It's Gonna Change the World")))
+    )
   )
   val likertInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
@@ -135,11 +118,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
     Some(InteractionType.LIKERT),
     Some(likertCorrectResponsePattern),
     None,
-    Some(likertInteractionComponents),
-    None,
-    None,
-    None,
-    None
+    Some(likertInteractionComponents)
   )
   val likertInteractionActivityEncoded: String =
     """{
@@ -164,13 +143,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
     Some(interactionActivityType),
     Some(moreInfo),
     Some(InteractionType.LONG_FILL_IN),
-    Some(longFillInCorrectResponsesPattern),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(longFillInCorrectResponsesPattern)
   )
   val longFillInInteractionActivityEncoded: String =
     """{
@@ -232,13 +205,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
     Some(interactionActivityType),
     Some(moreInfo),
     Some(InteractionType.NUMERIC),
-    Some(numericCorrectResponsesPattern),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(numericCorrectResponsesPattern)
   )
   val numericInteractionActivityEncoded: String =
     """{
@@ -251,20 +218,16 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   /* Other Interaction Activity */
-  val otherCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("(35.937432,-86.868896)"))
+  val otherCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("(35.937432,-86.868896)")
+  )
   val otherInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
     Some(interactionActivityType),
     Some(moreInfo),
     Some(InteractionType.OTHER),
-    Some(otherCorrectResponsesPattern),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(otherCorrectResponsesPattern)
   )
   val otherInteractionActivityEncoded: String =
     """{
@@ -282,7 +245,10 @@ class ActivityDefinitionTest extends AnyFunSpec {
   )
   val performanceInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("pong", Some(LanguageMap(Map("en-US" -> "Net pong matches won")))),
-    InteractionComponent("dg", Some(LanguageMap(Map("en-US" -> "Strokes over par in disc golf at Liberty")))),
+    InteractionComponent(
+      "dg",
+      Some(LanguageMap(Map("en-US" -> "Strokes over par in disc golf at Liberty")))
+    ),
     InteractionComponent("lunch", Some(LanguageMap(Map("en-US" -> "Lunch having been eaten"))))
   )
   val performanceInteractionActivity: ActivityDefinition = ActivityDefinition(
@@ -311,7 +277,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   /* Sequencing Interaction Activity */
-  val sequencingCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(List("tim[,]mike[,]ells[,]ben"))
+  val sequencingCorrectResponsePattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("tim[,]mike[,]ells[,]ben")
+  )
   val sequencingInteractionComponents: List[InteractionComponent] = List(
     InteractionComponent("tim", Some(LanguageMap(Map("en-US" -> "Tim")))),
     InteractionComponent("ben", Some(LanguageMap(Map("en-US" -> "Ben")))),
@@ -325,12 +293,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
     Some(moreInfo),
     Some(InteractionType.SEQUENCING),
     Some(sequencingCorrectResponsePattern),
-    Some(sequencingInteractionComponents),
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(sequencingInteractionComponents)
   )
   val sequencingInteractionActivityEncoded: String =
     """{
@@ -344,20 +307,16 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   /* True/False Interaction Activity */
-  val trueFalseCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(List("true"))
+  val trueFalseCorrectResponsesPattern: CorrectResponsePattern = CorrectResponsePattern(
+    List("true")
+  )
   val trueFalseInteractionActivity: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
     Some(descriptionLanguageMap),
     Some(interactionActivityType),
     Some(moreInfo),
     Some(InteractionType.TRUE_FALSE),
-    Some(trueFalseCorrectResponsesPattern),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(trueFalseCorrectResponsesPattern)
   )
   val trueFalseInteractionActivityEncoded: String =
     """{
@@ -458,7 +417,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("An interaction type must be specified when interaction components are defined")
+          exception.getMessage.contains(
+            "An interaction type must be specified when interaction components are defined"
+          )
         )
       }
 
@@ -482,7 +443,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The choice interaction type only supports the choices interaction component")
+          exception.getMessage.contains(
+            "The choice interaction type only supports the choices interaction component"
+          )
         )
       }
 
@@ -532,7 +495,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The fill-in interaction type does not support any interaction components")
+          exception.getMessage.contains(
+            "The fill-in interaction type does not support any interaction components"
+          )
         )
       }
 
@@ -556,7 +521,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The long-fill-in interaction type does not support any interaction components")
+          exception.getMessage.contains(
+            "The long-fill-in interaction type does not support any interaction components"
+          )
         )
       }
 
@@ -580,7 +547,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The numeric interaction type does not support any interaction components")
+          exception.getMessage.contains(
+            "The numeric interaction type does not support any interaction components"
+          )
         )
       }
 
@@ -603,7 +572,11 @@ class ActivityDefinitionTest extends AnyFunSpec {
             None
           )
         }
-        assert(exception.getMessage.contains("The other interaction type does not support any interaction components"))
+        assert(
+          exception.getMessage.contains(
+            "The other interaction type does not support any interaction components"
+          )
+        )
       }
 
       it(
@@ -626,7 +599,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The true-false interaction type does not support any interaction components")
+          exception.getMessage.contains(
+            "The true-false interaction type does not support any interaction components"
+          )
         )
       }
 
@@ -650,7 +625,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           )
         }
         assert(
-          exception.getMessage.contains("The likert interaction type only supports the scale interaction component")
+          exception.getMessage.contains(
+            "The likert interaction type only supports the scale interaction component"
+          )
         )
       }
 
@@ -706,7 +683,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
         )
       }
 
-      it("should throw a statement validation exception if the value of moreInfo is not a valid IRL") {
+      it(
+        "should throw a statement validation exception if the value of moreInfo is not a valid IRL"
+      ) {
         val exception = intercept[StatementValidationException] {
           ActivityDefinition(
             Some(nameLanguageMap),
@@ -730,196 +709,177 @@ class ActivityDefinitionTest extends AnyFunSpec {
     describe("[encoding]") {
       it("should successfully encode an activity definition") {
         val activityDefinition: ActivityDefinition = nonInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === nonInteractionActivityEncoded)
       }
 
       it("should successfully encode an activity definition with extensions") {
         val activityDefinition: ActivityDefinition = activityWithExtensions
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === activityWithExtensionsEncoded)
       }
 
       it("should successfully encode an interaction activity definition (choice)") {
         val activityDefinition: ActivityDefinition = choiceInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === choiceInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (fill-in)") {
         val activityDefinition: ActivityDefinition = fillInInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === fillInInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (likert)") {
         val activityDefinition: ActivityDefinition = likertInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === likertInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (long-fill-in)") {
         val activityDefinition: ActivityDefinition = longFillInInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === longFillInInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (matching)") {
         val activityDefinition: ActivityDefinition = matchingInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === matchingInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (numeric)") {
         val activityDefinition: ActivityDefinition = numericInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === numericInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (other)") {
         val activityDefinition: ActivityDefinition = otherInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === otherInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (performance)") {
         val activityDefinition: ActivityDefinition = performanceInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === performanceInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (sequencing)") {
         val activityDefinition: ActivityDefinition = sequencingInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === sequencingInteractionActivityEncoded.replaceAll("\n", ""))
       }
 
       it("should successfully encode an interaction activity definition (true-false)") {
         val activityDefinition: ActivityDefinition = trueFalseInteractionActivity
-        val encoded = activityDefinition.asJson.noSpaces
+        val encoded = activityDefinition.toJson()
         assert(encoded === trueFalseInteractionActivityEncoded.replaceAll("\n", ""))
       }
     }
 
     describe("[decoding]") {
       it("should successfully decode an activity definition") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](nonInteractionActivityEncoded)
         val expected: ActivityDefinition = nonInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(nonInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode an activity definition with extensions") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](activityWithExtensionsEncoded)
         val expected: ActivityDefinition = activityWithExtensions
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(activityWithExtensionsEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (choice)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](choiceInteractionActivityEncoded)
         val expected: ActivityDefinition = choiceInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(choiceInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (fill-in)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](fillInInteractionActivityEncoded)
         val expected: ActivityDefinition = fillInInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(fillInInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (likert)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](likertInteractionActivityEncoded)
         val expected: ActivityDefinition = likertInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(likertInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (long-fill-in)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](longFillInInteractionActivityEncoded)
         val expected: ActivityDefinition = longFillInInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] =
+          ActivityDefinition(longFillInInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (matching)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](matchingInteractionActivityEncoded)
         val expected: ActivityDefinition = matchingInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] =
+          ActivityDefinition(matchingInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (numeric)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](numericInteractionActivityEncoded)
         val expected: ActivityDefinition = numericInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(numericInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (other)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](otherInteractionActivityEncoded)
         val expected: ActivityDefinition = otherInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] = ActivityDefinition(otherInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (performance)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](performanceInteractionActivityEncoded)
         val expected: ActivityDefinition = performanceInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] =
+          ActivityDefinition(performanceInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (sequencing)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](sequencingInteractionActivityEncoded)
         val expected: ActivityDefinition = sequencingInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] =
+          ActivityDefinition(sequencingInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode a interaction activity definition (true-false)") {
-        val decoded: Either[io.circe.Error, ActivityDefinition] =
-          decode[ActivityDefinition](trueFalseInteractionActivityEncoded)
         val expected: ActivityDefinition = trueFalseInteractionActivity
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[ActivityDefinition] =
+          ActivityDefinition(trueFalseInteractionActivityEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
     }
 
@@ -937,7 +897,11 @@ class ActivityDefinitionTest extends AnyFunSpec {
         source = None,
         steps = None,
         target = None,
-        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
+        extensions = Some(
+          ExtensionMap(
+            Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)
+          )
+        )
       )
 
       it("should return true of both definitions are equivalent (no interaction type)") {
@@ -952,9 +916,18 @@ class ActivityDefinitionTest extends AnyFunSpec {
           correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
           choices = Some(
             List(
-              InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-              InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-              InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+              InteractionComponent(
+                id = "quartz",
+                definition = Some(LanguageMap(Map("en" -> "Quartz")))
+              ),
+              InteractionComponent(
+                id = "silica",
+                definition = Some(LanguageMap(Map("en" -> "Silica")))
+              ),
+              InteractionComponent(
+                id = "chert",
+                definition = Some(LanguageMap(Map("en" -> "Chert")))
+              )
             )
           )
         )
@@ -977,11 +950,26 @@ class ActivityDefinitionTest extends AnyFunSpec {
           correctResponsesPattern = Some(CorrectResponsePattern(List("likert_1"))),
           scale = Some(
             List(
-              InteractionComponent(id = "likert_1", definition = Some(LanguageMap(Map("en" -> "Never")))),
-              InteractionComponent(id = "likert_2", definition = Some(LanguageMap(Map("en" -> "Rarely")))),
-              InteractionComponent(id = "likert_3", definition = Some(LanguageMap(Map("en" -> "Sometimes")))),
-              InteractionComponent(id = "likert_4", definition = Some(LanguageMap(Map("en" -> "Often")))),
-              InteractionComponent(id = "likert_5", definition = Some(LanguageMap(Map("en" -> "Always"))))
+              InteractionComponent(
+                id = "likert_1",
+                definition = Some(LanguageMap(Map("en" -> "Never")))
+              ),
+              InteractionComponent(
+                id = "likert_2",
+                definition = Some(LanguageMap(Map("en" -> "Rarely")))
+              ),
+              InteractionComponent(
+                id = "likert_3",
+                definition = Some(LanguageMap(Map("en" -> "Sometimes")))
+              ),
+              InteractionComponent(
+                id = "likert_4",
+                definition = Some(LanguageMap(Map("en" -> "Often")))
+              ),
+              InteractionComponent(
+                id = "likert_5",
+                definition = Some(LanguageMap(Map("en" -> "Always")))
+              )
             )
           )
         )
@@ -994,7 +982,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           interactionType = Some(InteractionType.LONG_FILL_IN),
           correctResponsesPattern = Some(
             CorrectResponsePattern(
-              List("{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2).")
+              List(
+                "{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2)."
+              )
             )
           )
         )
@@ -1020,8 +1010,14 @@ class ActivityDefinitionTest extends AnyFunSpec {
           ),
           target = Some(
             List(
-              InteractionComponent(id = "1", definition = Some(LanguageMap(Map("en" -> "White Fir")))),
-              InteractionComponent(id = "2", definition = Some(LanguageMap(Map("en" -> "Subalpine Fir"))))
+              InteractionComponent(
+                id = "1",
+                definition = Some(LanguageMap(Map("en" -> "White Fir")))
+              ),
+              InteractionComponent(
+                id = "2",
+                definition = Some(LanguageMap(Map("en" -> "Subalpine Fir")))
+              )
             )
           )
         )
@@ -1051,18 +1047,27 @@ class ActivityDefinitionTest extends AnyFunSpec {
         val left: ActivityDefinition = sample.copy(
           interactionType = Some(InteractionType.PERFORMANCE),
           correctResponsesPattern = Some(
-            CorrectResponsePattern(List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:"))
+            CorrectResponsePattern(
+              List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:")
+            )
           ),
           steps = Some(
             List(
-              InteractionComponent(id = "git-commits", definition = Some(LanguageMap(Map("en" -> "Git Commits")))),
+              InteractionComponent(
+                id = "git-commits",
+                definition = Some(LanguageMap(Map("en" -> "Git Commits")))
+              ),
               InteractionComponent(
                 id = "git-mr-comments-own",
-                definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself")))
+                definition = Some(
+                  LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself"))
+                )
               ),
               InteractionComponent(
                 id = "git-mr-comments-other",
-                definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by another")))
+                definition = Some(
+                  LanguageMap(Map("en" -> "Git Comments on a merge request created by another"))
+                )
               )
             )
           )
@@ -1074,10 +1079,14 @@ class ActivityDefinitionTest extends AnyFunSpec {
       it("should return true of both definitions are equivalent (sequencing)") {
         val left: ActivityDefinition = sample.copy(
           interactionType = Some(InteractionType.SEQUENCING),
-          correctResponsesPattern = Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
+          correctResponsesPattern =
+            Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
           choices = Some(
             List(
-              InteractionComponent(id = "commit", definition = Some(LanguageMap(Map("en" -> "Commit work")))),
+              InteractionComponent(
+                id = "commit",
+                definition = Some(LanguageMap(Map("en" -> "Commit work")))
+              ),
               InteractionComponent(
                 id = "pull-request",
                 definition = Some(LanguageMap(Map("en" -> "Create pull request")))
@@ -1086,7 +1095,10 @@ class ActivityDefinitionTest extends AnyFunSpec {
                 id = "approve",
                 definition = Some(LanguageMap(Map("en" -> "Get approval for pull request")))
               ),
-              InteractionComponent(id = "merge", definition = Some(LanguageMap(Map("en" -> "Merge pull request"))))
+              InteractionComponent(
+                id = "merge",
+                definition = Some(LanguageMap(Map("en" -> "Merge pull request")))
+              )
             )
           )
         )
@@ -1103,15 +1115,26 @@ class ActivityDefinitionTest extends AnyFunSpec {
         assert(left.isEquivalentTo(right))
       }
 
-      it("should return true of both definitions are equivalent excepting order of an interaction component list") {
+      it(
+        "should return true of both definitions are equivalent excepting order of an interaction component list"
+      ) {
         val left: ActivityDefinition = sample.copy(
           interactionType = Some(InteractionType.CHOICE),
           correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
           choices = Some(
             List(
-              InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert")))),
-              InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-              InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica"))))
+              InteractionComponent(
+                id = "chert",
+                definition = Some(LanguageMap(Map("en" -> "Chert")))
+              ),
+              InteractionComponent(
+                id = "quartz",
+                definition = Some(LanguageMap(Map("en" -> "Quartz")))
+              ),
+              InteractionComponent(
+                id = "silica",
+                definition = Some(LanguageMap(Map("en" -> "Silica")))
+              )
             )
           )
         )
@@ -1141,7 +1164,11 @@ class ActivityDefinitionTest extends AnyFunSpec {
         source = None,
         steps = None,
         target = None,
-        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
+        extensions = Some(
+          ExtensionMap(
+            Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)
+          )
+        )
       )
 
       describe("[interaction type only]") {
@@ -1185,7 +1212,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
       }
 
       describe("[with correct response pattern]") {
-        it("should return true if the interaction type and correct response patterns are compatible") {
+        it(
+          "should return true if the interaction type and correct response patterns are compatible"
+        ) {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
@@ -1197,7 +1226,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
           assert(left.isCompatibleWith(right))
         }
 
-        it("should return true if the correct response patterns is not defined on the compared instance") {
+        it(
+          "should return true if the correct response patterns is not defined on the compared instance"
+        ) {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz")))
@@ -1240,9 +1271,18 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1265,11 +1305,26 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("likert_1"))),
             scale = Some(
               List(
-                InteractionComponent(id = "likert_1", definition = Some(LanguageMap(Map("en" -> "Never")))),
-                InteractionComponent(id = "likert_2", definition = Some(LanguageMap(Map("en" -> "Rarely")))),
-                InteractionComponent(id = "likert_3", definition = Some(LanguageMap(Map("en" -> "Sometimes")))),
-                InteractionComponent(id = "likert_4", definition = Some(LanguageMap(Map("en" -> "Often")))),
-                InteractionComponent(id = "likert_5", definition = Some(LanguageMap(Map("en" -> "Always"))))
+                InteractionComponent(
+                  id = "likert_1",
+                  definition = Some(LanguageMap(Map("en" -> "Never")))
+                ),
+                InteractionComponent(
+                  id = "likert_2",
+                  definition = Some(LanguageMap(Map("en" -> "Rarely")))
+                ),
+                InteractionComponent(
+                  id = "likert_3",
+                  definition = Some(LanguageMap(Map("en" -> "Sometimes")))
+                ),
+                InteractionComponent(
+                  id = "likert_4",
+                  definition = Some(LanguageMap(Map("en" -> "Often")))
+                ),
+                InteractionComponent(
+                  id = "likert_5",
+                  definition = Some(LanguageMap(Map("en" -> "Always")))
+                )
               )
             )
           )
@@ -1282,7 +1337,9 @@ class ActivityDefinitionTest extends AnyFunSpec {
             interactionType = Some(InteractionType.LONG_FILL_IN),
             correctResponsesPattern = Some(
               CorrectResponsePattern(
-                List("{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2).")
+                List(
+                  "{case_matters=false}{lang=en}Quartz consists primarily of silica, or silicon dioxide (SiO2)."
+                )
               )
             )
           )
@@ -1308,8 +1365,14 @@ class ActivityDefinitionTest extends AnyFunSpec {
             ),
             target = Some(
               List(
-                InteractionComponent(id = "1", definition = Some(LanguageMap(Map("en" -> "White Fir")))),
-                InteractionComponent(id = "2", definition = Some(LanguageMap(Map("en" -> "Subalpine Fir"))))
+                InteractionComponent(
+                  id = "1",
+                  definition = Some(LanguageMap(Map("en" -> "White Fir")))
+                ),
+                InteractionComponent(
+                  id = "2",
+                  definition = Some(LanguageMap(Map("en" -> "Subalpine Fir")))
+                )
               )
             )
           )
@@ -1339,18 +1402,27 @@ class ActivityDefinitionTest extends AnyFunSpec {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.PERFORMANCE),
             correctResponsesPattern = Some(
-              CorrectResponsePattern(List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:"))
+              CorrectResponsePattern(
+                List("git-commits[.]10:[,]git-mr-comments-own[.]5:[,]git-mr-comments-other[.]20:")
+              )
             ),
             steps = Some(
               List(
-                InteractionComponent(id = "git-commits", definition = Some(LanguageMap(Map("en" -> "Git Commits")))),
+                InteractionComponent(
+                  id = "git-commits",
+                  definition = Some(LanguageMap(Map("en" -> "Git Commits")))
+                ),
                 InteractionComponent(
                   id = "git-mr-comments-own",
-                  definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself")))
+                  definition = Some(
+                    LanguageMap(Map("en" -> "Git Comments on a merge request created by oneself"))
+                  )
                 ),
                 InteractionComponent(
                   id = "git-mr-comments-other",
-                  definition = Some(LanguageMap(Map("en" -> "Git Comments on a merge request created by another")))
+                  definition = Some(
+                    LanguageMap(Map("en" -> "Git Comments on a merge request created by another"))
+                  )
                 )
               )
             )
@@ -1362,10 +1434,14 @@ class ActivityDefinitionTest extends AnyFunSpec {
         it("should return true if all the interaction properties are compatible (sequencing)") {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.SEQUENCING),
-            correctResponsesPattern = Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
+            correctResponsesPattern =
+              Some(CorrectResponsePattern(List("commit[,]pull-request[,]approve[,]merge"))),
             choices = Some(
               List(
-                InteractionComponent(id = "commit", definition = Some(LanguageMap(Map("en" -> "Commit work")))),
+                InteractionComponent(
+                  id = "commit",
+                  definition = Some(LanguageMap(Map("en" -> "Commit work")))
+                ),
                 InteractionComponent(
                   id = "pull-request",
                   definition = Some(LanguageMap(Map("en" -> "Create pull request")))
@@ -1374,7 +1450,10 @@ class ActivityDefinitionTest extends AnyFunSpec {
                   id = "approve",
                   definition = Some(LanguageMap(Map("en" -> "Get approval for pull request")))
                 ),
-                InteractionComponent(id = "merge", definition = Some(LanguageMap(Map("en" -> "Merge pull request"))))
+                InteractionComponent(
+                  id = "merge",
+                  definition = Some(LanguageMap(Map("en" -> "Merge pull request")))
+                )
               )
             )
           )
@@ -1399,9 +1478,18 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1410,9 +1498,18 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1427,9 +1524,18 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1439,7 +1545,10 @@ class ActivityDefinitionTest extends AnyFunSpec {
             choices = Some(
               List(
                 InteractionComponent(id = "silica", definition = None),
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz Crystal")))),
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz Crystal")))
+                ),
                 InteractionComponent(
                   id = "chert",
                   definition = Some(LanguageMap(Map("en-US" -> "Chert", "en-GB" -> "Chert")))
@@ -1450,15 +1559,26 @@ class ActivityDefinitionTest extends AnyFunSpec {
           assert(left.isCompatibleWith(right))
         }
 
-        it("should return true if all interaction component lists where undefined on the compared instance") {
+        it(
+          "should return true if all interaction component lists where undefined on the compared instance"
+        ) {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1481,24 +1601,44 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
           assert(left.isCompatibleWith(right) === false)
         }
 
-        it("should return false if an interaction component lists are incompatible (changed identifier)") {
+        it(
+          "should return false if an interaction component lists are incompatible (changed identifier)"
+        ) {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1507,24 +1647,44 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "obsidian", definition = Some(LanguageMap(Map("en" -> "Obsidian"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "obsidian",
+                  definition = Some(LanguageMap(Map("en" -> "Obsidian")))
+                )
               )
             )
           )
           assert(left.isCompatibleWith(right) === false)
         }
 
-        it("should return false if an interaction component lists are incompatible (removed component)") {
+        it(
+          "should return false if an interaction component lists are incompatible (removed component)"
+        ) {
           val left: ActivityDefinition = sample.copy(
             interactionType = Some(InteractionType.CHOICE),
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
-                InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                ),
+                InteractionComponent(
+                  id = "chert",
+                  definition = Some(LanguageMap(Map("en" -> "Chert")))
+                )
               )
             )
           )
@@ -1533,8 +1693,14 @@ class ActivityDefinitionTest extends AnyFunSpec {
             correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
             choices = Some(
               List(
-                InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-                InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica"))))
+                InteractionComponent(
+                  id = "quartz",
+                  definition = Some(LanguageMap(Map("en" -> "Quartz")))
+                ),
+                InteractionComponent(
+                  id = "silica",
+                  definition = Some(LanguageMap(Map("en" -> "Silica")))
+                )
               )
             )
           )

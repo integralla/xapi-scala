@@ -1,9 +1,9 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class AttachmentTest extends AnyFunSpec {
 
@@ -34,12 +34,12 @@ class AttachmentTest extends AnyFunSpec {
             |  "sha2" : "672fa5fa658017f1b72d65036f13379c6ab05d4ab3b6664908d8acf0b6a0c634"
             |}""".stripMargin
 
-        val encoded: String = attachment.asJson.spaces2
-        println(encoded)
+        val encoded: String = attachment.toJson(spaces = true)
         assert(encoded === expected)
 
-        val decoded: Attachment = decode[Attachment](encoded).toOption.get
-        assert(decoded === attachment)
+        val decoded: Try[Attachment] = Attachment(encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === attachment)
       }
       it("should successfully encode/decode an attachment, with a fileUrl") {
         val attachment: Attachment = Attachment(
@@ -67,16 +67,19 @@ class AttachmentTest extends AnyFunSpec {
             |  "fileUrl" : "http://example.com/attachment-storage/test"
             |}""".stripMargin
 
-        val encoded: String = attachment.asJson.spaces2
+        val encoded: String = attachment.toJson(spaces = true)
         assert(encoded === expected)
 
-        val decoded: Attachment = decode[Attachment](encoded).toOption.get
-        assert(decoded === attachment)
+        val decoded: Try[Attachment] = Attachment(encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === attachment)
       }
     }
 
     describe("[validation]") {
-      it("should throw a validation exception for an signature type attachment with an invalid content type") {
+      it(
+        "should throw a validation exception for an signature type attachment with an invalid content type"
+      ) {
         val exception = intercept[StatementValidationException] {
           Attachment(
             usageType = IRI("http://adlnet.gov/expapi/attachments/signature"),

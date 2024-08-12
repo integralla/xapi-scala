@@ -2,10 +2,10 @@ package io.integralla.xapi.model
 
 import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import StatementObjectType.StatementObjectType
 
-/** A statement activity
+/** Statement activity model
   *
   * @param objectType
   *   Activity statement object type
@@ -18,7 +18,7 @@ case class Activity(
   objectType: Option[StatementObjectType] = None,
   id: IRI,
   definition: Option[ActivityDefinition] = None
-) extends Equivalence {
+) extends Encodable[Activity] with Equivalence {
 
   /** Similar to `isEquivalentTo` but includes the activity definition in
     * addition to the activity identifier
@@ -54,7 +54,7 @@ case class Activity(
   }
 }
 
-object Activity {
+object Activity extends Decodable[Activity] {
   implicit val decoder: Decoder[Activity] = deriveDecoder[Activity]
   implicit val encoder: Encoder[Activity] = deriveEncoder[Activity].mapJson(_.dropNullValues)
 }

@@ -1,29 +1,22 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import org.scalatest.funspec.AnyFunSpec
 
+import scala.util.Try
+
 class ActivityTest extends AnyFunSpec {
 
-  val nameLanguageMap: LanguageMap = LanguageMap(Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività"))
+  val nameLanguageMap: LanguageMap = LanguageMap(
+    Map("en-US" -> "Example Activity", "it-IT" -> "Esempio di attività")
+  )
   val descriptionLanguageMap: LanguageMap = LanguageMap(
     Map("en-US" -> "An xAPI activity", "it-IT" -> "Un'attività xAPI")
   )
 
   val sampleActivityDefinition: ActivityDefinition = ActivityDefinition(
     Some(nameLanguageMap),
-    Some(descriptionLanguageMap),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some(descriptionLanguageMap)
   )
 
   describe("Activity") {
@@ -34,17 +27,39 @@ class ActivityTest extends AnyFunSpec {
           IRI("http://example.com/xapi/activity/simplestatement"),
           Some(sampleActivityDefinition)
         )
-        val actual = activity.asJson.noSpaces
+        val actual = activity.toJson(spaces = true)
         val expected =
-          """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement","definition":{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"}}}"""
+          """{
+            |  "objectType" : "Activity",
+            |  "id" : "http://example.com/xapi/activity/simplestatement",
+            |  "definition" : {
+            |    "name" : {
+            |      "en-US" : "Example Activity",
+            |      "it-IT" : "Esempio di attività"
+            |    },
+            |    "description" : {
+            |      "en-US" : "An xAPI activity",
+            |      "it-IT" : "Un'attività xAPI"
+            |    }
+            |  }
+            |}""".stripMargin
         assert(actual === expected)
       }
 
       it("should successfully encode an activity without a definition") {
         val activity: Activity =
-          Activity(Some(StatementObjectType.Activity), IRI("http://example.com/xapi/activity/simplestatement"), None)
-        val actual = activity.asJson.noSpaces
-        val expected = """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement"}"""
+          Activity(
+            Some(StatementObjectType.Activity),
+            IRI("http://example.com/xapi/activity/simplestatement"),
+            None
+          )
+        val actual = activity.toJson(spaces = true)
+        println(actual)
+        val expected =
+          """{
+            |  "objectType" : "Activity",
+            |  "id" : "http://example.com/xapi/activity/simplestatement"
+            |}""".stripMargin
         assert(actual === expected)
       }
     }
@@ -53,37 +68,46 @@ class ActivityTest extends AnyFunSpec {
       it("should successfully decode an activity") {
         val data: String =
           """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement","definition":{"name":{"en-US":"Example Activity","it-IT":"Esempio di attività"},"description":{"en-US":"An xAPI activity","it-IT":"Un'attività xAPI"}}}"""
-        val decoded: Either[io.circe.Error, Activity] = decode[Activity](data)
+
         val expected: Activity = Activity(
           Some(StatementObjectType.Activity),
           IRI("http://example.com/xapi/activity/simplestatement"),
           Some(sampleActivityDefinition)
         )
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+
+        val decoded: Try[Activity] = Activity(data)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
       it("should successfully decode an activity without a definition") {
-        val data: String = """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement"}"""
-        val decoded: Either[io.circe.Error, Activity] = decode[Activity](data)
+        val data: String =
+          """{"objectType":"Activity","id":"http://example.com/xapi/activity/simplestatement"}"""
         val expected: Activity =
-          Activity(Some(StatementObjectType.Activity), IRI("http://example.com/xapi/activity/simplestatement"), None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+          Activity(
+            Some(StatementObjectType.Activity),
+            IRI("http://example.com/xapi/activity/simplestatement"),
+            None
+          )
+
+        val decoded: Try[Activity] = Activity(data)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
 
-      it("should successfully decode an activity where the objectType has not been explicitly set") {
+      it(
+        "should successfully decode an activity where the objectType has not been explicitly set"
+      ) {
         val data: String = """{"id":"http://example.com/xapi/activity/simplestatement"}"""
-        val decoded: Either[io.circe.Error, Activity] = decode[Activity](data)
-        val expected: Activity = Activity(None, IRI("http://example.com/xapi/activity/simplestatement"), None)
-        decoded match {
-          case Right(actual) => assert(actual === expected)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val expected: Activity =
+          Activity(None, IRI("http://example.com/xapi/activity/simplestatement"), None)
+
+        val decoded: Try[Activity] = Activity(data)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
     }
 
@@ -98,8 +122,14 @@ class ActivityTest extends AnyFunSpec {
         correctResponsesPattern = Some(CorrectResponsePattern(List("quartz"))),
         choices = Some(
           List(
-            InteractionComponent(id = "quartz", definition = Some(LanguageMap(Map("en" -> "Quartz")))),
-            InteractionComponent(id = "silica", definition = Some(LanguageMap(Map("en" -> "Silica")))),
+            InteractionComponent(
+              id = "quartz",
+              definition = Some(LanguageMap(Map("en" -> "Quartz")))
+            ),
+            InteractionComponent(
+              id = "silica",
+              definition = Some(LanguageMap(Map("en" -> "Silica")))
+            ),
             InteractionComponent(id = "chert", definition = Some(LanguageMap(Map("en" -> "Chert"))))
           )
         ),
@@ -107,7 +137,11 @@ class ActivityTest extends AnyFunSpec {
         source = None,
         steps = None,
         target = None,
-        extensions = Some(ExtensionMap(Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)))
+        extensions = Some(
+          ExtensionMap(
+            Map(IRI("http://lrs.integralla.io/xapi/extenions/string") -> "string".asJson)
+          )
+        )
       )
 
       val activity: Activity = Activity(
@@ -122,7 +156,9 @@ class ActivityTest extends AnyFunSpec {
           val right = activity.copy()
           assert(left.isEquivalentTo(right))
         }
-        it("should return true if the identifiers of both activities match (other properties do not)") {
+        it(
+          "should return true if the identifiers of both activities match (other properties do not)"
+        ) {
           val left = activity.copy()
           val right = activity.copy(objectType = None, definition = None)
           assert(left.isEquivalentTo(right))

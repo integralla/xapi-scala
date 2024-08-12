@@ -3,6 +3,7 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import Attachment.signatureUsageType
+import io.integralla.xapi.model.common.{Decodable, Encodable}
 
 /** An attachment represents a resource that is logically associated with the
   * statement
@@ -31,7 +32,7 @@ case class Attachment(
   length: Int,
   sha2: String,
   fileUrl: Option[IRI] = None
-) extends StatementValidation {
+) extends Encodable[Attachment] with StatementValidation {
 
   /** Indicates whether the attachment is a JWS for a signed statement
     *
@@ -54,8 +55,9 @@ case class Attachment(
   override def validate: Seq[Either[String, Boolean]] =
     Seq(
       if (isSignature) {
-        if (contentType.startsWith("application/octet-stream")) { Right(true) }
-        else {
+        if (contentType.startsWith("application/octet-stream")) {
+          Right(true)
+        } else {
           Left(
             "The JWS for a signed statement must have the attachment content-type of application/octet-stream"
           )
@@ -64,7 +66,7 @@ case class Attachment(
     )
 }
 
-object Attachment {
+object Attachment extends Decodable[Attachment] {
 
   /** The IRI value expected for a signed statement */
   val signatureUsageType: IRI = IRI("http://adlnet.gov/expapi/attachments/signature")
