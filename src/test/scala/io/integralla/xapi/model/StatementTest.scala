@@ -3,7 +3,6 @@ package io.integralla.xapi.model
 import com.typesafe.scalalogging.StrictLogging
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references._
-import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.{OffsetDateTime, ZoneId}
@@ -203,7 +202,7 @@ class StatementTest extends AnyFunSpec with StrictLogging {
   }
 
   def getStatementFromResource(path: String): Statement = {
-    LRSModelUtils.fromJSON[Statement](getStatementResource(path)).get
+    Statement(getStatementResource(path)).get
   }
 
   describe("Statement") {

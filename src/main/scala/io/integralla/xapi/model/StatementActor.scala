@@ -3,7 +3,7 @@ package io.integralla.xapi.model
 import io.circe._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import StatementObjectType.StatementObjectType
 import io.lemonlabs.uri.AbsoluteUrl
@@ -13,7 +13,8 @@ import scala.util.{Failure, Success}
 /** Actor Used to define whom a statement is about An actor can be either an
   * agent or a group
   */
-sealed trait StatementActor extends StatementValidation with Equivalence {
+sealed trait StatementActor
+    extends Encodable[StatementActor] with Equivalence with StatementValidation {
 
   /** @return The actor name */
   def name: Option[String]
@@ -104,7 +105,7 @@ sealed trait StatementActor extends StatementValidation with Equivalence {
   }
 }
 
-object StatementActor {
+object StatementActor extends Decodable[StatementActor] {
 
   implicit val decoder: Decoder[StatementActor] = (c: HCursor) =>
     for {
@@ -219,7 +220,7 @@ case class Agent(
   }
 }
 
-object Agent {
+object Agent extends Decodable[Agent] {
   implicit val decoder: Decoder[Agent] = deriveDecoder[Agent]
   implicit val encoder: Encoder[Agent] = deriveEncoder[Agent].mapJson(_.dropNullValues)
 }
@@ -336,7 +337,7 @@ case class Group(
   }
 }
 
-object Group {
+object Group extends Decodable[Group] {
   implicit val decoder: Decoder[Group] = deriveDecoder[Group]
   implicit val encoder: Encoder[Group] = deriveEncoder[Group].mapJson(_.dropNullValues)
 }

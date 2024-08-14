@@ -3,7 +3,7 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.integralla.xapi.model.StatementObjectType.StatementObjectType
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.references.{ActivityReference, ActorRef, AgentReference}
 
 import java.time.OffsetDateTime
@@ -40,7 +40,7 @@ case class SubStatement(
   context: Option[StatementContext] = None,
   timestamp: Option[OffsetDateTime] = None,
   attachments: Option[List[Attachment]] = None
-) extends StatementValidation with Equivalence {
+) extends Encodable[SubStatement] with StatementValidation with Equivalence {
 
   /** @return
     *   A distinct list of all activities referenced in the sub-statement
@@ -151,7 +151,7 @@ case class SubStatement(
   }
 }
 
-object SubStatement {
+object SubStatement extends Decodable[SubStatement] {
   implicit val decoder: Decoder[SubStatement] = deriveDecoder[SubStatement]
   implicit val encoder: Encoder[SubStatement] =
     deriveEncoder[SubStatement].mapJson(_.dropNullValues)

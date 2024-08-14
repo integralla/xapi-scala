@@ -1,10 +1,9 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
-import io.integralla.xapi.model.utils.LRSModelUtils
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID
+import scala.util.Try
 
 class StatementQueryResultTest extends AnyFunSpec {
   describe("StatementQueryResult") {
@@ -24,7 +23,11 @@ class StatementQueryResultTest extends AnyFunSpec {
               ),
               verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
               `object` = StatementObject(
-                Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+                Activity(
+                  Some(StatementObjectType.Activity),
+                  IRI("https://lrs.integralla.io/activity/test"),
+                  None
+                )
               ),
               result = None,
               context = None,
@@ -39,10 +42,11 @@ class StatementQueryResultTest extends AnyFunSpec {
         val more: String = "/xapi/statements?exclusiveStart=8f232022-a4f6-4832-aea7-bc1650489bb3"
         val result: StatementQueryResult = StatementQueryResult(statements, Some(more))
 
-        val encoded: String = LRSModelUtils.toJSON[StatementQueryResult](result)
-        val decoded: StatementQueryResult = decode[StatementQueryResult](encoded).toOption.get
+        val encoded: String = result.toJson()
+        val decoded: Try[StatementQueryResult] = StatementQueryResult(encoded)
 
-        assert(decoded === result)
+        assert(decoded.isSuccess)
+        assert(decoded.get === result)
       }
       it("should encode/decode a statement query result object without a more relative IRI") {
         val statements: StatementList = StatementList(
@@ -59,7 +63,11 @@ class StatementQueryResultTest extends AnyFunSpec {
               ),
               verb = StatementVerb(IRI("https://lrs.integralla.io/verbs/test"), None),
               `object` = StatementObject(
-                Activity(Some(StatementObjectType.Activity), IRI("https://lrs.integralla.io/activity/test"), None)
+                Activity(
+                  Some(StatementObjectType.Activity),
+                  IRI("https://lrs.integralla.io/activity/test"),
+                  None
+                )
               ),
               result = None,
               context = None,
@@ -73,11 +81,12 @@ class StatementQueryResultTest extends AnyFunSpec {
         )
         val result: StatementQueryResult = StatementQueryResult(statements, None)
 
-        val encoded: String = LRSModelUtils.toJSON[StatementQueryResult](result)
-        val decoded: StatementQueryResult = decode[StatementQueryResult](encoded).toOption.get
+        val encoded: String = result.toJson()
+        val decoded: Try[StatementQueryResult] = StatementQueryResult(encoded)
 
+        assert(decoded.isSuccess)
         assert(!encoded.contains("more"))
-        assert(decoded === result)
+        assert(decoded.get === result)
       }
     }
   }

@@ -2,7 +2,7 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.references.{AgentReference, InstructorRef, TeamRef}
 
 import java.util.UUID
@@ -54,7 +54,7 @@ case class StatementContext(
   language: Option[String] = None,
   statement: Option[StatementRef] = None,
   extensions: Option[ExtensionMap] = None
-) extends Equivalence {
+) extends Encodable[StatementContext] with Equivalence {
 
   /** Generates a signature that can be used to test logical equivalence between
     * objects
@@ -114,7 +114,7 @@ case class StatementContext(
   }
 }
 
-object StatementContext {
+object StatementContext extends Decodable[StatementContext] {
   implicit val decoder: Decoder[StatementContext] = deriveDecoder[StatementContext]
   implicit val encoder: Encoder[StatementContext] =
     deriveEncoder[StatementContext].mapJson(_.dropNullValues)

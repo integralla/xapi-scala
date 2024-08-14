@@ -2,7 +2,7 @@ package io.integralla.xapi.model
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import net.time4j.{ClockUnit, Duration, IsoUnit}
 
 import java.text.ParseException
@@ -31,7 +31,7 @@ case class StatementResult(
   response: Option[String] = None,
   duration: Option[String] = None,
   extensions: Option[ExtensionMap] = None
-) extends StatementValidation with Equivalence {
+) extends Encodable[StatementResult] with Equivalence with StatementValidation {
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(
       validateDuration
@@ -89,7 +89,7 @@ case class StatementResult(
   }
 }
 
-object StatementResult {
+object StatementResult extends Decodable[StatementResult] {
   implicit val decoder: Decoder[StatementResult] = deriveDecoder[StatementResult]
   implicit val encoder: Encoder[StatementResult] =
     deriveEncoder[StatementResult].mapJson(_.dropNullValues)

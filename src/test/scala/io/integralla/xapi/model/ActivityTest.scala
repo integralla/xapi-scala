@@ -54,7 +54,6 @@ class ActivityTest extends AnyFunSpec {
             None
           )
         val actual = activity.toJson(spaces = true)
-        println(actual)
         val expected =
           """{
             |  "objectType" : "Activity",

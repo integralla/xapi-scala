@@ -1,17 +1,19 @@
 package io.integralla.xapi.model
 
 import com.typesafe.scalalogging.StrictLogging
-import io.circe.jawn.decode
 import io.circe.parser._
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
+
+import scala.util.Try
 
 class StatementResultTest extends AnyFunSpec with StrictLogging {
 
   val sampleScore: Score = Score(Some(0.5), Some(5.0), Some(0.0), Some(10.0))
   val sampleExtensions: ExtensionMap = ExtensionMap(
-    Map(IRI("https://example.com/extenions/other") -> parse("""{"one": 1, "two": 2}""").toOption.get)
+    Map(
+      IRI("https://example.com/extenions/other") -> parse("""{"one": 1, "two": 2}""").toOption.get
+    )
   )
 
   val sampleResult: StatementResult = StatementResult(
@@ -83,7 +85,7 @@ class StatementResultTest extends AnyFunSpec with StrictLogging {
     describe("[encoding]") {
       it("should successfully encode a result") {
         logger.info(s"SAMPLE: $sampleResult")
-        val actual: String = sampleResult.asJson.noSpaces
+        val actual: String = sampleResult.toJson()
         logger.info(s"Encoded: $actual")
         logger.info(s"Expected: $sampleResultEncoded")
         assert(actual === sampleResultEncoded)
@@ -92,19 +94,16 @@ class StatementResultTest extends AnyFunSpec with StrictLogging {
 
     describe("[decoding]") {
       it("should successfully decode a result") {
-        val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](sampleResultEncoded)
-        decoded match {
-          case Right(actual) =>
-            logger.info(s"Decoded: $actual")
-            assert(actual === sampleResult)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[StatementResult] = StatementResult(sampleResultEncoded)
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === sampleResult)
       }
 
       it("should successfully decode a result in which some values are not set") {
         val data: String =
           """{"score":{"scaled":0.5,"raw":5.0,"min":0.0,"max":10.0},"success":true,"completion":true,"duration":"PT4H35M59.14S"}"""
-        val decoded: Either[io.circe.Error, StatementResult] = decode[StatementResult](data)
+        val decoded: Try[StatementResult] = StatementResult(data)
         val expected: StatementResult = StatementResult(
           Some(sampleScore),
           Some(true),
@@ -113,12 +112,9 @@ class StatementResultTest extends AnyFunSpec with StrictLogging {
           Some("PT4H35M59.14S"),
           None
         )
-        decoded match {
-          case Right(actual) =>
-            logger.info(s"Decoded: $actual")
-            assert(actual === expected)
-          case Left(err) => throw new Error(s"Decoding failed: $err")
-        }
+
+        assert(decoded.isSuccess)
+        assert(decoded.get === expected)
       }
     }
 

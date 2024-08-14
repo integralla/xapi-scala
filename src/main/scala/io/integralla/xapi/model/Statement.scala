@@ -10,7 +10,6 @@ import io.integralla.xapi.model.references.{
   AgentReference,
   AuthorityRef
 }
-import io.integralla.xapi.model.utils.LRSModelUtils
 
 import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
@@ -152,10 +151,7 @@ case class Statement(
     *   The size of the statement in bytes based on the JSON representation of
     *   the statement, when printed with no spaces
     */
-  def size: Int =
-    LRSModelUtils
-      .toJSON[Statement](this)
-      .getBytes(StandardCharsets.UTF_8).length
+  def size: Int = this.toJson().getBytes(StandardCharsets.UTF_8).length
 
   override def validate: Seq[Either[String, Boolean]] = {
     Seq(

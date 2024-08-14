@@ -3,7 +3,7 @@ package io.integralla.xapi.model
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import StatementVerb.voidingVerb
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 
 /** A Verb defines the action between an Actor and an Activity
   *
@@ -13,7 +13,8 @@ import io.integralla.xapi.model.common.Equivalence
   *   A language map where the key is a RFC 5646 Language Tag, and the value is
   *   a string in the language specified in the tag
   */
-case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends Equivalence {
+case class StatementVerb(id: IRI, display: Option[LanguageMap] = None)
+    extends Encodable[StatementVerb] with Equivalence {
 
   /** Indicates whether the verb is a voiding verb
     *
@@ -34,7 +35,7 @@ case class StatementVerb(id: IRI, display: Option[LanguageMap] = None) extends E
   }
 }
 
-object StatementVerb {
+object StatementVerb extends Decodable[StatementVerb] {
 
   /** The IRI value expected for a voiding statement */
   val voidingVerb: IRI = IRI("http://adlnet.gov/expapi/verbs/voided")

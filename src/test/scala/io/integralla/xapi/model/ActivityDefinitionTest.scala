@@ -329,22 +329,7 @@ class ActivityDefinitionTest extends AnyFunSpec {
       |}""".stripMargin
 
   describe("ActivityDefinition") {
-    describe("[initialization / validation]") {
-      it("should initialize an activity") {
-        val activityDefinition: ActivityDefinition = nonInteractionActivity
-        println(activityDefinition)
-      }
-
-      it("should initialize an activity with extensions") {
-        val activityDefinition: ActivityDefinition = activityWithExtensions
-        println(activityDefinition)
-      }
-
-      it("should initialize an interaction activity") {
-        val activityDefinition: ActivityDefinition = trueFalseInteractionActivity
-        println(activityDefinition)
-      }
-
+    describe("[validation]") {
       it(
         "should throw a statement validation exception when the activity type is cmi.interaction and an interaction type is not defined"
       ) {

@@ -1,22 +1,30 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references._
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID
 import scala.io.Source
-import scala.util.Using
+import scala.util.{Try, Using}
 
 class SubStatementTest extends AnyFunSpec {
 
   /* Activity SubStatement */
   val sampleActivitySubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
+    Agent(
+      Some(StatementObjectType.Agent),
+      None,
+      Some(MBox("mailto:test@example.com")),
+      None,
+      None,
+      None
+    ),
+    StatementVerb(
+      IRI("http://example.com/visited"),
+      Some(LanguageMap(Map("en-US" -> "will visit")))
+    ),
     StatementObject(
       Activity(
         Some(StatementObjectType.Activity),
@@ -31,13 +39,25 @@ class SubStatementTest extends AnyFunSpec {
   )
 
   val sampleActivitySubStatementEncoded: String =
-    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-activity.json"))(_.mkString)
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-activity.json"))(
+      _.mkString
+    )
 
   /* Agent SubStatement */
   val sampleAgentSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
+    Agent(
+      Some(StatementObjectType.Agent),
+      None,
+      Some(MBox("mailto:test@example.com")),
+      None,
+      None,
+      None
+    ),
+    StatementVerb(
+      IRI("http://example.com/visited"),
+      Some(LanguageMap(Map("en-US" -> "will visit")))
+    ),
     StatementObject(
       Agent(
         Some(StatementObjectType.Agent),
@@ -47,13 +67,25 @@ class SubStatementTest extends AnyFunSpec {
     )
   )
   val sampleAgentSubStatementEncoded: String =
-    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-agent.json"))(_.mkString)
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-agent.json"))(
+      _.mkString
+    )
 
   /* Group SubStatement */
   val sampleGroupSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
+    Agent(
+      Some(StatementObjectType.Agent),
+      None,
+      Some(MBox("mailto:test@example.com")),
+      None,
+      None,
+      None
+    ),
+    StatementVerb(
+      IRI("http://example.com/visited"),
+      Some(LanguageMap(Map("en-US" -> "will visit")))
+    ),
     StatementObject(
       Group(
         StatementObjectType.Group,
@@ -90,15 +122,30 @@ class SubStatementTest extends AnyFunSpec {
     None
   )
   val sampleGroupSubStatementEncoded: String =
-    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-group.json"))(_.mkString)
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-group.json"))(
+      _.mkString
+    )
 
   /* StatementRef SubStatement */
   val sampleStatementRefSubStatement: SubStatement = SubStatement(
     StatementObjectType.SubStatement,
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:test@example.com")), None, None, None),
-    StatementVerb(IRI("http://example.com/visited"), Some(LanguageMap(Map("en-US" -> "will visit")))),
+    Agent(
+      Some(StatementObjectType.Agent),
+      None,
+      Some(MBox("mailto:test@example.com")),
+      None,
+      None,
+      None
+    ),
+    StatementVerb(
+      IRI("http://example.com/visited"),
+      Some(LanguageMap(Map("en-US" -> "will visit")))
+    ),
     StatementObject(
-      StatementRef(StatementObjectType.StatementRef, UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f"))
+      StatementRef(
+        StatementObjectType.StatementRef,
+        UUID.fromString("f1dc3573-e346-4bd0-b295-f5dde5cbe13f")
+      )
     ),
     None,
     None,
@@ -106,7 +153,9 @@ class SubStatementTest extends AnyFunSpec {
     None
   )
   val sampleStatementRefSubStatementEncoded: String =
-    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-statement-ref.json"))(_.mkString)
+    Using.resource(Source.fromResource("data/sample-sub-statement-object-is-statement-ref.json"))(
+      _.mkString
+    )
 
   describe("SubStatement") {
     describe("[validation]") {
@@ -184,57 +233,49 @@ class SubStatementTest extends AnyFunSpec {
 
     describe("[encoding]") {
       it("should successfully encode a sub-statement (activity)") {
-        val actual: String = sampleActivitySubStatement.asJson.spaces2
+        val actual: String = sampleActivitySubStatement.toJson(spaces = true)
         assert(actual === sampleActivitySubStatementEncoded)
       }
 
       it("should successfully encode a sub-statement (agent)") {
-        val actual: String = sampleAgentSubStatement.asJson.spaces2
+        val actual: String = sampleAgentSubStatement.toJson(spaces = true)
         assert(actual === sampleAgentSubStatementEncoded)
       }
 
       it("should successfully encode a sub-statement (group)") {
-        val actual: String = sampleGroupSubStatement.asJson.spaces2
+        val actual: String = sampleGroupSubStatement.toJson(spaces = true)
         assert(actual === sampleGroupSubStatementEncoded)
       }
 
       it("should successfully encode a sub-statement (statement reference)") {
-        val actual: String = sampleStatementRefSubStatement.asJson.spaces2
+        val actual: String = sampleStatementRefSubStatement.toJson(spaces = true)
         assert(actual === sampleStatementRefSubStatementEncoded)
       }
     }
 
     describe("[decoding]") {
       it("should successfully decode a sub-statement (activity)") {
-        val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleActivitySubStatementEncoded)
-        decoded match {
-          case Right(actual) => assert(actual === sampleActivitySubStatement)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[SubStatement] = SubStatement(sampleActivitySubStatementEncoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === sampleActivitySubStatement)
       }
 
       it("should successfully decode a sub-statement (agent)") {
-        val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleAgentSubStatementEncoded)
-        decoded match {
-          case Right(actual) => assert(actual === sampleAgentSubStatement)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[SubStatement] = SubStatement(sampleAgentSubStatementEncoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === sampleAgentSubStatement)
       }
 
       it("should successfully decode a sub-statement (group)") {
-        val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleGroupSubStatementEncoded)
-        decoded match {
-          case Right(actual) => assert(actual === sampleGroupSubStatement)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[SubStatement] = SubStatement(sampleGroupSubStatementEncoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === sampleGroupSubStatement)
       }
 
       it("should successfully decode a sub-statement (statement reference)") {
-        val decoded: Either[io.circe.Error, SubStatement] = decode[SubStatement](sampleStatementRefSubStatementEncoded)
-        decoded match {
-          case Right(actual) => assert(actual === sampleStatementRefSubStatement)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[SubStatement] = SubStatement(sampleStatementRefSubStatementEncoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === sampleStatementRefSubStatement)
       }
     }
 
@@ -265,7 +306,10 @@ class SubStatementTest extends AnyFunSpec {
       it("should return false if both sub-statements are not equivalent") {
         val left: SubStatement = sampleActivitySubStatement.copy()
         val right: SubStatement = sampleActivitySubStatement.copy(
-          verb = StatementVerb(IRI("http://example.com/observed"), Some(LanguageMap(Map("en-US" -> "observed"))))
+          verb = StatementVerb(
+            IRI("http://example.com/observed"),
+            Some(LanguageMap(Map("en-US" -> "observed")))
+          )
         )
         assert(left.isEquivalentTo(right) === false)
       }
@@ -286,7 +330,9 @@ class SubStatementTest extends AnyFunSpec {
         assert(references.head.inSubStatement === true)
       }
 
-      it("should return a list that includes context activities if context activities are defined") {
+      it(
+        "should return a list that includes context activities if context activities are defined"
+      ) {
         val subStatement: SubStatement = sampleActivitySubStatement.copy(
           context = Some(
             StatementContext(
@@ -295,10 +341,18 @@ class SubStatementTest extends AnyFunSpec {
               team = None,
               contextActivities = Some(
                 ContextActivities(
-                  parent = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))),
-                  grouping = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))),
-                  category = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))),
-                  other = Some(List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None)))
+                  parent = Some(
+                    List(Activity(None, IRI("https://lrs.integralla.io/activity/parent"), None))
+                  ),
+                  grouping = Some(
+                    List(Activity(None, IRI("https://lrs.integralla.io/activity/grouping"), None))
+                  ),
+                  category = Some(
+                    List(Activity(None, IRI("https://lrs.integralla.io/activity/category"), None))
+                  ),
+                  other = Some(
+                    List(Activity(None, IRI("https://lrs.integralla.io/activity/other"), None))
+                  )
                 )
               ),
               revision = None,
@@ -334,7 +388,10 @@ class SubStatementTest extends AnyFunSpec {
           None,
           None
         ),
-        verb = StatementVerb(IRI("https://lrs.integralla.io/met"), Some(LanguageMap(Map("en-US" -> "met")))),
+        verb = StatementVerb(
+          IRI("https://lrs.integralla.io/met"),
+          Some(LanguageMap(Map("en-US" -> "met")))
+        ),
         `object` = StatementObject(
           Agent(
             Some(StatementObjectType.Agent),
@@ -349,7 +406,9 @@ class SubStatementTest extends AnyFunSpec {
         context = Some(
           StatementContext(
             registration = None,
-            instructor = Some(Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None)),
+            instructor = Some(
+              Agent(None, None, Some(MBox("mailto:instructors@integralla.io")), None, None, None)
+            ),
             team = Some(
               Group(
                 StatementObjectType.Group,
@@ -378,15 +437,18 @@ class SubStatementTest extends AnyFunSpec {
         assert(references.length === 4)
         assert(references.map(_.inSubStatement).forall(_ === true))
 
-        val statementActor = references.find(_.agent.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
+        val statementActor =
+          references.find(_.agent.mbox.get.value === "mailto:populus.tremuloides@integralla.io").get
         assert(statementActor.referenceType === ActorRef)
         assert(statementActor.asGroupMember === false)
 
-        val statementObject = references.find(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io").get
+        val statementObject =
+          references.find(_.agent.mbox.get.value === "mailto:prunus.persica@integralla.io").get
         assert(statementObject.referenceType === AgentObjectRef)
         assert(statementObject.asGroupMember === false)
 
-        val instructor = references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
+        val instructor =
+          references.find(_.agent.mbox.get.value === "mailto:instructors@integralla.io").get
         assert(instructor.referenceType === InstructorRef)
         assert(instructor.asGroupMember === false)
 
@@ -395,7 +457,9 @@ class SubStatementTest extends AnyFunSpec {
         assert(team.asGroupMember === false)
       }
 
-      it("should return a list of actors referenced in the actor, object, and context properties (context undefined)") {
+      it(
+        "should return a list of actors referenced in the actor, object, and context properties (context undefined)"
+      ) {
         val statement: SubStatement = subStatement.copy(context = None)
         val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 2)
@@ -405,7 +469,9 @@ class SubStatementTest extends AnyFunSpec {
         "should return a list of actors referenced in the actor, object, and context properties (object has no references)"
       ) {
         val statement: SubStatement = subStatement.copy(`object` =
-          StatementObject(StatementRef(objectType = StatementObjectType.StatementRef, id = UUID.randomUUID()))
+          StatementObject(
+            StatementRef(objectType = StatementObjectType.StatementRef, id = UUID.randomUUID())
+          )
         )
         val references: List[AgentReference] = statement.agentReferences
         assert(references.length === 3)

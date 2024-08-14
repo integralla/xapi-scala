@@ -1,11 +1,11 @@
 package io.integralla.xapi.model
 
-import io.circe.jawn.decode
 import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.references._
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID
+import scala.util.Try
 
 class StatementContextTest extends AnyFunSpec {
 
@@ -100,9 +100,11 @@ class StatementContextTest extends AnyFunSpec {
             |  }
             |}""".stripMargin
 
-        val encoded: String = sampleContext.asJson.spaces2
+        val encoded: String = sampleContext.toJson(spaces = true)
         assert(encoded === expected)
-        val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
+
+        val decoded: Try[StatementContext] = StatementContext(encoded)
+        assert(decoded.isSuccess)
         assert(decoded.get === sampleContext)
       }
       it("should successfully encode/decode a context object with context agents [xAPI 2.0]") {
@@ -139,9 +141,11 @@ class StatementContextTest extends AnyFunSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = context.asJson.spaces2
+        val encoded: String = context.toJson(spaces = true)
         assert(encoded === expected)
-        val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
+
+        val decoded: Try[StatementContext] = StatementContext(encoded)
+        assert(decoded.isSuccess)
         assert(decoded.get === context)
       }
       it("should successfully encode/decode a context object with context groups [xAPI 2.0]") {
@@ -198,9 +202,11 @@ class StatementContextTest extends AnyFunSpec {
             |  ]
             |}""".stripMargin
 
-        val encoded: String = context.asJson.spaces2
+        val encoded: String = context.toJson(spaces = true)
         assert(encoded === expected)
-        val decoded: Option[StatementContext] = decode[StatementContext](encoded).toOption
+
+        val decoded: Try[StatementContext] = StatementContext(encoded)
+        assert(decoded.isSuccess)
         assert(decoded.get === context)
       }
     }

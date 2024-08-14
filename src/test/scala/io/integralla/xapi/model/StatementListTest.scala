@@ -1,29 +1,26 @@
 package io.integralla.xapi.model
 
-import io.circe
-import io.circe.jawn.decode
-import io.circe.syntax.EncoderOps
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import org.scalatest.funspec.AnyFunSpec
 
 import java.util.UUID
+import scala.util.Try
 
 class StatementListTest extends AnyFunSpec {
 
   def generateStatement: Statement = Statement(
-    Some(UUID.randomUUID()),
-    Agent(Some(StatementObjectType.Agent), None, Some(MBox("mailto:xapi@adlnet.gov")), None, None, None),
-    StatementVerb(IRI("http://adlnet.gov/expapi/verbs/created"), Some(LanguageMap(Map("en-US" -> "created")))),
-    StatementObject(
-      Activity(None, IRI("http://example.adlnet.gov/xapi/example/activity"), None)
+    id = Some(UUID.randomUUID()),
+    actor = Agent(
+      objectType = Some(StatementObjectType.Agent),
+      mbox = Some(MBox("mailto:xapi@adlnet.gov"))
     ),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    verb = StatementVerb(
+      IRI("http://adlnet.gov/expapi/verbs/created"),
+      Some(LanguageMap(Map("en-US" -> "created")))
+    ),
+    `object` = StatementObject(
+      Activity(None, IRI("http://example.adlnet.gov/xapi/example/activity"), None)
+    )
   )
 
   describe("StatementList") {
@@ -31,19 +28,19 @@ class StatementListTest extends AnyFunSpec {
       it("should encode/decode a list of statements") {
         val statements: List[Statement] = (1 to 2).toList.map(_ => generateStatement)
         val statementList: StatementList = new StatementList(statements)
-        val encoded: String = statementList.asJson.noSpaces
+        val encoded: String = statementList.toJson()
         assert(encoded.startsWith("""[{"id":"""))
 
-        val decoded: Either[circe.Error, StatementList] = decode[StatementList](encoded)
-        decoded match {
-          case Right(actual) => assert(actual === statementList)
-          case Left(err)     => throw new Error(s"Decoding failed: $err")
-        }
+        val decoded: Try[StatementList] = StatementList(encoded)
+        assert(decoded.isSuccess)
+        assert(decoded.get === statementList)
       }
     }
 
     describe("[validation]") {
-      it("should throw a statement validation exception if any statement in the list does not validate") {
+      it(
+        "should throw a statement validation exception if any statement in the list does not validate"
+      ) {
         val statements: String =
           """[
           |	{
@@ -61,7 +58,7 @@ class StatementListTest extends AnyFunSpec {
           |""".stripMargin
 
         val exception = intercept[StatementValidationException] {
-          decode[StatementList](statements)
+          StatementList(statements).get
         }
         assert(exception.getMessage.contains("An Agent mbox identifier must be a valid mailto IRI"))
       }

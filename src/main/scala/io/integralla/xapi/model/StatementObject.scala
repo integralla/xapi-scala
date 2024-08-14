@@ -2,7 +2,7 @@ package io.integralla.xapi.model
 
 import io.circe._
 import io.circe.syntax.EncoderOps
-import io.integralla.xapi.model.common.Equivalence
+import io.integralla.xapi.model.common.{Decodable, Encodable, Equivalence}
 import io.integralla.xapi.model.exceptions.StatementValidationException
 import io.integralla.xapi.model.references.{
   ActivityObjectRef,
@@ -22,7 +22,7 @@ import java.util.UUID
   * @param value
   *   – An object of one of the five supported statement object types
   */
-case class StatementObject(value: AnyRef) extends Equivalence {
+case class StatementObject(value: AnyRef) extends Encodable[StatementObject] with Equivalence {
 
   /** A list of activities (if any) referenced by the statement object
     * Activities can be referenced via the statement object, or in a
@@ -90,7 +90,7 @@ case class StatementObject(value: AnyRef) extends Equivalence {
   }
 }
 
-object StatementObject {
+object StatementObject extends Decodable[StatementObject] {
 
   implicit val decoder: Decoder[StatementObject] = (c: HCursor) => {
     for {
