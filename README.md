@@ -1,4 +1,6 @@
-# xAPI Scala
+# xAPI Scala 
+
+[![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/integralla/xapi-scala/actions/workflows/scala.yml?query=branch%3Amain++)
 
 ## Description
 
