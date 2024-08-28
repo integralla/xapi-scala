@@ -1,7 +1,29 @@
 ThisBuild / organization := "io.integralla"
-ThisBuild / startYear := Some(2024)
+ThisBuild / organizationName := "Integralla LLC"
+ThisBuild / organizationHomepage := Some(url("https://integralla.com/"))
 
-ThisBuild / version := "1.0.0-SNAPSHOT"
+ThisBuild / developers := List(
+  Developer(
+    id = "integralla",
+    name = "Andrew Kirk",
+    email = "integralla-github.imaging568@passmail.net",
+    url = url("https://x.com/IntegrallaIO")
+  )
+)
+
+ThisBuild / homepage := Some(url("https://github.com/integralla/xapi-scala"))
+ThisBuild / licenses := List(
+  "Apache-2.0" -> new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")
+)
+ThisBuild / publishTo := sonatypeCentralPublishToBundle.value
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/integralla/xapi-scala"),
+    "scm:git@github.com:integralla/xapi-scala.git"
+  )
+)
+ThisBuild / startYear := Some(2024)
+ThisBuild / version := "1.0.0"
 ThisBuild / versionScheme := Some("semver-spec")
 
 ThisBuild / scalaVersion := "3.4.2"

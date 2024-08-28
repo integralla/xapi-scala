@@ -1,4 +1,4 @@
-# xAPI Scala 
+# xAPI Scala
 
 [![Build Status](https://github.com/integralla/xapi-scala/actions/workflows/scala.yml/badge.svg)](https://github.com/integralla/xapi-scala/actions/workflows/scala.yml)
 
