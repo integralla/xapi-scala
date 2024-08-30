@@ -5,7 +5,7 @@
 ## Description
 
 Scala library for creating and working with Experience API (xAPI) resources (such as statements
-and documents). 
+and documents).
 
 > The [Experience API (xAPI)](https://xapi.ieee-saopen.org/) is a standard that describes an
 > interoperable means to document and communicate information about learning experiences. It
@@ -82,7 +82,8 @@ assert(decoded.get == statement)
 
 ### Encoding / Decoding
 
-A `Statement` and every other data type supported by the model can be encoded as a JSON string using
+A `Statement`, and every other data type supported by the model, can be encoded as a JSON string
+using
 a built-in method called `toJson` as demonstrated above in the "Basic Usage" section.
 
 Similarly, every supported data type supports decoding from JSON using an `apply` method that is
@@ -107,7 +108,8 @@ strings for such things as UUIDs, hashes, etc.
 
 The xAPI specification requires the ability to test statements for logical equivalence in certain
 contexts such as ensuring statement immutability and verifying statement signatures. This can be
-accomplished using an `isEquivalentTo` method available for `Statement` data type (and most others).
+accomplished using an `isEquivalentTo` method available for the `Statement` data type (and most
+others).
 
 ```scala
 val left: Statement = ???
@@ -123,10 +125,10 @@ difficult when dealing with sub-statements. In order to make all of this easier,
 data type supports methods to retrieve a list of agent references, or a list of activity references,
 where the reference data type provides context to facilitate filtering requirements.
 
-* `activityReferences: List[ActivityReference]` – _Extracts and returns all activities (if any)
-  referenced by the statement_
-* `agentReferences: List[AgentReference]` – _A list of agent references across all parts of the
-  statement_
+| Method Name          | Return Type               | Description                                                              |
+|----------------------|---------------------------|--------------------------------------------------------------------------|
+| `activityReferences` | `List[ActivityReference]` | Extracts and returns all activities (if any) referenced by the statement |
+| `agentReferences`    | `List[AgentReference]`    | A list of agent references across all parts of the statement             |
 
 For an activity, the reference model defines the type of reference (for example, as a statement
 object or
@@ -144,11 +146,11 @@ The xAPI specification defines four types of Inverse Functional Identifiers (IFI
 identify agents or identified groups within a statement. The library offers a couple of methods to
 simplify working with these identifiers:
 
-* `ifiType: Option[String]` – _The IFI type name (for example, `account`)_
-* `ifiValue: Option[String]` – _The IFI value as a string (for
-  example, `http://www.example.com#123456`)_
-* `ifiKey: Option[String]` – _An IFI key composed of its type and value (for
-  example, `account#http://www.example.com#123456`)_
+| Method Name | Return Type      | Description                                                                                      |
+|-------------|------------------|--------------------------------------------------------------------------------------------------|
+| `ifiType`   | `Option[String]` | The IFI type name (for example, `account`)                                                       |
+| `ifiValue`  | `Option[String]` | The IFI value as a string (for example, `http://www.example.com#123456`)                         |
+| `ifiKey`    | `Option[String]` | An IFI key composed of its type and value (for example, `account#http://www.example.com#123456`) |
 
 The `ifiKey` method is particularly useful for filtering or grouping by agent.
 
@@ -165,3 +167,40 @@ if it is set to a single `Activity` object (something allowed for backwards comp
 ### Other
 
 Please consult the source code, which is well documented, for additional features / details.
+
+## Contributing
+
+All suggestions are welcome!
+
+This project uses the `sbt` build tool:
+
+```shell
+sbt 'compile;test'
+```
+
+Use `scalafmt` to ensure code style compliance:
+
+```shell
+sbt scalafmt
+```
+
+## Sponsor
+
+We offer commercial development services, specializing in educational technology and data analytics.
+Contact us to learn more ([integralla.com](https://integralla.com/)).
+
+## License
+
+Copyright 2024 Integralla LLC (https://integralla.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
