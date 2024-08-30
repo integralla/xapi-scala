@@ -29,7 +29,6 @@ Create a basic statement with an explicit identifier:
 import io.integralla.xapi.model._
 
 val statement = Statement(
-  id = Some(UUID.fromString("12345678-1234-5678-1234-567812345678")),
   actor = Agent(
     objectType = Some(StatementObjectType.Agent),
     mbox = Some(MBox("mailto:demo@example.com"))
