@@ -15,8 +15,19 @@ and documents).
 The library has been cross-built for Scala 3 and Scala 2.13, and is available
 from [Maven Central](https://central.sonatype.com/search?namespace=io.integralla&q=xapi-scala).
 
-```text
+```sbt
+/* sbt */
 libraryDependencies += "io.integralla" %% "xapi-scala" % "1.0.0"
+```
+
+```scala worksheet
+/* Scala CLI */
+//> using dep io.integralla:xapi-scala_3:1.0.0
+```
+
+```shell
+# Apache Spark
+spark-shell --packages io.integralla:xapi-scala_2.13:1.0.0
 ```
 
 ## Basic Usage
